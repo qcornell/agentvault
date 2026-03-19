@@ -1,5 +1,6 @@
 export {
   evaluatePolicy,
+  getDailySpending,
   recordSpending,
   resetDailySpending,
   validatePolicy,

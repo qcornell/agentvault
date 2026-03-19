@@ -18,6 +18,10 @@ function getDailySpent(agentId: string): number {
   return entry.total;
 }
 
+export function getDailySpending(agentId: string): number {
+  return getDailySpent(agentId);
+}
+
 export function recordSpending(agentId: string, amountHbar: number): void {
   const today = getTodayKey();
   const entry = dailySpending.get(agentId);

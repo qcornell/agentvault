@@ -2,480 +2,1439 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgentVault Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AgentVault</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0a0e1a;--bg-card:#111827;--bg-card-hover:#1a2236;--bg-surface:#0f1525;
-    --border:#1e293b;--border-light:#2a3a52;
-    --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#64748b;
-    --accent:#06b6d4;--accent-glow:rgba(6,182,212,.15);--accent-dim:#0891b2;
-    --green:#22c55e;--green-bg:rgba(34,197,94,.12);--green-border:rgba(34,197,94,.3);
-    --red:#ef4444;--red-bg:rgba(239,68,68,.12);--red-border:rgba(239,68,68,.3);
-    --yellow:#eab308;--yellow-bg:rgba(234,179,8,.12);--yellow-border:rgba(234,179,8,.3);
-    --purple:#a78bfa;--purple-bg:rgba(167,139,250,.12);
-    --radius:12px;--radius-sm:8px;--radius-xs:6px;
-    --shadow:0 4px 24px rgba(0,0,0,.4);
-    --mono:'JetBrains Mono',monospace;
-    --sans:'Inter',system-ui,sans-serif;
-  }
-  html{font-size:15px}
-  body{
-    font-family:var(--sans);color:var(--text);background:var(--bg);
-    min-height:100vh;line-height:1.5;
-  }
-  /* ── Layout ── */
-  .shell{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
-  header{display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-  header .logo{font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
-  header .logo span{color:var(--accent)}
-  header .badge{
-    font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-    padding:3px 10px;border-radius:20px;
-    background:var(--accent-glow);color:var(--accent);border:1px solid rgba(6,182,212,.25);
-  }
-  header .spacer{flex:1}
-  header .net{font-size:.8rem;color:var(--text-muted);font-family:var(--mono)}
-  header .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-  header .dot.on{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.5)}
-  header .dot.off{background:var(--red)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0f19;--bg-raised:#111827;--bg-card:#151c2c;--bg-card-hover:#1a2338;
+  --bg-surface:#0f1525;--bg-input:#1a2236;--bg-overlay:rgba(11,15,25,.92);
+  --border:#1f2a40;--border-light:#2a3652;--border-focus:rgba(99,91,255,.5);
+  --text:#f8fafc;--text-secondary:#c9d1d9;--text-muted:#7c8898;--text-dim:#4e5969;
+  --primary:#635BFF;--primary-light:#8B85FF;--primary-glow:rgba(99,91,255,.12);--primary-border:rgba(99,91,255,.25);
+  --teal:#17a2b8;--teal-light:#22d3ee;--teal-glow:rgba(23,162,184,.1);--teal-border:rgba(23,162,184,.25);
+  --green:#10b981;--green-glow:rgba(16,185,129,.08);--green-border:rgba(16,185,129,.2);
+  --red:#ef4444;--red-glow:rgba(239,68,68,.08);--red-border:rgba(239,68,68,.2);
+  --amber:#f59e0b;--amber-glow:rgba(245,158,11,.08);--amber-border:rgba(245,158,11,.2);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --shadow-md:0 4px 12px rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.2);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.4);
+  --radius:12px;--radius-md:10px;--radius-sm:8px;--radius-xs:6px;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --sidebar-w:250px;
+  --topbar-h:64px;
+  --bottom-nav-h:0px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html{font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:100vh;min-height:100dvh;display:flex;line-height:1.5;overflow-x:hidden}
 
-  /* ── Grid ── */
-  .grid{display:grid;gap:20px}
-  .grid-top{grid-template-columns:1fr 1fr 1fr;margin-bottom:20px}
-  .grid-main{grid-template-columns:1fr 1fr}
-  @media(max-width:900px){.grid-top,.grid-main{grid-template-columns:1fr}}
+/* ── Sidebar Overlay ── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:55;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;transition:opacity .3s var(--ease);
+}
+.sidebar-overlay.visible{display:block;opacity:1}
 
-  /* ── Cards ── */
-  .card{
-    background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:20px 24px;position:relative;overflow:hidden;
-  }
-  .card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(6,182,212,.3),transparent);
-  }
-  .card h2{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .card h2 .icon{font-size:1rem}
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--bg-raised);border-right:1px solid var(--border);
+  position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:60;
+  overflow-y:auto;overflow-x:hidden;transition:transform .3s var(--ease);
+}
+.sidebar::-webkit-scrollbar{width:0}
+.sidebar-logo{
+  padding:24px 22px 20px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);min-height:72px;
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--teal),var(--primary));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-mark svg{width:18px;height:18px;color:#fff}
+.logo-text{font-size:1.2rem;font-weight:700;letter-spacing:-.03em;color:var(--text)}
+.logo-text span{color:var(--primary-light)}
+.sidebar-close{
+  display:none;margin-left:auto;width:36px;height:36px;border:none;background:rgba(255,255,255,.06);
+  border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer;
+  align-items:center;justify-content:center;flex-shrink:0;
+}
+.sidebar-close svg{width:18px;height:18px}
 
-  /* ── Agent Card ── */
-  .agent-name{font-size:1.3rem;font-weight:700;margin-bottom:4px}
-  .agent-id{font-family:var(--mono);font-size:.8rem;color:var(--accent);margin-bottom:12px}
-  .agent-meta{display:flex;flex-direction:column;gap:6px}
-  .agent-meta .row{display:flex;align-items:center;gap:8px;font-size:.85rem}
-  .agent-meta .label{color:var(--text-dim);min-width:60px}
-  .agent-meta .val{color:var(--text);font-family:var(--mono);font-size:.8rem;word-break:break-all}
-  .agent-meta a{color:var(--accent);text-decoration:none}
-  .agent-meta a:hover{text-decoration:underline}
+.sidebar-nav{padding:16px 12px;flex:1}
+.nav-section{
+  font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--text-dim);padding:20px 14px 8px;
+}
+.nav-section:first-child{padding-top:4px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:500;color:var(--text-muted);cursor:pointer;
+  transition:all .15s var(--ease);text-decoration:none;position:relative;margin-bottom:2px;
+  min-height:44px;-webkit-tap-highlight-color:transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
+.nav-item:active{background:rgba(255,255,255,.08)}
+.nav-item.active{background:var(--primary-glow);color:var(--primary-light);font-weight:600}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;background:var(--primary);border-radius:0 3px 3px 0;
+}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{
+  margin-left:auto;font-size:.7rem;font-weight:700;min-width:20px;text-align:center;
+  padding:1px 7px;border-radius:10px;background:var(--amber);color:#000;
+}
+.sidebar-footer{padding:16px 14px;border-top:1px solid var(--border)}
+.net-badge{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:rgba(255,255,255,.03);border-radius:var(--radius-sm);
+  border:1px solid var(--border);font-size:.78rem;color:var(--text-muted);
+}
+.net-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.net-dot.live{background:var(--green);box-shadow:0 0 8px rgba(16,185,129,.4);animation:pulse 2s infinite}
+.powered{font-size:.68rem;color:var(--text-dim);padding:10px 12px 0}
 
-  /* ── Balance Card ── */
-  .balance-amount{font-size:2.2rem;font-weight:700;font-family:var(--mono);letter-spacing:-.02em}
-  .balance-amount .unit{font-size:1rem;font-weight:500;color:var(--text-muted);margin-left:4px}
-  .balance-sub{font-size:.8rem;color:var(--text-dim);margin-top:4px}
+/* ── Main ── */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 
-  /* ── Policy Card ── */
-  .policy-rules{display:flex;flex-direction:column;gap:10px}
-  .policy-rule{
-    display:flex;align-items:center;gap:10px;padding:10px 14px;
-    background:var(--bg-surface);border-radius:var(--radius-sm);border:1px solid var(--border);
-  }
-  .policy-rule .rule-icon{font-size:1.1rem;flex-shrink:0}
-  .policy-rule .rule-text{font-size:.85rem;flex:1}
-  .policy-rule .rule-val{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--accent)}
-  .policy-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-  .chip{
-    font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:20px;
-    background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.2);
-  }
+/* ── Topbar ── */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;gap:12px;padding:0 32px;height:var(--topbar-h);
+  background:var(--bg-overlay);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-burger{
+  display:none;width:40px;height:40px;border:none;background:none;
+  color:var(--text-muted);cursor:pointer;border-radius:var(--radius-xs);
+  align-items:center;justify-content:center;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.topbar-burger:active{background:rgba(255,255,255,.06)}
+.topbar-burger svg{width:22px;height:22px}
+.topbar h1{font-size:1.15rem;font-weight:600;flex:1;color:var(--text);white-space:nowrap}
+.topbar-group{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.topbar-stat{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text-muted);white-space:nowrap}
+.topbar-stat .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+.topbar-bal{
+  font-family:var(--mono);font-weight:600;font-size:.9rem;color:var(--text);
+  padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-xs);white-space:nowrap;
+}
+.topbar-bal .u{color:var(--text-muted);font-weight:400}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.3)}50%{box-shadow:0 0 0 6px rgba(16,185,129,0)}}
 
-  /* ── Approval Queue ── */
-  .approval-item{
-    padding:16px;margin-bottom:12px;border-radius:var(--radius-sm);
-    border:1px solid var(--yellow-border);background:var(--yellow-bg);
-  }
-  .approval-item.resolved-approved{border-color:var(--green-border);background:var(--green-bg)}
-  .approval-item.resolved-denied{border-color:var(--red-border);background:var(--red-bg)}
-  .approval-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .approval-header .action-name{font-weight:600;font-size:.9rem}
-  .approval-header .amount{font-family:var(--mono);font-weight:600;color:var(--accent)}
-  .approval-reason{font-size:.83rem;color:var(--text-muted);margin-bottom:10px}
-  .approval-meta{font-size:.75rem;color:var(--text-dim);font-family:var(--mono);margin-bottom:10px}
-  .approval-btns{display:flex;gap:8px}
-  .btn{
-    padding:8px 20px;border-radius:var(--radius-xs);border:none;cursor:pointer;
-    font-family:var(--sans);font-size:.82rem;font-weight:600;transition:all .15s;
-  }
-  .btn-approve{background:var(--green);color:#fff}
-  .btn-approve:hover{background:#16a34a;transform:translateY(-1px)}
-  .btn-deny{background:var(--red);color:#fff}
-  .btn-deny:hover{background:#dc2626;transform:translateY(-1px)}
-  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-  .approval-resolved-badge{
-    font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
-    padding:4px 12px;border-radius:20px;display:inline-block;
-  }
-  .badge-approved{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-  .badge-denied{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
-  .empty-state{text-align:center;padding:32px 16px;color:var(--text-dim);font-size:.85rem}
-  .empty-state .empty-icon{font-size:2rem;margin-bottom:8px}
+/* ── Content ── */
+.content{padding:28px 32px 60px}
+.content-grid{display:flex;gap:24px}
+.col-main{flex:1;min-width:0}
+.col-side{width:340px;flex-shrink:0}
 
-  /* ── Audit Log ── */
-  .audit-entry{
-    padding:12px 16px;border-left:3px solid var(--border);
-    margin-bottom:8px;background:var(--bg-surface);border-radius:0 var(--radius-xs) var(--radius-xs) 0;
-    transition:border-color .15s;
-  }
-  .audit-entry:hover{border-left-color:var(--accent);background:var(--bg-card-hover)}
-  .audit-entry.verdict-pass{border-left-color:var(--green)}
-  .audit-entry.verdict-deny{border-left-color:var(--red)}
-  .audit-entry.verdict-approval_required{border-left-color:var(--yellow)}
-  .audit-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
-  .audit-action{font-weight:600;font-size:.85rem}
-  .audit-verdict{
-    font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
-    padding:2px 8px;border-radius:12px;
-  }
-  .v-pass{background:var(--green-bg);color:var(--green)}
-  .v-deny{background:var(--red-bg);color:var(--red)}
-  .v-approval_required{background:var(--yellow-bg);color:var(--yellow)}
-  .audit-summary{font-size:.8rem;color:var(--text-muted);margin-bottom:4px}
-  .audit-time{font-size:.72rem;color:var(--text-dim);font-family:var(--mono)}
-  .audit-txid{font-size:.72rem;color:var(--accent);font-family:var(--mono);word-break:break-all}
-  .audit-txid a{color:var(--accent);text-decoration:none}
-  .audit-txid a:hover{text-decoration:underline}
+/* ── Stat Cards ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;position:relative;overflow:hidden;
+  transition:all .2s var(--ease);
+}
+.stat:hover{border-color:var(--border-light);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat.featured{
+  background:linear-gradient(135deg,#17a2b8 0%,#635BFF 100%);border:none;color:#fff;
+}
+.stat.featured:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,91,255,.25)}
+.stat-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:10px}
+.stat.featured .stat-label{color:rgba(255,255,255,.8)}
+.stat-val{font-size:1.9rem;font-weight:700;font-family:var(--mono);letter-spacing:-.03em;margin-bottom:4px;line-height:1.1}
+.stat-val .unit{font-size:.85rem;font-weight:400;color:var(--text-muted);margin-left:2px}
+.stat.featured .stat-val .unit{color:rgba(255,255,255,.7)}
+.stat-meta{font-size:.78rem;color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.stat.featured .stat-meta{color:rgba(255,255,255,.75)}
+.stat-meta .up{color:var(--green);font-weight:600}
+.stat.featured .stat-meta .up{color:rgba(255,255,255,.95)}
+.stat-secondary{
+  margin-top:10px;padding-top:10px;font-size:.78rem;color:var(--text-dim);
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.stat.featured .stat-secondary{border-top-color:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.stat-icon{
+  position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);
+}
+.stat.featured .stat-icon{background:rgba(255,255,255,.15)}
+.stat-icon svg{width:18px;height:18px;color:var(--text-muted)}
+.stat.featured .stat-icon svg{color:rgba(255,255,255,.9)}
 
-  /* ── Status Bar ── */
-  .status-bar{
-    display:flex;align-items:center;gap:16px;padding:12px 20px;
-    background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);
-    margin-bottom:20px;font-size:.8rem;color:var(--text-muted);
-  }
-  .status-bar .pulse{
-    width:10px;height:10px;border-radius:50%;background:var(--green);
-    animation:pulse 2s infinite;flex-shrink:0;
-  }
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
-  .status-bar .refresh-info{margin-left:auto;font-family:var(--mono);font-size:.72rem}
+/* ── Cards ── */
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:20px;overflow:hidden;transition:all .2s var(--ease);
+}
+.card:hover{border-color:var(--border-light)}
+.card-head{
+  display:flex;align-items:center;gap:10px;padding:18px 22px;
+  border-bottom:1px solid var(--border);
+}
+.card-head h2{font-size:.88rem;font-weight:600;color:var(--text-secondary);flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.card-head h2 svg{width:16px;height:16px;opacity:.6;flex-shrink:0}
+.card-head h2 span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-tag{
+  font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;
+}
+.tag-live{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.tag-count{background:rgba(255,255,255,.04);color:var(--text-muted);border:1px solid var(--border)}
+.tag-enforcing{background:var(--primary-glow);color:var(--primary-light);border:1px solid var(--primary-border)}
+.card-body{padding:20px 22px}
+.card-body.flush{padding:0}
 
-  /* ── Scrollable sections ── */
-  .scroll-section{max-height:500px;overflow-y:auto;padding-right:4px}
-  .scroll-section::-webkit-scrollbar{width:4px}
-  .scroll-section::-webkit-scrollbar-track{background:transparent}
-  .scroll-section::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+/* ── Chart ── */
+.chart-wrap{position:relative;height:220px;padding:20px 22px 16px}
 
-  /* ── Init overlay ── */
-  .init-overlay{
-    position:fixed;top:0;left:0;right:0;bottom:0;
-    background:var(--bg);display:flex;align-items:center;justify-content:center;
-    flex-direction:column;gap:16px;z-index:100;
+/* ── Identity ── */
+.id-grid{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.id-avatar{
+  width:52px;height:52px;border-radius:var(--radius-md);
+  background:linear-gradient(135deg,var(--teal-glow),var(--primary-glow));
+  border:1px solid var(--primary-border);display:flex;align-items:center;justify-content:center;
+}
+.id-avatar svg{width:24px;height:24px;color:var(--primary-light)}
+.id-name{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.id-sub{font-family:var(--mono);font-size:.78rem;color:var(--primary-light);margin-bottom:14px;word-break:break-all}
+.id-rows{display:flex;flex-direction:column;gap:8px}
+.id-row{display:flex;align-items:center;gap:10px;font-size:.82rem;flex-wrap:wrap}
+.id-label{color:var(--text-dim);min-width:50px;font-weight:500}
+.id-val{
+  font-family:var(--mono);font-size:.78rem;color:var(--text-secondary);
+  background:var(--bg-surface);padding:5px 12px;border-radius:var(--radius-xs);
+  border:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:100%;min-width:0;
+}
+.id-val a{color:var(--primary-light);text-decoration:none}
+.id-val a:hover{text-decoration:underline}
+
+/* ── Policy ── */
+.pol-list{display:flex;flex-direction:column;gap:8px}
+.pol-row{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  background:var(--bg-surface);border-radius:var(--radius-sm);border:1px solid var(--border);
+  transition:all .15s var(--ease);flex-wrap:wrap;
+}
+.pol-row:hover{border-color:var(--border-light);background:var(--bg-card-hover)}
+.pol-icon{
+  width:36px;height:36px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.pol-icon svg{width:16px;height:16px}
+.pol-icon.g{background:var(--green-glow);border:1px solid var(--green-border)}
+.pol-icon.g svg{color:var(--green)}
+.pol-icon.a{background:var(--amber-glow);border:1px solid var(--amber-border)}
+.pol-icon.a svg{color:var(--amber)}
+.pol-icon.r{background:var(--red-glow);border:1px solid var(--red-border)}
+.pol-icon.r svg{color:var(--red)}
+.pol-text{flex:1;min-width:120px}
+.pol-name{font-size:.85rem;font-weight:600}
+.pol-desc{font-size:.72rem;color:var(--text-dim);margin-top:1px}
+.pol-val{font-family:var(--mono);font-size:.88rem;font-weight:600;color:var(--text);margin-right:8px;white-space:nowrap}
+.pol-val .pvu{color:var(--text-dim);font-weight:400;font-size:.78rem}
+.pol-status{
+  font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+}
+.ps-on{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.ps-warn{background:var(--amber-glow);color:var(--amber);border:1px solid var(--amber-border)}
+.action-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.achip{
+  font-size:.72rem;font-weight:500;padding:4px 12px;border-radius:20px;
+  background:var(--primary-glow);color:var(--primary-light);border:1px solid var(--primary-border);
+}
+
+/* ── Approvals ── */
+.appr{padding:18px 22px;border-bottom:1px solid var(--border);transition:background .15s var(--ease);position:relative}
+.appr:last-child{border-bottom:none}
+.appr:hover{background:rgba(255,255,255,.015)}
+.appr.pending{border-left:3px solid var(--amber)}
+.appr.approved{border-left:3px solid var(--green)}
+.appr.denied{border-left:3px solid var(--red)}
+.appr-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.appr-action{font-weight:600;font-size:.9rem}
+.appr-amount{font-family:var(--mono);font-weight:700;font-size:.95rem}
+.appr-amount .au{color:var(--text-muted);font-weight:400;font-size:.8rem}
+.appr-tag{
+  margin-left:auto;font-size:.64rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;padding:3px 10px;border-radius:10px;
+}
+.at-pending{background:var(--amber-glow);color:var(--amber);border:1px solid var(--amber-border)}
+.at-approved{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.at-denied{background:var(--red-glow);color:var(--red);border:1px solid var(--red-border)}
+.appr-reason{font-size:.8rem;color:var(--text-muted);margin-bottom:4px;line-height:1.4}
+.appr-meta{font-size:.72rem;color:var(--text-dim);font-family:var(--mono);margin-bottom:12px;word-break:break-all}
+.appr-btns{display:flex;gap:8px}
+.btn{
+  padding:11px 22px;border-radius:var(--radius-xs);border:1px solid transparent;
+  cursor:pointer;font-family:var(--sans);font-size:.85rem;font-weight:600;
+  transition:all .15s var(--ease);display:inline-flex;align-items:center;gap:6px;
+  min-height:44px;-webkit-tap-highlight-color:transparent;
+}
+.btn-approve{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-approve:hover{background:#059669;transform:translateY(-1px);box-shadow:0 4px 14px rgba(16,185,129,.3)}
+.btn-approve:active{transform:scale(.97)}
+.btn-deny{background:transparent;color:var(--red);border-color:var(--red-border)}
+.btn-deny:hover{background:var(--red-glow);transform:translateY(-1px)}
+.btn-deny:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.appr-resolved{font-size:.75rem;color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.empty{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:.85rem}
+.empty svg{width:40px;height:40px;color:var(--text-dim);opacity:.3;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto}
+
+/* ── Audit ── */
+.audit{
+  padding:14px 22px;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;
+  transition:background .15s var(--ease);
+}
+.audit:last-child{border-bottom:none}
+.audit:hover{background:rgba(255,255,255,.015)}
+.audit-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:5px}
+.audit-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-light);background:var(--bg);flex-shrink:0}
+.audit-dot.pass{border-color:var(--green);background:var(--green)}
+.audit-dot.deny{border-color:var(--red);background:var(--red)}
+.audit-dot.approval_required{border-color:var(--amber);background:var(--amber)}
+.audit-line{width:1px;flex:1;background:var(--border);margin-top:4px;min-height:16px}
+.audit-body{min-width:0;overflow:hidden}
+.audit-head{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.audit-action{font-weight:600;font-size:.85rem}
+.audit-vtag{
+  font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 7px;border-radius:8px;
+}
+.vt-pass{background:var(--green-glow);color:var(--green)}
+.vt-deny{background:var(--red-glow);color:var(--red)}
+.vt-approval_required{background:var(--amber-glow);color:var(--amber)}
+.audit-sum{font-size:.8rem;color:var(--text-muted);line-height:1.4;word-break:break-word}
+.audit-tx{font-size:.72rem;color:var(--primary-light);font-family:var(--mono);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.audit-tx a{color:var(--primary-light);text-decoration:none}
+.audit-tx a:hover{text-decoration:underline}
+.audit-time{font-size:.72rem;color:var(--text-dim);font-family:var(--mono);white-space:nowrap;padding-top:5px}
+
+/* ── Quick Actions ── */
+.qa{
+  display:flex;align-items:center;gap:11px;padding:14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--bg-card);cursor:pointer;
+  transition:all .15s var(--ease);margin-bottom:8px;font-size:.88rem;font-weight:500;color:var(--text-secondary);
+  min-height:48px;-webkit-tap-highlight-color:transparent;
+}
+.qa:hover{background:var(--bg-card-hover);border-color:var(--primary-border);color:var(--text)}
+.qa:active{background:rgba(99,91,255,.08);transform:scale(.985)}
+.qa svg{width:18px;height:18px;color:var(--primary-light);flex-shrink:0}
+.qa .qa-arrow{margin-left:auto;color:var(--text-dim)}
+
+/* ── Scroll ── */
+.scroll{max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:4px}
+.scroll::-webkit-scrollbar-track{background:transparent}
+.scroll::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+
+/* ── Init ── */
+.init{
+  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:20px;z-index:200;
+}
+.init.hidden{display:none}
+.init-spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.init-text{color:var(--text-muted);font-size:.88rem;font-weight:500}
+
+/* ── Bottom Navigation (mobile) ── */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:45;
+  background:var(--bg-raised);border-top:1px solid var(--border);
+  padding:6px 8px calc(6px + var(--safe-bottom));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.bnav{
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;
+  border-radius:var(--radius-xs);color:var(--text-dim);text-decoration:none;
+  font-size:.62rem;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:color .15s;min-width:52px;
+}
+.bnav svg{width:20px;height:20px}
+.bnav.active{color:var(--primary-light)}
+.bnav:active{color:var(--text-secondary)}
+.bnav-badge{
+  position:relative;
+}
+.bnav-badge::after{
+  content:attr(data-count);position:absolute;top:-4px;right:-10px;
+  font-size:.6rem;font-weight:700;min-width:16px;text-align:center;
+  padding:0 4px;border-radius:8px;background:var(--amber);color:#000;
+  line-height:16px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ═══════════════════════════════════════════════ */
+
+/* Tablet landscape */
+@media(max-width:1280px){
+  .col-side{width:310px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Tablet portrait */
+@media(max-width:1024px){
+  :root{--sidebar-w:0px;--bottom-nav-h:68px}
+  .sidebar{transform:translateX(-100%);width:280px}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-close{display:flex}
+  .main{margin-left:0}
+  .topbar-burger{display:flex}
+  .content-grid{flex-direction:column}
+  .col-side{width:100%}
+  .col-side .card{margin-bottom:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .content{padding:24px 24px calc(24px + var(--bottom-nav-h))}
+  .bottom-nav{display:block}
+}
+
+/* Mobile large */
+@media(max-width:640px){
+  .topbar{padding:0 16px;height:56px;gap:8px}
+  .topbar h1{font-size:1rem}
+  .topbar-stat .label-text{display:none}
+  .topbar-bal{padding:5px 10px;font-size:.82rem}
+  .content{padding:16px 14px calc(16px + var(--bottom-nav-h))}
+  .stats{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+  .stat{padding:16px}
+  .stat-val{font-size:1.5rem}
+  .stat-icon{width:30px;height:30px;top:14px;right:14px}
+  .stat-icon svg{width:14px;height:14px}
+  .stat-label{font-size:.66rem}
+  .chart-wrap{height:180px;padding:14px 14px 10px}
+  .card-head{padding:14px 16px}
+  .card-body{padding:16px}
+  .appr{padding:14px 16px}
+  .audit{padding:12px 16px;gap:10px}
+  .pol-row{padding:12px;gap:10px}
+  .pol-icon{width:32px;height:32px}
+  .id-grid{grid-template-columns:1fr;gap:12px}
+  .id-avatar{width:44px;height:44px}
+  .id-avatar svg{width:20px;height:20px}
+}
+
+/* Mobile small */
+@media(max-width:380px){
+  .stats{grid-template-columns:1fr;gap:8px}
+  .stat{padding:14px}
+  .stat-val{font-size:1.3rem}
+  .topbar-group{gap:8px}
+  .topbar-stat{display:none}
+  .pol-row{flex-wrap:wrap}
+  .pol-val{width:100%;margin-top:4px;margin-right:0}
+  .appr-btns{flex-direction:column}
+  .appr-btns .btn{width:100%;justify-content:center}
+}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s var(--ease) both}
+.fade-up:nth-child(2){animation-delay:.05s}
+.fade-up:nth-child(3){animation-delay:.1s}
+.fade-up:nth-child(4){animation-delay:.15s}
+
+/* Touch devices: disable hover transforms */
+@media(hover:none){
+  .stat:hover,.card:hover,.pol-row:hover{transform:none;box-shadow:none}
+  .stat.featured:hover{transform:none}
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL SYSTEM
+   ═══════════════════════════════════════════════ */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:0;visibility:hidden;transition:opacity .25s var(--ease),visibility .25s;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal-panel{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  transform:translateY(24px) scale(.96);transition:transform .3s var(--ease);
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+}
+.modal-backdrop.open .modal-panel{transform:translateY(0) scale(1)}
+.modal-header{
+  display:flex;align-items:center;gap:10px;padding:20px 24px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg-card);z-index:1;
+}
+.modal-header h3{flex:1;font-size:1rem;font-weight:600}
+.modal-close{
+  width:36px;height:36px;border:none;background:rgba(255,255,255,.05);border-radius:var(--radius-xs);
+  color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;
+}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-close svg{width:16px;height:16px}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* Form fields */
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.field-hint{font-size:.72rem;color:var(--text-dim);margin-top:4px}
+.finput{
+  width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border);
+  border-radius:var(--radius-xs);color:var(--text);font-family:var(--mono);font-size:.88rem;
+  outline:none;transition:border-color .15s,box-shadow .15s;min-height:44px;
+}
+.finput:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--border-focus)}
+.finput::placeholder{color:var(--text-dim)}
+select.finput{font-family:var(--sans);appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg fill='none' stroke='%237c8898' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6,9 12,15 18,9' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:36px;
+}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+
+/* Holders editor */
+.holder-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.holder-row .finput{flex:1}
+.holder-pct{width:80px;flex-shrink:0}
+
+/* Modal result */
+.modal-result{
+  margin-top:16px;padding:16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--bg-surface);
+  font-size:.85rem;line-height:1.5;display:none;
+}
+.modal-result.show{display:block}
+.modal-result.pass{border-color:var(--green-border);background:var(--green-glow)}
+.modal-result.deny{border-color:var(--red-border);background:var(--red-glow)}
+.modal-result.approval_required{border-color:var(--amber-border);background:var(--amber-glow)}
+.modal-result .verdict-badge{
+  display:inline-block;font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;padding:3px 10px;border-radius:10px;margin-bottom:8px;
+}
+.modal-result .vb-pass{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.modal-result .vb-deny{background:var(--red-glow);color:var(--red);border:1px solid var(--red-border)}
+.modal-result .vb-approval_required{background:var(--amber-glow);color:var(--amber);border:1px solid var(--amber-border)}
+.modal-result .result-text{color:var(--text-secondary)}
+.modal-result .result-tx{font-family:var(--mono);font-size:.78rem;margin-top:8px;word-break:break-all}
+.modal-result .result-tx a{color:var(--primary-light);text-decoration:none}
+.modal-result .result-tx a:hover{text-decoration:underline}
+
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);box-shadow:0 4px 14px rgba(99,91,255,.3)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn-ghost{background:transparent;color:var(--text-muted);border-color:var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
+.btn .btn-spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:4px}
+
+/* ── Toast Notifications ── */
+.toast-container{position:fixed;top:20px;right:20px;z-index:150;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{
+  pointer-events:auto;padding:14px 20px;border-radius:var(--radius-sm);
+  font-size:.85rem;font-weight:500;color:#fff;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateX(120%);transition:transform .3s var(--ease),opacity .3s;
+  max-width:360px;display:flex;align-items:center;gap:10px;
+}
+.toast.show{transform:translateX(0)}
+.toast.hiding{opacity:0;transform:translateX(120%)}
+.toast-success{background:linear-gradient(135deg,#059669,#10b981)}
+.toast-error{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.toast-info{background:linear-gradient(135deg,#4338ca,#635BFF)}
+.toast-warn{background:linear-gradient(135deg,#d97706,#f59e0b);color:#000}
+.toast svg{width:18px;height:18px;flex-shrink:0}
+
+/* ── Modal Mobile ── */
+@media(max-width:640px){
+  .modal-backdrop{padding:0;align-items:flex-end}
+  .modal-panel{
+    max-width:100%;max-height:92vh;border-radius:var(--radius) var(--radius) 0 0;
+    border-bottom:none;
+    transform:translateY(100%);
   }
-  .init-overlay.hidden{display:none}
-  .init-spinner{
-    width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);
-    border-radius:50%;animation:spin .8s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .init-text{color:var(--text-muted);font-size:.9rem}
-  .init-error{color:var(--red);font-size:.85rem;text-align:center;max-width:400px}
+  .modal-backdrop.open .modal-panel{transform:translateY(0)}
+  .modal-header{padding:16px 18px}
+  .modal-body{padding:18px}
+  .modal-footer{padding:14px 18px calc(14px + var(--safe-bottom));flex-direction:column}
+  .modal-footer .btn{width:100%;justify-content:center}
+  .field-row{flex-direction:column;gap:0}
+  .holder-row{flex-wrap:wrap}
+  .holder-pct{width:100%}
+  .toast-container{top:auto;bottom:calc(80px + var(--safe-bottom));right:12px;left:12px}
+  .toast{max-width:100%}
+}
 </style>
 </head>
 <body>
 
-<div class="init-overlay" id="initOverlay">
-  <div class="init-spinner"></div>
+<div class="init" id="initOverlay">
+  <div class="init-spin"></div>
   <div class="init-text">Connecting to AgentVault…</div>
-  <div class="init-error" id="initError" style="display:none"></div>
 </div>
 
-<div class="shell" id="app" style="display:none">
-  <header>
-    <div class="logo">🏦 Agent<span>Vault</span></div>
-    <div class="badge">Dashboard</div>
-    <div class="spacer"></div>
-    <div class="net"><span class="dot on" id="statusDot"></span><span id="networkLabel">testnet</span></div>
-  </header>
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <div class="status-bar">
-    <div class="pulse"></div>
-    <span>Live — polling every 3s</span>
-    <span id="auditCount">0 audit entries</span>
-    <span id="approvalCount">0 pending approvals</span>
-    <span class="refresh-info">Last: <span id="lastRefresh">—</span></span>
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
+    </div>
+    <div class="logo-text">Agent<span>Vault</span></div>
+    <button class="sidebar-close" id="sidebarClose" onclick="closeSidebar()" aria-label="Close menu">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Main</div>
+    <a class="nav-item active" data-nav="overview" onclick="navigateTo('overview')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Overview</span>
+    </a>
+    <a class="nav-item" data-nav="approvals" onclick="navigateTo('approvals')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+      <span>Approvals</span>
+      <span class="nav-badge" id="navBadge">1</span>
+    </a>
+    <a class="nav-item" data-nav="audit" onclick="navigateTo('audit')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Audit Log</span>
+    </a>
+    <a class="nav-item" data-nav="policy" onclick="navigateTo('policy')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Policy Engine</span>
+    </a>
+    <div class="nav-section">Identity</div>
+    <a class="nav-item" data-nav="identity" onclick="navigateTo('identity')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M14 10h4M14 14h2"/></svg>
+      <span>Agent NFT</span>
+    </a>
+    <a class="nav-item" data-nav="hcs" onclick="navigateTo('hcs')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span>HCS Topic</span>
+    </a>
+    <div class="nav-section">Tools</div>
+    <a class="nav-item" data-nav="actions" onclick="navigateTo('actions')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      <span>MCP Tools</span>
+    </a>
+    <a class="nav-item" data-nav="distribute" onclick="navigateTo('distribute')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+      <span>Distribute</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="net-badge">
+      <span class="net-dot live"></span>
+      <span>Hedera Testnet</span>
+    </div>
+    <div class="powered">Powered by Hedera Agent Kit</div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main" id="app" style="display:none">
+  <div class="topbar">
+    <button class="topbar-burger" id="burgerBtn" onclick="openSidebar()" aria-label="Open menu">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <h1>Overview</h1>
+    <div class="topbar-group">
+      <div class="topbar-stat">
+        <span class="live-dot"></span>
+        <span class="label-text">Live</span>
+        <span style="color:var(--text-dim)" class="label-text">·</span>
+        <span id="lastRefresh" class="label-text">—</span>
+      </div>
+      <div class="topbar-bal"><span id="topBal">—</span> <span class="u">ℏ</span></div>
+    </div>
   </div>
 
-  <!-- Top row: Agent + Balance + Policy summary -->
-  <div class="grid grid-top">
-    <div class="card" id="agentCard">
-      <h2><span class="icon">🤖</span> Agent Identity</h2>
-      <div class="agent-name" id="agentName">—</div>
-      <div class="agent-id" id="agentId">—</div>
-      <div class="agent-meta">
-        <div class="row"><span class="label">Wallet</span><span class="val" id="agentWallet">—</span></div>
-        <div class="row"><span class="label">NFT</span><span class="val" id="agentNFT">—</span></div>
-        <div class="row"><span class="label">HCS</span><span class="val" id="agentHCS">—</span></div>
+  <div class="content">
+    <div class="stats">
+      <div class="stat featured fade-up">
+        <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
+        <div class="stat-label">Vault Balance</div>
+        <div class="stat-val"><span id="balHbar">—</span><span class="unit"> ℏ</span></div>
+        <div class="stat-meta"><span class="up">● Active</span> Hedera Testnet</div>
+      </div>
+      <div class="stat fade-up">
+        <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+        <div class="stat-label">Daily Spent</div>
+        <div class="stat-val"><span id="dailySpent">0</span><span class="unit"> ℏ</span></div>
+        <div class="stat-meta">of <span id="dailyLimit">—</span> ℏ limit</div>
+        <div class="stat-secondary"><div id="dailyBar" style="height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:4px"><div id="dailyFill" style="height:100%;width:0%;border-radius:2px;background:var(--teal);transition:width .6s var(--ease)"></div></div></div>
+      </div>
+      <div class="stat fade-up">
+        <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+        <div class="stat-label">Audit Entries</div>
+        <div class="stat-val" id="auditBig">0</div>
+        <div class="stat-meta">HCS-backed records</div>
+      </div>
+      <div class="stat fade-up">
+        <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div class="stat-label">Pending</div>
+        <div class="stat-val" id="pendBig">0</div>
+        <div class="stat-meta">awaiting approval</div>
       </div>
     </div>
 
-    <div class="card">
-      <h2><span class="icon">💰</span> Vault Balance</h2>
-      <div class="balance-amount"><span id="balanceHbar">—</span><span class="unit">ℏ</span></div>
-      <div class="balance-sub" id="balanceSub">Hedera Testnet</div>
-    </div>
+    <div class="content-grid">
+      <div class="col-main">
+        <!-- Chart -->
+        <div class="card fade-up">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg><span>Transaction Activity</span></h2>
+            <span class="card-tag tag-live">Live</span>
+          </div>
+          <div class="chart-wrap"><canvas id="activityChart"></canvas></div>
+        </div>
 
-    <div class="card">
-      <h2><span class="icon">🛡️</span> Policy Summary</h2>
-      <div class="policy-rules" id="policySummary">
-        <div class="policy-rule">
-          <span class="rule-icon">📊</span>
-          <span class="rule-text">Daily limit</span>
-          <span class="rule-val" id="policyDaily">—</span>
+        <!-- Identity -->
+        <div class="card fade-up" id="identitySection">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M14 10h4M14 14h2"/></svg><span>Agent Identity</span></h2>
+            <span class="card-tag tag-live" id="agentBadge">Active</span>
+          </div>
+          <div class="card-body">
+            <div class="id-grid">
+              <div class="id-avatar">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
+              </div>
+              <div>
+                <div class="id-name" id="agentName">—</div>
+                <div class="id-sub" id="agentId">—</div>
+                <div class="id-rows">
+                  <div class="id-row"><span class="id-label">Wallet</span><span class="id-val" id="agentWallet">—</span></div>
+                  <div class="id-row"><span class="id-label">NFT</span><span class="id-val" id="agentNFT">—</span></div>
+                  <div class="id-row"><span class="id-label">HCS</span><span class="id-val" id="agentHCS">—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="policy-rule">
-          <span class="rule-icon">💸</span>
-          <span class="rule-text">Per-TX limit</span>
-          <span class="rule-val" id="policyPerTx">—</span>
-        </div>
-        <div class="policy-rule">
-          <span class="rule-icon">⚠️</span>
-          <span class="rule-text">Approval above</span>
-          <span class="rule-val" id="policyApproval">—</span>
+
+        <!-- Approvals -->
+        <div class="card fade-up" id="approvalSection">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span>Approval Queue</span></h2>
+            <span class="card-tag tag-count" id="apprBadge">0 pending</span>
+          </div>
+          <div class="card-body flush">
+            <div class="scroll" id="apprList">
+              <div class="empty">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                <div>No pending approvals</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="policy-chips" id="policyChips"></div>
+
+      <div class="col-side">
+        <!-- Policy -->
+        <div class="card fade-up" id="policySection">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Policy Engine</span></h2>
+            <span class="card-tag tag-enforcing">Enforcing</span>
+          </div>
+          <div class="card-body">
+            <div class="pol-list">
+              <div class="pol-row">
+                <div class="pol-icon g"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+                <div class="pol-text"><div class="pol-name">Daily Spend Limit</div><div class="pol-desc">Max total outflow per 24h</div></div>
+                <div class="pol-val"><span id="polDaily">—</span> <span class="pvu">ℏ</span></div>
+                <span class="pol-status ps-on">Active</span>
+              </div>
+              <div class="pol-row">
+                <div class="pol-icon g"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                <div class="pol-text"><div class="pol-name">Per-TX Limit</div><div class="pol-desc">Max single transaction</div></div>
+                <div class="pol-val"><span id="polPerTx">—</span> <span class="pvu">ℏ</span></div>
+                <span class="pol-status ps-on">Active</span>
+              </div>
+              <div class="pol-row">
+                <div class="pol-icon a"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                <div class="pol-text"><div class="pol-name">Approval Threshold</div><div class="pol-desc">Human approval required above</div></div>
+                <div class="pol-val"><span id="polAppr">—</span> <span class="pvu">ℏ</span></div>
+                <span class="pol-status ps-warn">Threshold</span>
+              </div>
+              <div class="pol-row">
+                <div class="pol-icon r"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+                <div class="pol-text"><div class="pol-name">Unauthorized Targets</div><div class="pol-desc">Auto-deny unknown recipients</div></div>
+                <div class="pol-val">Auto Deny</div>
+                <span class="pol-status ps-on">Active</span>
+              </div>
+            </div>
+            <div class="action-chips" id="polChips"></div>
+          </div>
+        </div>
+
+        <!-- Audit -->
+        <div class="card fade-up" id="auditSection">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Audit Trail</span></h2>
+            <span class="card-tag tag-live">HCS-Backed</span>
+          </div>
+          <div class="card-body flush">
+            <div class="scroll" id="auditList">
+              <div class="empty">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                <div>No audit entries yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card fade-up" id="actionsSection">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>Quick Actions</span></h2>
+          </div>
+          <div class="card-body" style="padding:14px 16px">
+            <div class="qa" onclick="openModal('transfer')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              <span>Send Transfer</span>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </div>
+            <div class="qa" onclick="openModal('distribute')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+              <span>Distribute Rent</span>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </div>
+            <div class="qa" onclick="openModal('policy')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Test Policy Engine</span>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </div>
+            <div class="qa" onclick="quickCheckBalance()">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+              <span>Check Balance</span>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Main row: Approvals + Audit -->
-  <div class="grid grid-main">
-    <div class="card">
-      <h2><span class="icon">✋</span> Approval Queue</h2>
-      <div class="scroll-section" id="approvalList">
-        <div class="empty-state"><div class="empty-icon">✅</div>No pending approvals</div>
-      </div>
+  <!-- Bottom Nav (mobile only) -->
+  <nav class="bottom-nav" id="bottomNav">
+    <div class="bottom-nav-inner">
+      <a class="bnav active" data-bnav="overview" onclick="navigateTo('overview')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Overview</span>
+      </a>
+      <a class="bnav" data-bnav="approvals" id="bnavAppr" onclick="navigateTo('approvals')">
+        <span class="bnav-badge" data-count="1" id="bnavBadge">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+        </span>
+        <span>Approvals</span>
+      </a>
+      <a class="bnav" data-bnav="audit" onclick="navigateTo('audit')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        <span>Audit</span>
+      </a>
+      <a class="bnav" data-bnav="policy" onclick="navigateTo('policy')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Policy</span>
+      </a>
+      <a class="bnav" onclick="openSidebar()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <span>More</span>
+      </a>
     </div>
+  </nav>
+</div>
 
-    <div class="card">
-      <h2><span class="icon">📜</span> Audit Trail <span style="font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(HCS-backed)</span></h2>
-      <div class="scroll-section" id="auditList">
-        <div class="empty-state"><div class="empty-icon">📭</div>No audit entries yet</div>
+<!-- ═══ Toast Container ═══ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══ Modal: Send Transfer ═══ -->
+<div class="modal-backdrop" id="modalTransfer" onclick="if(event.target===this)closeModal('transfer')">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;color:var(--primary-light)"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <h3>Send Transfer</h3>
+      <button class="modal-close" onclick="closeModal('transfer')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Recipient Account ID</label>
+        <input class="finput" id="txTo" type="text" placeholder="0.0.12345">
       </div>
+      <div class="field">
+        <label>Amount (HBAR)</label>
+        <input class="finput" id="txAmt" type="number" step="0.01" min="0" placeholder="10">
+      </div>
+      <div class="field">
+        <label>Memo <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
+        <input class="finput" id="txMemo" type="text" placeholder="Rent payment March 2026">
+      </div>
+      <div class="modal-result" id="txResult"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('transfer')">Cancel</button>
+      <button class="btn btn-primary" id="txCheckBtn" onclick="txCheckPolicy()">Check Policy</button>
+      <button class="btn btn-approve" id="txExecBtn" onclick="txExecute()" style="display:none">Execute Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal: Distribute Rent ═══ -->
+<div class="modal-backdrop" id="modalDistribute" onclick="if(event.target===this)closeModal('distribute')">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;color:var(--teal)"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+      <h3>Distribute Rent</h3>
+      <button class="modal-close" onclick="closeModal('distribute')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Total Amount (HBAR)</label>
+          <input class="finput" id="distAmt" type="number" step="0.01" min="0" placeholder="100">
+        </div>
+        <div class="field">
+          <label>Property Name</label>
+          <input class="finput" id="distProp" type="text" value="Monthly Rent" placeholder="Monthly Rent">
+        </div>
+      </div>
+      <div class="field">
+        <label>Holders</label>
+        <div id="holdersEditor">
+          <div class="holder-row">
+            <input class="finput" placeholder="Name" value="Alice">
+            <input class="finput holder-pct" type="number" min="0" max="100" placeholder="%" value="45">
+            <span style="color:var(--text-dim);font-size:.82rem">%</span>
+          </div>
+          <div class="holder-row">
+            <input class="finput" placeholder="Name" value="Bob">
+            <input class="finput holder-pct" type="number" min="0" max="100" placeholder="%" value="35">
+            <span style="color:var(--text-dim);font-size:.82rem">%</span>
+          </div>
+          <div class="holder-row">
+            <input class="finput" placeholder="Name" value="Charlie">
+            <input class="finput holder-pct" type="number" min="0" max="100" placeholder="%" value="20">
+            <span style="color:var(--text-dim);font-size:.82rem">%</span>
+          </div>
+        </div>
+        <div class="field-hint">Percentages must total 100%. Account IDs default to operator.</div>
+      </div>
+      <div class="modal-result" id="distResult"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('distribute')">Cancel</button>
+      <button class="btn btn-primary" id="distBtn" onclick="distExecute()">Distribute</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal: Test Policy Engine ═══ -->
+<div class="modal-backdrop" id="modalPolicy" onclick="if(event.target===this)closeModal('policy')">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;color:var(--amber)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <h3>Test Policy Engine</h3>
+      <button class="modal-close" onclick="closeModal('policy')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Action</label>
+        <select class="finput" id="polAction">
+          <option value="HBAR_TRANSFER">HBAR_TRANSFER</option>
+          <option value="DISTRIBUTE_TO_HOLDERS">DISTRIBUTE_TO_HOLDERS</option>
+          <option value="GET_BALANCE">GET_BALANCE</option>
+          <option value="UNKNOWN_ACTION">UNKNOWN_ACTION (should be denied)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Amount (HBAR)</label>
+          <input class="finput" id="polAmt" type="number" step="0.01" min="0" placeholder="10" value="10">
+        </div>
+        <div class="field">
+          <label>Recipient <span style="color:var(--text-dim);font-weight:400">(optional)</span></label>
+          <input class="finput" id="polRecip" type="text" placeholder="0.0.12345">
+        </div>
+      </div>
+      <div class="field-hint" style="margin-top:-8px;margin-bottom:10px">
+        Try: amount > per-TX limit (DENY), amount > approval threshold (APPROVAL_REQUIRED), unknown action (DENY), low amount to allowed recipient (PASS)
+      </div>
+      <div class="modal-result" id="polResult"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('policy')">Cancel</button>
+      <button class="btn btn-primary" id="polBtn" onclick="polCheck()">Check Policy</button>
     </div>
   </div>
 </div>
 
 <script>
-const API = window.location.origin;
-let pollTimer = null;
-
-// ── Fetch helpers ──
-async function api(path) {
-  const r = await fetch(API + path);
-  if (!r.ok) throw new Error(`API ${r.status}`);
-  return r.json();
+/* ── Sidebar toggle ── */
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('visible');
+  document.body.style.overflow='hidden';
 }
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+  document.body.style.overflow='';
+}
+// Close on escape
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar()});
+// Close on swipe left
+let touchStartX=0;
+document.getElementById('sidebar').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX},{passive:true});
+document.getElementById('sidebar').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(dx<-60)closeSidebar();
+},{passive:true});
 
-async function apiPost(path, body) {
-  const r = await fetch(API + path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+/* ── Navigation ── */
+const sectionMap={
+  overview:null, // scroll to top
+  approvals:'approvalSection',
+  audit:'auditSection',
+  policy:'policySection',
+  identity:'identitySection',
+  hcs:'identitySection', // HCS info lives inside the identity card
+  actions:'actionsSection',
+  distribute:null // opens modal
+};
+function navigateTo(name){
+  closeSidebar();
+  // Update active state on sidebar nav
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active',el.dataset.nav===name);
   });
-  return r.json();
-}
-
-// ── Render functions ──
-function renderAgent(status) {
-  const a = status.agent || {};
-  const id = status.identity || {};
-  document.getElementById('agentName').textContent = a.name || 'Unknown Agent';
-  document.getElementById('agentId').textContent = a.id || '—';
-  document.getElementById('agentWallet').textContent = a.wallet || '—';
-  document.getElementById('networkLabel').textContent = a.network || 'testnet';
-
-  const nftEl = document.getElementById('agentNFT');
-  if (id.nftTokenId) {
-    nftEl.innerHTML = `<a href="${id.nftUrl}" target="_blank">${id.nftTokenId}</a>`;
-  } else {
-    nftEl.textContent = 'Not minted yet';
-  }
-
-  const hcsEl = document.getElementById('agentHCS');
-  if (id.hcsTopicId) {
-    hcsEl.innerHTML = `<a href="${id.topicUrl}" target="_blank">${id.hcsTopicId}</a>`;
-  } else {
-    hcsEl.textContent = 'Not created yet';
-  }
-}
-
-function renderBalance(balance) {
-  const el = document.getElementById('balanceHbar');
-  if (balance && typeof balance.hbar === 'number') {
-    el.textContent = balance.hbar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
-  } else {
-    el.textContent = '—';
-  }
-}
-
-function renderPolicy(status) {
-  const p = status.policy || {};
-  document.getElementById('policyDaily').textContent = p.dailySpendLimitHbar ? `${p.dailySpendLimitHbar} ℏ` : '—';
-  document.getElementById('policyPerTx').textContent = p.perTxLimitHbar ? `${p.perTxLimitHbar} ℏ` : '—';
-  document.getElementById('policyApproval').textContent = p.approvalRequiredAboveHbar ? `${p.approvalRequiredAboveHbar} ℏ` : '—';
-
-  const chips = document.getElementById('policyChips');
-  chips.innerHTML = '';
-  if (p.allowedActions && p.allowedActions.length) {
-    p.allowedActions.forEach(a => {
-      const chip = document.createElement('span');
-      chip.className = 'chip';
-      chip.textContent = a;
-      chips.appendChild(chip);
-    });
-  }
-}
-
-function timeAgo(iso) {
-  const d = new Date(iso);
-  const s = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (s < 5) return 'just now';
-  if (s < 60) return `${s}s ago`;
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  return d.toLocaleTimeString();
-}
-
-function renderApprovals(data) {
-  const el = document.getElementById('approvalList');
-  const pending = data.pending || [];
-  const resolved = data.resolved || [];
-  const all = [...pending, ...resolved].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  document.getElementById('approvalCount').textContent = `${pending.length} pending approval${pending.length !== 1 ? 's' : ''}`;
-
-  if (!all.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>No approvals yet</div>';
+  // Update active state on bottom nav
+  document.querySelectorAll('.bnav[data-bnav]').forEach(el=>{
+    el.classList.toggle('active',el.dataset.bnav===name);
+  });
+  // Update topbar title
+  const titles={overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent NFT',hcs:'HCS Topic',actions:'MCP Tools',distribute:'Distribute'};
+  document.querySelector('.topbar h1').textContent=titles[name]||'Overview';
+  // Special cases
+  if(name==='distribute'){openModal('distribute');return}
+  if(name==='actions'){openModal('transfer');return}
+  // Scroll to section
+  if(name==='overview'){
+    document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
-
-  el.innerHTML = all.map(a => {
-    const isPending = a.status === 'pending';
-    const cls = isPending ? '' : `resolved-${a.status}`;
-    return `
-      <div class="approval-item ${cls}">
-        <div class="approval-header">
-          <span class="action-name">${esc(a.action)}</span>
-          <span class="amount">${a.amount} ℏ</span>
-        </div>
-        <div class="approval-reason">${esc(a.reason)}</div>
-        <div class="approval-meta">${esc(a.recipient || '')} · ${timeAgo(a.createdAt)}</div>
-        ${isPending ? `
-          <div class="approval-btns">
-            <button class="btn btn-approve" onclick="resolveApproval('${a.id}', true)">✅ Approve</button>
-            <button class="btn btn-deny" onclick="resolveApproval('${a.id}', false)">🚫 Deny</button>
-          </div>
-        ` : `
-          <span class="approval-resolved-badge ${a.status === 'approved' ? 'badge-approved' : 'badge-denied'}">
-            ${a.status === 'approved' ? '✅ Approved' : '🚫 Denied'} by ${esc(a.resolvedBy || '?')}
-          </span>
-        `}
-      </div>
-    `;
-  }).join('');
+  const target=document.getElementById(sectionMap[name]);
+  if(target){
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 }
 
-function renderAudit(data) {
-  const el = document.getElementById('auditList');
-  const entries = (data.entries || []).slice().reverse(); // newest first
+/* ── Data ── */
+const API=window.location.origin;
+let USE_DEMO=false,chartInst=null;
 
-  document.getElementById('auditCount').textContent = `${entries.length} audit entr${entries.length !== 1 ? 'ies' : 'y'}`;
+const DEMO={
+  status:{
+    agent:{name:'DeedSlice Agent',id:'deedslice-rent-agent-v1',wallet:'0.0.7420047',network:'testnet'},
+    identity:{nftTokenId:'0.0.7420100',nftUrl:'https://hashscan.io/testnet/token/0.0.7420100',hcsTopicId:'0.0.7420101',topicUrl:'https://hashscan.io/testnet/topic/0.0.7420101'},
+    balance:{hbar:42.35},
+    policy:{dailySpendLimitHbar:100,perTxLimitHbar:25,approvalRequiredAboveHbar:15,allowedActions:['transfer','distribute','query_balance','log_audit']},
+    dailySpent:18.5
+  },
+  approvals:{
+    pending:[{id:'apr-001',action:'Transfer',amount:30,reason:'Exceeds per-TX limit of 25 ℏ — requires human approval',recipient:'0.0.98765',createdAt:new Date(Date.now()-120000).toISOString(),status:'pending'}],
+    resolved:[{id:'apr-000',action:'Distribution',amount:22,reason:'Above approval threshold of 15 ℏ',recipient:'3 holders',createdAt:new Date(Date.now()-3600000).toISOString(),status:'approved',resolvedBy:'operator'}]
+  },
+  audit:{entries:[
+    {action:'vault_init',policyCheck:{verdict:'pass'},summary:'Agent vault initialized · Account created · NFT minted',txIds:['0.0.7420047@1710864601.123456789'],timestamp:new Date(Date.now()-7200000).toISOString()},
+    {action:'hcs_topic_create',policyCheck:{verdict:'pass'},summary:'HCS audit topic created: 0.0.7420101',txIds:[],timestamp:new Date(Date.now()-7100000).toISOString()},
+    {action:'nft_mint',policyCheck:{verdict:'pass'},summary:'Agent identity NFT minted: 0.0.7420100 serial #1',txIds:['0.0.7420047@1710864620.456789012'],timestamp:new Date(Date.now()-7000000).toISOString()},
+    {action:'transfer',policyCheck:{verdict:'deny',rule:'unauthorized_recipient'},summary:'Blocked: recipient 0.0.99999 not in allowlist',txIds:[],timestamp:new Date(Date.now()-5400000).toISOString()},
+    {action:'distribute',policyCheck:{verdict:'pass'},summary:'Rent distribution: 10 ℏ to 3 holders (3.33 ℏ each)',txIds:['0.0.7420047@1710864901.987654321'],timestamp:new Date(Date.now()-3600000).toISOString()},
+    {action:'transfer',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'Transfer 30 ℏ requires approval (threshold: 15 ℏ)',txIds:[],timestamp:new Date(Date.now()-120000).toISOString()},
+  ]}
+};
 
-  if (!entries.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>No audit entries yet</div>';
+async function api(p){const r=await fetch(API+p);if(!r.ok)throw new Error('API '+r.status);return r.json()}
+async function apiPost(p,b){const r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});return r.json()}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso).getTime())/1000);if(s<5)return'just now';if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return new Date(iso).toLocaleDateString()}
+
+function initChart(){
+  const ctx=document.getElementById('activityChart').getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,220);
+  g.addColorStop(0,'rgba(99,91,255,.15)');g.addColorStop(1,'rgba(99,91,255,.01)');
+  chartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels:['11:30','11:35','11:40','11:45','11:50','11:55','12:00','12:05'],
+      datasets:[{label:'TX Volume (ℏ)',data:[0,5,5,15,15,25,25,42.35],
+        borderColor:'#635BFF',backgroundColor:g,borderWidth:2.5,fill:true,tension:.4,
+        pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#635BFF',
+        pointBorderColor:'var(--bg-card)',pointBorderWidth:2,pointHoverBorderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'rgba(17,24,39,.95)',padding:12,cornerRadius:8,
+        titleColor:'#fff',bodyColor:'#c9d1d9',borderColor:'rgba(255,255,255,.08)',borderWidth:1,
+        displayColors:false,callbacks:{label:c=>c.parsed.y+' ℏ'}}},
+      scales:{
+        y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)',drawBorder:false},
+          ticks:{color:'#4e5969',font:{size:11,family:'Inter'},callback:v=>v+' ℏ',maxTicksLimit:5}},
+        x:{grid:{display:false,drawBorder:false},ticks:{color:'#4e5969',font:{size:11,family:'Inter'},maxRotation:0}}},
+      interaction:{intersect:false,mode:'index'}}
+  });
+}
+
+function renderAgent(s){
+  const a=s.agent||{},id=s.identity||{};
+  document.getElementById('agentName').textContent=a.name||'AgentVault Agent';
+  document.getElementById('agentId').textContent=a.id||'—';
+  document.getElementById('agentWallet').textContent=a.wallet||'—';
+  const nft=document.getElementById('agentNFT');
+  nft.innerHTML=id.nftTokenId?`<a href="${esc(id.nftUrl)}" target="_blank">${esc(id.nftTokenId)}</a>`:'Not minted';
+  const hcs=document.getElementById('agentHCS');
+  hcs.innerHTML=id.hcsTopicId?`<a href="${esc(id.topicUrl)}" target="_blank">${esc(id.hcsTopicId)}</a>`:'Not created';
+}
+
+function renderBalance(s){
+  const b=s.balance;
+  const v=(b&&typeof b.hbar==='number')?b.hbar.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}):'—';
+  document.getElementById('balHbar').textContent=v;
+  document.getElementById('topBal').textContent=v;
+}
+
+function renderPolicy(s){
+  const p=s.policy||{};
+  document.getElementById('polDaily').textContent=p.dailySpendLimitHbar??'—';
+  document.getElementById('polPerTx').textContent=p.perTxLimitHbar??'—';
+  document.getElementById('polAppr').textContent=p.approvalRequiredAboveHbar??'—';
+  document.getElementById('dailySpent').textContent=s.dailySpent??'0';
+  document.getElementById('dailyLimit').textContent=p.dailySpendLimitHbar??'—';
+  const pct=p.dailySpendLimitHbar?Math.min(100,((s.dailySpent||0)/p.dailySpendLimitHbar)*100):0;
+  document.getElementById('dailyFill').style.width=pct+'%';
+  document.getElementById('dailyFill').style.background=pct>80?'var(--red)':pct>50?'var(--amber)':'var(--teal)';
+  const ch=document.getElementById('polChips');ch.innerHTML='';
+  (p.allowedActions||[]).forEach(a=>{const c=document.createElement('span');c.className='achip';c.textContent=a;ch.appendChild(c)});
+}
+
+function renderApprovals(d){
+  const el=document.getElementById('apprList');
+  const pending=d.pending||[],resolved=d.resolved||[];
+  const all=[...pending,...resolved].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  document.getElementById('apprBadge').textContent=pending.length+' pending';
+  document.getElementById('navBadge').textContent=pending.length;
+  document.getElementById('navBadge').style.display=pending.length?'':'none';
+  document.getElementById('pendBig').textContent=pending.length;
+  // Update bottom nav badge
+  const bb=document.getElementById('bnavBadge');
+  if(bb){bb.dataset.count=pending.length;bb.style.display=pending.length?'':'none'}
+  if(!all.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg><div>No approvals yet</div></div>';return}
+  el.innerHTML=all.map(a=>{
+    const ip=a.status==='pending';
+    return`<div class="appr ${a.status}">
+      <div class="appr-top">
+        <span class="appr-action">${esc(a.action)}</span>
+        <span class="appr-amount">${a.amount}<span class="au"> ℏ</span></span>
+        <span class="appr-tag at-${a.status}">${a.status}</span>
+      </div>
+      <div class="appr-reason">${esc(a.reason)}</div>
+      <div class="appr-meta">${esc(a.recipient||'')} · ${timeAgo(a.createdAt)}</div>
+      ${ip?`<div class="appr-btns"><button class="btn btn-approve" onclick="resolveAppr('${a.id}',true)">Approve</button><button class="btn btn-deny" onclick="resolveAppr('${a.id}',false)">Deny</button></div>`
+        :`<div class="appr-resolved">${a.status==='approved'?'✓':'✗'} ${a.status} by ${esc(a.resolvedBy||'—')}</div>`}
+    </div>`}).join('');
+}
+
+function renderAudit(d){
+  const el=document.getElementById('auditList');
+  const entries=(d.entries||[]).slice().reverse();
+  document.getElementById('auditBig').textContent=entries.length;
+  if(!entries.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><div>No audit entries yet</div></div>';return}
+  el.innerHTML=entries.map((e,i)=>{
+    const v=(e.policyCheck?.verdict||'pass').toLowerCase();
+    const tx=(e.txIds||[]).filter(Boolean).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join(', ');
+    return`<div class="audit">
+      <div class="audit-dot-col"><div class="audit-dot ${v}"></div>${i<entries.length-1?'<div class="audit-line"></div>':''}</div>
+      <div class="audit-body">
+        <div class="audit-head"><span class="audit-action">${esc(e.action)}</span><span class="audit-vtag vt-${v}">${v.replace('_',' ')}</span></div>
+        <div class="audit-sum">${esc(e.summary)}</div>
+        ${tx?`<div class="audit-tx">${tx}</div>`:''}
+      </div>
+      <div class="audit-time">${e.timestamp?timeAgo(e.timestamp):''}</div>
+    </div>`}).join('');
+}
+
+async function resolveAppr(id,ok){
+  if(USE_DEMO){
+    const item=DEMO.approvals.pending.find(a=>a.id===id);
+    if(item){item.status=ok?'approved':'denied';item.resolvedBy='dashboard';DEMO.approvals.resolved.push(item);DEMO.approvals.pending=DEMO.approvals.pending.filter(a=>a.id!==id);renderApprovals(DEMO.approvals)}
     return;
   }
-
-  el.innerHTML = entries.map(e => {
-    const v = (e.policyCheck?.verdict || 'pass').toLowerCase();
-    const vLabel = (e.policyCheck?.verdict || 'PASS').toUpperCase();
-    const txLinks = (e.txIds || []).map(id => {
-      const fmt = id.replace(/@/g, '-').replace(/\./g, '-');
-      return `<a href="https://hashscan.io/testnet/transaction/${fmt}" target="_blank">${id}</a>`;
-    }).join(', ');
-
-    return `
-      <div class="audit-entry verdict-${v}">
-        <div class="audit-top">
-          <span class="audit-action">${esc(e.action)}</span>
-          <span class="audit-verdict v-${v}">${vLabel}</span>
-        </div>
-        <div class="audit-summary">${esc(e.summary)}</div>
-        ${txLinks ? `<div class="audit-txid">TX: ${txLinks}</div>` : ''}
-        <div class="audit-time">${e.timestamp ? new Date(e.timestamp).toLocaleString() : ''}</div>
-      </div>
-    `;
-  }).join('');
+  try{await apiPost(`/api/approvals/${id}/resolve`,{approved:ok,resolvedBy:'dashboard-operator'});await refresh()}catch(e){alert('Failed: '+e.message)}
 }
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s || '';
-  return d.innerHTML;
-}
-
-// ── Approval actions ──
-async function resolveApproval(id, approved) {
-  const btns = document.querySelectorAll('.approval-btns .btn');
-  btns.forEach(b => b.disabled = true);
-  try {
-    await apiPost(`/api/approvals/${id}/resolve`, { approved, resolvedBy: 'dashboard-operator' });
-    await refresh();
-  } catch (e) {
-    alert('Failed: ' + e.message);
-  }
-  btns.forEach(b => b.disabled = false);
-}
-
-// ── Main refresh loop ──
-async function refresh() {
-  try {
-    const [status, audit, approvals] = await Promise.all([
-      api('/api/status'),
-      api('/api/audit'),
-      api('/api/approvals'),
-    ]);
-    renderAgent(status);
-    renderBalance(status.balance);
-    renderPolicy(status);
-    renderAudit(audit);
-    renderApprovals(approvals);
-
-    document.getElementById('lastRefresh').textContent = new Date().toLocaleTimeString();
-    document.getElementById('statusDot').className = 'dot on';
-  } catch (e) {
-    document.getElementById('statusDot').className = 'dot off';
-    console.error('Refresh failed:', e);
+async function refresh(){
+  try{
+    const[s,au,ap]=await Promise.all([api('/api/status'),api('/api/audit'),api('/api/approvals')]);
+    renderAgent(s);renderBalance(s);renderPolicy(s);renderAudit(au);renderApprovals(ap);
+    document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();
+    USE_DEMO=false;
+  }catch(e){
+    if(!USE_DEMO){
+      USE_DEMO=true;
+      renderAgent(DEMO.status);renderBalance(DEMO.status);renderPolicy(DEMO.status);
+      renderAudit(DEMO.audit);renderApprovals(DEMO.approvals);
+      document.getElementById('lastRefresh').textContent='demo';
+    }
   }
 }
 
-// ── Boot ──
-async function boot() {
-  try {
-    await refresh();
-    document.getElementById('initOverlay').classList.add('hidden');
-    document.getElementById('app').style.display = '';
-    pollTimer = setInterval(refresh, 3000);
-  } catch (e) {
-    document.getElementById('initError').textContent = `Cannot connect to AgentVault API at ${API}\n\nMake sure the dashboard server is running:\n  npx ts-node dashboard/server.ts`;
-    document.getElementById('initError').style.display = '';
-    document.querySelector('.init-spinner').style.display = 'none';
-    document.querySelector('.init-text').style.display = 'none';
-    // Retry
-    setTimeout(boot, 5000);
-  }
+async function boot(){
+  try{await refresh()}catch(e){}
+  document.getElementById('initOverlay').classList.add('hidden');
+  document.getElementById('app').style.display='';
+  initChart();
+  setInterval(refresh,3000);
 }
-
 boot();
+
+/* ═══════════════════════════════════════════════
+   TOAST SYSTEM
+   ═══════════════════════════════════════════════ */
+function showToast(message,type='info',duration=4000){
+  const container=document.getElementById('toastContainer');
+  const icons={
+    success:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
+    error:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    warn:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+  };
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`${icons[type]||''}<span>${esc(message)}</span>`;
+  container.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{
+    t.classList.remove('show');t.classList.add('hiding');
+    setTimeout(()=>t.remove(),350);
+  },duration);
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL SYSTEM
+   ═══════════════════════════════════════════════ */
+const modalMap={transfer:'modalTransfer',distribute:'modalDistribute',policy:'modalPolicy'};
+function openModal(name){
+  const el=document.getElementById(modalMap[name]);
+  if(!el)return;
+  // Reset results
+  const res=el.querySelector('.modal-result');
+  if(res){res.className='modal-result';res.innerHTML='';res.style.display='none'}
+  if(name==='transfer'){document.getElementById('txExecBtn').style.display='none';document.getElementById('txCheckBtn').style.display=''}
+  el.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(name){
+  const el=document.getElementById(modalMap[name]);
+  if(el)el.classList.remove('open');
+  document.body.style.overflow='';
+}
+// Close modals on Escape
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){Object.keys(modalMap).forEach(k=>{const m=document.getElementById(modalMap[k]);if(m&&m.classList.contains('open'))closeModal(k)})}
+});
+
+function setLoading(btn,loading){
+  if(loading){btn._origHTML=btn.innerHTML;btn.innerHTML='<span class="btn-spin"></span>Working…';btn.disabled=true}
+  else{btn.innerHTML=btn._origHTML||btn.innerHTML;btn.disabled=false}
+}
+
+/* ── Transfer Modal ── */
+let lastTxCheck=null;
+async function txCheckPolicy(){
+  const to=document.getElementById('txTo').value.trim();
+  const amt=parseFloat(document.getElementById('txAmt').value);
+  if(!to||!amt||amt<=0){showToast('Enter recipient and amount','warn');return}
+  const btn=document.getElementById('txCheckBtn');
+  const res=document.getElementById('txResult');
+  setLoading(btn,true);
+  try{
+    let data;
+    if(USE_DEMO){
+      // Simulate policy check
+      let v='pass',rule='';
+      if(!['HBAR_TRANSFER','DISTRIBUTE_TO_HOLDERS','GET_BALANCE','GET_AUDIT_LOG'].includes('HBAR_TRANSFER'))v='deny',rule='action_not_allowed';
+      else if(!DEMO.status.policy.allowedActions)v='pass';
+      const lim=DEMO.status.policy.perTxLimitHbar||25;
+      const appr=DEMO.status.policy.approvalRequiredAboveHbar||15;
+      if(amt>lim){v='deny';rule='per_tx_limit'}
+      else if(amt>appr){v='approval_required';rule='amount_threshold'}
+      data={ok:true,data:{policyCheck:{verdict:v,rule}}};
+    } else {
+      data=await apiPost('/api/demo/check-policy',{action:'HBAR_TRANSFER',amount:amt,recipient:to});
+    }
+    const pc=data.data?.policyCheck||{};
+    const v=(pc.verdict||'pass').toLowerCase();
+    lastTxCheck=v;
+    res.className='modal-result show '+v;
+    res.style.display='block';
+    const ruleText=pc.rule?`<div style="margin-top:6px;font-family:var(--mono);font-size:.78rem;color:var(--text-dim)">Rule: ${esc(pc.rule)}</div>`:'';
+    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
+      <div class="result-text">${v==='pass'?'✅ Transfer is allowed by policy. Click Execute to send.'
+        :v==='deny'?'❌ Transfer denied by policy rules.'
+        :'⚠️ Transfer requires human approval before execution.'}</div>`;
+    if(v==='pass'){document.getElementById('txExecBtn').style.display='';document.getElementById('txCheckBtn').style.display='none'}
+    else{document.getElementById('txExecBtn').style.display='none'}
+  }catch(e){showToast('Policy check failed: '+e.message,'error')}
+  finally{setLoading(btn,false)}
+}
+
+async function txExecute(){
+  const to=document.getElementById('txTo').value.trim();
+  const amt=parseFloat(document.getElementById('txAmt').value);
+  const memo=document.getElementById('txMemo').value.trim();
+  const btn=document.getElementById('txExecBtn');
+  const res=document.getElementById('txResult');
+  setLoading(btn,true);
+  try{
+    let data;
+    if(USE_DEMO){
+      data={ok:true,summary:`Transferred ${amt} ℏ to ${to}`,data:{txIds:['0.0.7420047@'+Math.floor(Date.now()/1000)+'.123456789']}};
+      DEMO.audit.entries.push({action:'transfer',policyCheck:{verdict:'pass'},summary:`Transfer ${amt} ℏ to ${to}${memo?' — '+memo:''}`,txIds:data.data.txIds,timestamp:new Date().toISOString()});
+      renderAudit(DEMO.audit);
+    } else {
+      data=await apiPost('/api/demo/distribute',{amount:amt,holders:[{accountId:to,name:'Direct Transfer',ownershipPercent:100}],propertyName:memo||'Direct Transfer'});
+    }
+    if(data.ok){
+      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join('<br>');
+      res.className='modal-result show pass';
+      res.style.display='block';
+      res.innerHTML=`<span class="verdict-badge vb-pass">Success</span>
+        <div class="result-text">✅ ${esc(data.summary||'Transfer executed')}</div>
+        ${txLinks?'<div class="result-tx">'+txLinks+'</div>':''}`;
+      showToast('Transfer sent successfully!','success');
+      await refresh();
+    } else {
+      res.className='modal-result show deny';
+      res.style.display='block';
+      res.innerHTML=`<span class="verdict-badge vb-deny">Failed</span><div class="result-text">❌ ${esc(data.error||'Transfer failed')}</div>`;
+      showToast('Transfer failed','error');
+    }
+  }catch(e){showToast('Execution failed: '+e.message,'error')}
+  finally{setLoading(btn,false)}
+}
+
+/* ── Distribute Modal ── */
+async function distExecute(){
+  const amt=parseFloat(document.getElementById('distAmt').value);
+  const prop=document.getElementById('distProp').value.trim()||'Monthly Rent';
+  if(!amt||amt<=0){showToast('Enter a valid amount','warn');return}
+  const rows=document.querySelectorAll('#holdersEditor .holder-row');
+  const holders=[];
+  let totalPct=0;
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    const name=inputs[0].value.trim()||'Holder';
+    const pct=parseFloat(inputs[1].value)||0;
+    totalPct+=pct;
+    holders.push({accountId:'operator',name,ownershipPercent:pct});
+  });
+  if(Math.abs(totalPct-100)>0.5){showToast(`Percentages total ${totalPct}%, must be 100%`,'warn');return}
+  const btn=document.getElementById('distBtn');
+  const res=document.getElementById('distResult');
+  setLoading(btn,true);
+  try{
+    let data;
+    if(USE_DEMO){
+      const txId='0.0.7420047@'+Math.floor(Date.now()/1000)+'.987654321';
+      const splits=holders.map(h=>`${h.name}: ${(amt*h.ownershipPercent/100).toFixed(2)} ℏ`).join(', ');
+      data={ok:true,summary:`Distributed ${amt} ℏ for "${prop}" — ${splits}`,data:{txIds:[txId]}};
+      DEMO.audit.entries.push({action:'distribute',policyCheck:{verdict:'pass'},summary:data.summary,txIds:[txId],timestamp:new Date().toISOString()});
+      DEMO.status.dailySpent=(DEMO.status.dailySpent||0)+amt;
+      renderAudit(DEMO.audit);renderPolicy(DEMO.status);
+    } else {
+      data=await apiPost('/api/demo/distribute',{amount:amt,propertyName:prop,holders});
+    }
+    if(data.ok){
+      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join('<br>');
+      res.className='modal-result show pass';
+      res.style.display='block';
+      res.innerHTML=`<span class="verdict-badge vb-pass">Success</span>
+        <div class="result-text">✅ ${esc(data.summary||'Distribution complete')}</div>
+        ${txLinks?'<div class="result-tx">'+txLinks+'</div>':''}`;
+      showToast('Distribution complete!','success');
+      await refresh();
+    } else {
+      res.className='modal-result show deny';
+      res.style.display='block';
+      res.innerHTML=`<span class="verdict-badge vb-deny">Failed</span><div class="result-text">❌ ${esc(data.error||'Distribution failed')}</div>`;
+      showToast('Distribution failed','error');
+    }
+  }catch(e){showToast('Distribution failed: '+e.message,'error')}
+  finally{setLoading(btn,false)}
+}
+
+/* ── Policy Test Modal ── */
+async function polCheck(){
+  const action=document.getElementById('polAction').value;
+  const amt=parseFloat(document.getElementById('polAmt').value)||0;
+  const recip=document.getElementById('polRecip').value.trim()||undefined;
+  const btn=document.getElementById('polBtn');
+  const res=document.getElementById('polResult');
+  setLoading(btn,true);
+  try{
+    let data;
+    if(USE_DEMO){
+      let v='pass',rule='';
+      const allowed=DEMO.status.policy.allowedActions||[];
+      const perTx=DEMO.status.policy.perTxLimitHbar||25;
+      const daily=DEMO.status.policy.dailySpendLimitHbar||100;
+      const appr=DEMO.status.policy.approvalRequiredAboveHbar||15;
+      if(!allowed.includes(action.toLowerCase())&&!allowed.includes(action)){v='deny';rule='action_not_allowed'}
+      else if(amt>perTx){v='deny';rule='per_tx_limit (max: '+perTx+' ℏ)'}
+      else if((DEMO.status.dailySpent||0)+amt>daily){v='deny';rule='daily_spend_limit (spent: '+(DEMO.status.dailySpent||0)+' / '+daily+' ℏ)'}
+      else if(amt>appr){v='approval_required';rule='amount_threshold (threshold: '+appr+' ℏ)'}
+      data={ok:true,data:{policyCheck:{verdict:v,rule}}};
+    } else {
+      data=await apiPost('/api/demo/check-policy',{action,amount:amt,recipient:recip});
+    }
+    const pc=data.data?.policyCheck||{};
+    const v=(pc.verdict||'pass').toLowerCase();
+    const ruleText=pc.rule?`<div style="margin-top:8px;font-family:var(--mono);font-size:.82rem;color:var(--text-secondary)">📋 Rule: <strong>${esc(pc.rule)}</strong></div>`:'';
+    res.className='modal-result show '+v;
+    res.style.display='block';
+    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
+      <div class="result-text" style="margin-top:8px">${v==='pass'?'✅ This action would be <strong>allowed</strong> by the policy engine.'
+        :v==='deny'?'❌ This action would be <strong>blocked</strong>. The agent cannot proceed.'
+        :'⚠️ This action would <strong>require human approval</strong> before the agent can proceed.'}</div>
+      <div style="margin-top:10px;font-size:.78rem;color:var(--text-dim)">Action: ${esc(action)} · Amount: ${amt} ℏ${recip?' · To: '+esc(recip):''}</div>`;
+    showToast(v==='pass'?'Policy: PASS ✅':v==='deny'?'Policy: DENIED ❌':'Policy: Approval Required ⚠️',v==='pass'?'success':v==='deny'?'error':'warn');
+  }catch(e){showToast('Policy check failed: '+e.message,'error')}
+  finally{setLoading(btn,false)}
+}
+
+/* ── Quick Balance Check ── */
+async function quickCheckBalance(){
+  showToast('Refreshing balance…','info',2000);
+  await refresh();
+  const bal=document.getElementById('balHbar').textContent;
+  showToast(`Balance: ${bal} ℏ`,'success',3000);
+}
 </script>
 </body>
 </html>

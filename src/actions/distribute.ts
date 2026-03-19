@@ -148,9 +148,9 @@ export async function distributeToHolders(input: DistributeInput): Promise<Vault
       totalOut += split.amountHbar;
     }
 
-    // Debit from the agent's wallet
+    // Debit from the agent's wallet (always use the operator account)
     transferTx.addHbarTransfer(
-      AccountId.fromString(policy.agentId.split(":").pop() ?? hcsConfig.operatorId),
+      AccountId.fromString(hcsConfig.operatorId),
       new Hbar(-totalOut)
     );
 

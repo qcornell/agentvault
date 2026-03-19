@@ -68,8 +68,12 @@ export async function mintAgentNFT(input: MintAgentNFTInput): Promise<VaultResul
 
     const tokenId = createReceipt.tokenId!.toString();
 
-    // 2. Mint serial #1 with identity metadata
-    const metadataBuffer = Buffer.from(JSON.stringify(fullIdentity));
+    // 2. Mint serial #1 with compact metadata reference
+    // Hedera NFT metadata field is limited to 100 bytes.
+    // We store a compact identifier + policy hash prefix.
+    // Full identity is logged to HCS (immutable, verifiable).
+    const compactMeta = `av:${identity.agentId}|ph:${policyHash.slice(0, 16)}`;
+    const metadataBuffer = Buffer.from(compactMeta);
 
     const mintTx = new TokenMintTransaction()
       .setTokenId(tokenId)
