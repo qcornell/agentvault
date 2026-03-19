@@ -1,0 +1,36 @@
+{
+  "name": "agentvault",
+  "version": "0.1.0",
+  "description": "Bank account + rules for AI agents on Hedera",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "npx -p typescript tsc -p tsconfig.json",
+    "demo": "npx ts-node examples/full-demo.ts",
+    "demo:identity": "npx ts-node examples/mint-identity.ts",
+    "demo:policy": "npx ts-node examples/policy-demo.ts",
+    "demo:distribution": "npx ts-node examples/distribution-demo.ts",
+    "dashboard": "npx ts-node dashboard/server.ts"
+  },
+  "keywords": [
+    "hedera",
+    "ai",
+    "agent",
+    "vault",
+    "wallet",
+    "policy",
+    "mcp",
+    "audit"
+  ],
+  "author": "Dappily",
+  "license": "MIT",
+  "dependencies": {
+    "@hashgraph/sdk": "^2.58.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentVault Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0e1a;--bg-card:#111827;--bg-card-hover:#1a2236;--bg-surface:#0f1525;
+    --border:#1e293b;--border-light:#2a3a52;
+    --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#64748b;
+    --accent:#06b6d4;--accent-glow:rgba(6,182,212,.15);--accent-dim:#0891b2;
+    --green:#22c55e;--green-bg:rgba(34,197,94,.12);--green-border:rgba(34,197,94,.3);
+    --red:#ef4444;--red-bg:rgba(239,68,68,.12);--red-border:rgba(239,68,68,.3);
+    --yellow:#eab308;--yellow-bg:rgba(234,179,8,.12);--yellow-border:rgba(234,179,8,.3);
+    --purple:#a78bfa;--purple-bg:rgba(167,139,250,.12);
+    --radius:12px;--radius-sm:8px;--radius-xs:6px;
+    --shadow:0 4px 24px rgba(0,0,0,.4);
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  html{font-size:15px}
+  body{
+    font-family:var(--sans);color:var(--text);background:var(--bg);
+    min-height:100vh;line-height:1.5;
+  }
+  /* ── Layout ── */
+  .shell{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+  header .logo{font-size:1.6rem;font-weight:700;letter-spacing:-.02em}
+  header .logo span{color:var(--accent)}
+  header .badge{
+    font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+    padding:3px 10px;border-radius:20px;
+    background:var(--accent-glow);color:var(--accent);border:1px solid rgba(6,182,212,.25);
+  }
+  header .spacer{flex:1}
+  header .net{font-size:.8rem;color:var(--text-muted);font-family:var(--mono)}
+  header .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+  header .dot.on{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.5)}
+  header .dot.off{background:var(--red)}
+
+  /* ── Grid ── */
+  .grid{display:grid;gap:20px}
+  .grid-top{grid-template-columns:1fr 1fr 1fr;margin-bottom:20px}
+  .grid-main{grid-template-columns:1fr 1fr}
+  @media(max-width:900px){.grid-top,.grid-main{grid-template-columns:1fr}}
+
+  /* ── Cards ── */
+  .card{
+    background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 24px;position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(6,182,212,.3),transparent);
+  }
+  .card h2{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h2 .icon{font-size:1rem}
+
+  /* ── Agent Card ── */
+  .agent-name{font-size:1.3rem;font-weight:700;margin-bottom:4px}
+  .agent-id{font-family:var(--mono);font-size:.8rem;color:var(--accent);margin-bottom:12px}
+  .agent-meta{display:flex;flex-direction:column;gap:6px}
+  .agent-meta .row{display:flex;align-items:center;gap:8px;font-size:.85rem}
+  .agent-meta .label{color:var(--text-dim);min-width:60px}
+  .agent-meta .val{color:var(--text);font-family:var(--mono);font-size:.8rem;word-break:break-all}
+  .agent-meta a{color:var(--accent);text-decoration:none}
+  .agent-meta a:hover{text-decoration:underline}
+
+  /* ── Balance Card ── */
+  .balance-amount{font-size:2.2rem;font-weight:700;font-family:var(--mono);letter-spacing:-.02em}
+  .balance-amount .unit{font-size:1rem;font-weight:500;color:var(--text-muted);margin-left:4px}
+  .balance-sub{font-size:.8rem;color:var(--text-dim);margin-top:4px}
+
+  /* ── Policy Card ── */
+  .policy-rules{display:flex;flex-direction:column;gap:10px}
+  .policy-rule{
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    background:var(--bg-surface);border-radius:var(--radius-sm);border:1px solid var(--border);
+  }
+  .policy-rule .rule-icon{font-size:1.1rem;flex-shrink:0}
+  .policy-rule .rule-text{font-size:.85rem;flex:1}
+  .policy-rule .rule-val{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--accent)}
+  .policy-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{
+    font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:20px;
+    background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.2);
+  }
+
+  /* ── Approval Queue ── */
+  .approval-item{
+    padding:16px;margin-bottom:12px;border-radius:var(--radius-sm);
+    border:1px solid var(--yellow-border);background:var(--yellow-bg);
+  }
+  .approval-item.resolved-approved{border-color:var(--green-border);background:var(--green-bg)}
+  .approval-item.resolved-denied{border-color:var(--red-border);background:var(--red-bg)}
+  .approval-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .approval-header .action-name{font-weight:600;font-size:.9rem}
+  .approval-header .amount{font-family:var(--mono);font-weight:600;color:var(--accent)}
+  .approval-reason{font-size:.83rem;color:var(--text-muted);margin-bottom:10px}
+  .approval-meta{font-size:.75rem;color:var(--text-dim);font-family:var(--mono);margin-bottom:10px}
+  .approval-btns{display:flex;gap:8px}
+  .btn{
+    padding:8px 20px;border-radius:var(--radius-xs);border:none;cursor:pointer;
+    font-family:var(--sans);font-size:.82rem;font-weight:600;transition:all .15s;
+  }
+  .btn-approve{background:var(--green);color:#fff}
+  .btn-approve:hover{background:#16a34a;transform:translateY(-1px)}
+  .btn-deny{background:var(--red);color:#fff}
+  .btn-deny:hover{background:#dc2626;transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .approval-resolved-badge{
+    font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+    padding:4px 12px;border-radius:20px;display:inline-block;
+  }
+  .badge-approved{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+  .badge-denied{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+  .empty-state{text-align:center;padding:32px 16px;color:var(--text-dim);font-size:.85rem}
+  .empty-state .empty-icon{font-size:2rem;margin-bottom:8px}
+
+  /* ── Audit Log ── */
+  .audit-entry{
+    padding:12px 16px;border-left:3px solid var(--border);
+    margin-bottom:8px;background:var(--bg-surface);border-radius:0 var(--radius-xs) var(--radius-xs) 0;
+    transition:border-color .15s;
+  }
+  .audit-entry:hover{border-left-color:var(--accent);background:var(--bg-card-hover)}
+  .audit-entry.verdict-pass{border-left-color:var(--green)}
+  .audit-entry.verdict-deny{border-left-color:var(--red)}
+  .audit-entry.verdict-approval_required{border-left-color:var(--yellow)}
+  .audit-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+  .audit-action{font-weight:600;font-size:.85rem}
+  .audit-verdict{
+    font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+    padding:2px 8px;border-radius:12px;
+  }
+  .v-pass{background:var(--green-bg);color:var(--green)}
+  .v-deny{background:var(--red-bg);color:var(--red)}
+  .v-approval_required{background:var(--yellow-bg);color:var(--yellow)}
+  .audit-summary{font-size:.8rem;color:var(--text-muted);margin-bottom:4px}
+  .audit-time{font-size:.72rem;color:var(--text-dim);font-family:var(--mono)}
+  .audit-txid{font-size:.72rem;color:var(--accent);font-family:var(--mono);word-break:break-all}
+  .audit-txid a{color:var(--accent);text-decoration:none}
+  .audit-txid a:hover{text-decoration:underline}
+
+  /* ── Status Bar ── */
+  .status-bar{
+    display:flex;align-items:center;gap:16px;padding:12px 20px;
+    background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);
+    margin-bottom:20px;font-size:.8rem;color:var(--text-muted);
+  }
+  .status-bar .pulse{
+    width:10px;height:10px;border-radius:50%;background:var(--green);
+    animation:pulse 2s infinite;flex-shrink:0;
+  }
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+  .status-bar .refresh-info{margin-left:auto;font-family:var(--mono);font-size:.72rem}
+
+  /* ── Scrollable sections ── */
+  .scroll-section{max-height:500px;overflow-y:auto;padding-right:4px}
+  .scroll-section::-webkit-scrollbar{width:4px}
+  .scroll-section::-webkit-scrollbar-track{background:transparent}
+  .scroll-section::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+
+  /* ── Init overlay ── */
+  .init-overlay{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:var(--bg);display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:16px;z-index:100;
+  }
+  .init-overlay.hidden{display:none}
+  .init-spinner{
+    width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .init-text{color:var(--text-muted);font-size:.9rem}
+  .init-error{color:var(--red);font-size:.85rem;text-align:center;max-width:400px}
+</style>
+</head>
+<body>
+
+<div class="init-overlay" id="initOverlay">
+  <div class="init-spinner"></div>
+  <div class="init-text">Connecting to AgentVault…</div>
+  <div class="init-error" id="initError" style="display:none"></div>
+</div>
+
+<div class="shell" id="app" style="display:none">
+  <header>
+    <div class="logo">🏦 Agent<span>Vault</span></div>
+    <div class="badge">Dashboard</div>
+    <div class="spacer"></div>
+    <div class="net"><span class="dot on" id="statusDot"></span><span id="networkLabel">testnet</span></div>
+  </header>
+
+  <div class="status-bar">
+    <div class="pulse"></div>
+    <span>Live — polling every 3s</span>
+    <span id="auditCount">0 audit entries</span>
+    <span id="approvalCount">0 pending approvals</span>
+    <span class="refresh-info">Last: <span id="lastRefresh">—</span></span>
+  </div>
+
+  <!-- Top row: Agent + Balance + Policy summary -->
+  <div class="grid grid-top">
+    <div class="card" id="agentCard">
+      <h2><span class="icon">🤖</span> Agent Identity</h2>
+      <div class="agent-name" id="agentName">—</div>
+      <div class="agent-id" id="agentId">—</div>
+      <div class="agent-meta">
+        <div class="row"><span class="label">Wallet</span><span class="val" id="agentWallet">—</span></div>
+        <div class="row"><span class="label">NFT</span><span class="val" id="agentNFT">—</span></div>
+        <div class="row"><span class="label">HCS</span><span class="val" id="agentHCS">—</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">💰</span> Vault Balance</h2>
+      <div class="balance-amount"><span id="balanceHbar">—</span><span class="unit">ℏ</span></div>
+      <div class="balance-sub" id="balanceSub">Hedera Testnet</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">🛡️</span> Policy Summary</h2>
+      <div class="policy-rules" id="policySummary">
+        <div class="policy-rule">
+          <span class="rule-icon">📊</span>
+          <span class="rule-text">Daily limit</span>
+          <span class="rule-val" id="policyDaily">—</span>
+        </div>
+        <div class="policy-rule">
+          <span class="rule-icon">💸</span>
+          <span class="rule-text">Per-TX limit</span>
+          <span class="rule-val" id="policyPerTx">—</span>
+        </div>
+        <div class="policy-rule">
+          <span class="rule-icon">⚠️</span>
+          <span class="rule-text">Approval above</span>
+          <span class="rule-val" id="policyApproval">—</span>
+        </div>
+      </div>
+      <div class="policy-chips" id="policyChips"></div>
+    </div>
+  </div>
+
+  <!-- Main row: Approvals + Audit -->
+  <div class="grid grid-main">
+    <div class="card">
+      <h2><span class="icon">✋</span> Approval Queue</h2>
+      <div class="scroll-section" id="approvalList">
+        <div class="empty-state"><div class="empty-icon">✅</div>No pending approvals</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">📜</span> Audit Trail <span style="font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:.75rem">(HCS-backed)</span></h2>
+      <div class="scroll-section" id="auditList">
+        <div class="empty-state"><div class="empty-icon">📭</div>No audit entries yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+let pollTimer = null;
+
+// ── Fetch helpers ──
+async function api(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error(`API ${r.status}`);
+  return r.json();
+}
+
+async function apiPost(path, body) {
+  const r = await fetch(API + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  return r.json();
+}
+
+// ── Render functions ──
+function renderAgent(status) {
+  const a = status.agent || {};
+  const id = status.identity || {};
+  document.getElementById('agentName').textContent = a.name || 'Unknown Agent';
+  document.getElementById('agentId').textContent = a.id || '—';
+  document.getElementById('agentWallet').textContent = a.wallet || '—';
+  document.getElementById('networkLabel').textContent = a.network || 'testnet';
+
+  const nftEl = document.getElementById('agentNFT');
+  if (id.nftTokenId) {
+    nftEl.innerHTML = `<a href="${id.nftUrl}" target="_blank">${id.nftTokenId}</a>`;
+  } else {
+    nftEl.textContent = 'Not minted yet';
+  }
+
+  const hcsEl = document.getElementById('agentHCS');
+  if (id.hcsTopicId) {
+    hcsEl.innerHTML = `<a href="${id.topicUrl}" target="_blank">${id.hcsTopicId}</a>`;
+  } else {
+    hcsEl.textContent = 'Not created yet';
+  }
+}
+
+function renderBalance(balance) {
+  const el = document.getElementById('balanceHbar');
+  if (balance && typeof balance.hbar === 'number') {
+    el.textContent = balance.hbar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+  } else {
+    el.textContent = '—';
+  }
+}
+
+function renderPolicy(status) {
+  const p = status.policy || {};
+  document.getElementById('policyDaily').textContent = p.dailySpendLimitHbar ? `${p.dailySpendLimitHbar} ℏ` : '—';
+  document.getElementById('policyPerTx').textContent = p.perTxLimitHbar ? `${p.perTxLimitHbar} ℏ` : '—';
+  document.getElementById('policyApproval').textContent = p.approvalRequiredAboveHbar ? `${p.approvalRequiredAboveHbar} ℏ` : '—';
+
+  const chips = document.getElementById('policyChips');
+  chips.innerHTML = '';
+  if (p.allowedActions && p.allowedActions.length) {
+    p.allowedActions.forEach(a => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = a;
+      chips.appendChild(chip);
+    });
+  }
+}
+
+function timeAgo(iso) {
+  const d = new Date(iso);
+  const s = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (s < 5) return 'just now';
+  if (s < 60) return `${s}s ago`;
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  return d.toLocaleTimeString();
+}
+
+function renderApprovals(data) {
+  const el = document.getElementById('approvalList');
+  const pending = data.pending || [];
+  const resolved = data.resolved || [];
+  const all = [...pending, ...resolved].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  document.getElementById('approvalCount').textContent = `${pending.length} pending approval${pending.length !== 1 ? 's' : ''}`;
+
+  if (!all.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>No approvals yet</div>';
+    return;
+  }
+
+  el.innerHTML = all.map(a => {
+    const isPending = a.status === 'pending';
+    const cls = isPending ? '' : `resolved-${a.status}`;
+    return `
+      <div class="approval-item ${cls}">
+        <div class="approval-header">
+          <span class="action-name">${esc(a.action)}</span>
+          <span class="amount">${a.amount} ℏ</span>
+        </div>
+        <div class="approval-reason">${esc(a.reason)}</div>
+        <div class="approval-meta">${esc(a.recipient || '')} · ${timeAgo(a.createdAt)}</div>
+        ${isPending ? `
+          <div class="approval-btns">
+            <button class="btn btn-approve" onclick="resolveApproval('${a.id}', true)">✅ Approve</button>
+            <button class="btn btn-deny" onclick="resolveApproval('${a.id}', false)">🚫 Deny</button>
+          </div>
+        ` : `
+          <span class="approval-resolved-badge ${a.status === 'approved' ? 'badge-approved' : 'badge-denied'}">
+            ${a.status === 'approved' ? '✅ Approved' : '🚫 Denied'} by ${esc(a.resolvedBy || '?')}
+          </span>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAudit(data) {
+  const el = document.getElementById('auditList');
+  const entries = (data.entries || []).slice().reverse(); // newest first
+
+  document.getElementById('auditCount').textContent = `${entries.length} audit entr${entries.length !== 1 ? 'ies' : 'y'}`;
+
+  if (!entries.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>No audit entries yet</div>';
+    return;
+  }
+
+  el.innerHTML = entries.map(e => {
+    const v = (e.policyCheck?.verdict || 'pass').toLowerCase();
+    const vLabel = (e.policyCheck?.verdict || 'PASS').toUpperCase();
+    const txLinks = (e.txIds || []).map(id => {
+      const fmt = id.replace(/@/g, '-').replace(/\./g, '-');
+      return `<a href="https://hashscan.io/testnet/transaction/${fmt}" target="_blank">${id}</a>`;
+    }).join(', ');
+
+    return `
+      <div class="audit-entry verdict-${v}">
+        <div class="audit-top">
+          <span class="audit-action">${esc(e.action)}</span>
+          <span class="audit-verdict v-${v}">${vLabel}</span>
+        </div>
+        <div class="audit-summary">${esc(e.summary)}</div>
+        ${txLinks ? `<div class="audit-txid">TX: ${txLinks}</div>` : ''}
+        <div class="audit-time">${e.timestamp ? new Date(e.timestamp).toLocaleString() : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+// ── Approval actions ──
+async function resolveApproval(id, approved) {
+  const btns = document.querySelectorAll('.approval-btns .btn');
+  btns.forEach(b => b.disabled = true);
+  try {
+    await apiPost(`/api/approvals/${id}/resolve`, { approved, resolvedBy: 'dashboard-operator' });
+    await refresh();
+  } catch (e) {
+    alert('Failed: ' + e.message);
+  }
+  btns.forEach(b => b.disabled = false);
+}
+
+// ── Main refresh loop ──
+async function refresh() {
+  try {
+    const [status, audit, approvals] = await Promise.all([
+      api('/api/status'),
+      api('/api/audit'),
+      api('/api/approvals'),
+    ]);
+    renderAgent(status);
+    renderBalance(status.balance);
+    renderPolicy(status);
+    renderAudit(audit);
+    renderApprovals(approvals);
+
+    document.getElementById('lastRefresh').textContent = new Date().toLocaleTimeString();
+    document.getElementById('statusDot').className = 'dot on';
+  } catch (e) {
+    document.getElementById('statusDot').className = 'dot off';
+    console.error('Refresh failed:', e);
+  }
+}
+
+// ── Boot ──
+async function boot() {
+  try {
+    await refresh();
+    document.getElementById('initOverlay').classList.add('hidden');
+    document.getElementById('app').style.display = '';
+    pollTimer = setInterval(refresh, 3000);
+  } catch (e) {
+    document.getElementById('initError').textContent = `Cannot connect to AgentVault API at ${API}\n\nMake sure the dashboard server is running:\n  npx ts-node dashboard/server.ts`;
+    document.getElementById('initError').style.display = '';
+    document.querySelector('.init-spinner').style.display = 'none';
+    document.querySelector('.init-text').style.display = 'none';
+    // Retry
+    setTimeout(boot, 5000);
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
