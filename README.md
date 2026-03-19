@@ -205,6 +205,19 @@ agentvault/
 - **MCP** — Model Context Protocol (brain-agnostic tools)
 - **Node.js** — Dashboard server (zero external deps)
 
+## Hackathon Scope & Production Roadmap
+
+This is a hackathon build. Some simplifications were made intentionally:
+
+| Hackathon | Production |
+|-----------|-----------|
+| Single operator key (NFT supply, HCS submit, treasury, payer) | Separate keys per role (principle of least privilege) |
+| In-memory approval queue & daily spending tracker | Persistent storage (DB or on-chain state) |
+| Operator account = treasury = all holder accounts in demo | Distinct wallets per holder, mirror node queries for balances |
+| Web dashboard polling (3s) | WebSocket push, mobile notifications |
+
+The architecture is designed for this evolution — every component (identity, policy, audit, approval) is a separate module with clean interfaces.
+
 ## License
 
 MIT

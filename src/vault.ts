@@ -156,7 +156,7 @@ export class AgentVault {
       propertyName,
     });
 
-    // If approval required, handle the flow
+    // If approval required, create the request and WAIT for human to resolve it
     if (!result.ok && (result as any).code === "APPROVAL_REQUIRED") {
       const details = JSON.parse((result as any).details || "{}");
       const approvalReq = createApprovalRequest(
@@ -164,11 +164,11 @@ export class AgentVault {
         "DISTRIBUTE_TO_HOLDERS",
         totalAmountHbar,
         `${holders.length} holders`,
-        `Distribution for ${propertyName}`,
+        `Distribution of ${totalAmountHbar} ℏ for "${propertyName}"`,
         details.policyCheck
       );
 
-      // Log the approval request
+      // Log the approval request to HCS
       const entry = buildAuditEntry(
         this.config.agentId,
         "APPROVAL_REQUESTED",
@@ -180,18 +180,75 @@ export class AgentVault {
       );
       await logToHCS(this.hcsConfig, entry);
 
-      return {
-        ok: false,
-        error: "Awaiting human approval",
-        code: "PENDING_APPROVAL",
-        details: JSON.stringify({
-          approvalId: approvalReq.id,
-          ...details,
-        }),
-      };
+      // Wait for human to approve/deny on the dashboard (5 min timeout)
+      const approved = await waitForApproval(approvalReq.id, 300000);
+
+      if (!approved) {
+        // Denied or timed out — log it
+        const denyEntry = buildAuditEntry(
+          this.config.agentId,
+          "APPROVAL_DENIED",
+          `Distribution of ${totalAmountHbar} HBAR for "${propertyName}" was denied or timed out`,
+          { ...details.policyCheck, verdict: "DENY" as const, rule: "HUMAN_DENIED" },
+          [],
+          { approvalId: approvalReq.id },
+          {}
+        );
+        await logToHCS(this.hcsConfig, denyEntry);
+
+        return {
+          ok: false,
+          error: "Distribution denied by human operator",
+          code: "APPROVAL_DENIED",
+          details: JSON.stringify({ approvalId: approvalReq.id }),
+        };
+      }
+
+      // Approved! Log it and execute the distribution (bypass policy this time)
+      const approveEntry = buildAuditEntry(
+        this.config.agentId,
+        "APPROVAL_GRANTED",
+        `Human approved ${totalAmountHbar} HBAR distribution for "${propertyName}"`,
+        { ...details.policyCheck, verdict: "PASS" as const, rule: "HUMAN_APPROVED" },
+        [],
+        { approvalId: approvalReq.id },
+        {}
+      );
+      await logToHCS(this.hcsConfig, approveEntry);
+
+      // Re-execute with approval override — call distributeToHolders
+      // but first temporarily raise the approval threshold so it passes
+      const origThreshold = this.policy.approvalRequiredAboveHbar;
+      this.policy.approvalRequiredAboveHbar = totalAmountHbar + 1;
+      try {
+        const retryResult = await distributeToHolders({
+          client: this.client,
+          agentId: this.config.agentId,
+          policy: this.policy,
+          hcsConfig: this.hcsConfig,
+          totalAmountHbar,
+          holders,
+          propertyName,
+          memo: `Approved distribution: ${propertyName}`,
+        });
+        return retryResult;
+      } finally {
+        this.policy.approvalRequiredAboveHbar = origThreshold;
+      }
     }
 
     return result;
+  }
+
+  /** Execute a single transfer with full policy + approval pipeline */
+  async transfer(
+    to: string,
+    amount: number,
+    memo?: string
+  ): Promise<VaultResult> {
+    return this.distribute(amount, [
+      { accountId: to, name: "recipient", ownershipPercent: 100 },
+    ], memo || "Direct transfer");
   }
 
   /** Get audit log */

@@ -68,18 +68,14 @@ export function evaluatePolicy(
     }
   }
 
-  // Rule 3: Per-transaction limit
+  // Rule 3: Per-transaction limit (hard ceiling — not overridable by approval)
   if (amount > policy.perTxLimitHbar) {
-    // Check if it should be escalated vs denied
-    if (amount <= policy.approvalRequiredAboveHbar) {
-      return {
-        verdict: "DENY",
-        rule: "PER_TX_LIMIT",
-        reason: `Amount ${amount} HBAR exceeds per-transaction limit of ${policy.perTxLimitHbar} HBAR`,
-        details: baseDetails,
-      };
-    }
-    // Falls through to approval check below
+    return {
+      verdict: "DENY",
+      rule: "PER_TX_LIMIT",
+      reason: `Amount ${amount} HBAR exceeds per-transaction limit of ${policy.perTxLimitHbar} HBAR`,
+      details: baseDetails,
+    };
   }
 
   // Rule 4: Daily spending limit

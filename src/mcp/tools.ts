@@ -8,6 +8,7 @@
 import { MCPTool, VaultResult } from "../types";
 import { AgentVault } from "../vault";
 import { evaluatePolicy, formatPolicyResult } from "../policy";
+import { createApprovalRequest } from "../approval";
 import { Holder } from "../actions";
 
 /**
@@ -197,18 +198,45 @@ export function getAgentVaultTools(vault?: AgentVault | null): MCPTool[] {
       },
       handler: async (input: { action: string; amount: number; recipient?: string; reason: string }): Promise<VaultResult> => {
         if (!vault) return { ok: false, error: "Vault not initialized", code: "NO_VAULT" };
-        // Trigger a policy check which may produce APPROVAL_REQUIRED
+        // Run policy check first
         const check = vault.checkPolicy(input.action, input.amount, input.recipient);
+
+        // If DENY, no amount of approval can override it
+        if (check.verdict === "DENY") {
+          return {
+            ok: false,
+            error: `Action denied by policy: ${check.reason}`,
+            code: "POLICY_DENIED",
+            details: JSON.stringify({ policyCheck: check }),
+          };
+        }
+
+        // If PASS, no approval needed
+        if (check.verdict === "PASS") {
+          return {
+            ok: true,
+            summary: "This action passes policy — no approval needed.",
+            data: { policyCheck: check },
+          };
+        }
+
+        // APPROVAL_REQUIRED — create a real approval request in the queue
+        const approvalReq = createApprovalRequest(
+          vault.config.agentId,
+          input.action,
+          input.amount,
+          input.recipient || "N/A",
+          input.reason,
+          check
+        );
+
         return {
           ok: true,
-          summary: formatPolicyResult(check),
+          summary: `⚠️ Approval request created (${approvalReq.id}). Check the dashboard to approve or deny.`,
           data: {
+            approvalId: approvalReq.id,
             policyCheck: check,
-            message: check.verdict === "APPROVAL_REQUIRED"
-              ? "Approval request created. Check the dashboard to approve or deny."
-              : check.verdict === "PASS"
-                ? "This action does not require approval — it passes policy."
-                : "This action is denied by policy — approval cannot override a DENY.",
+            message: "Approval request is now in the dashboard queue. A human must approve or deny before the action can proceed.",
           },
         };
       },
