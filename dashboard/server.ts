@@ -161,11 +161,18 @@ const server = http.createServer(async (req, res) => {
     if (!vault) return json(res, { ok: false, error: "Vault not initialized" }, 503);
     const body = await parseBody(req);
     const amount = Number(body.amount) || 1;
-    const holders = body.holders || [
+    const rawHolders = body.holders || [
       { accountId: OPERATOR_ID, name: "Alice (45%)", ownershipPercent: 45 },
       { accountId: OPERATOR_ID, name: "Bob (35%)", ownershipPercent: 35 },
       { accountId: OPERATOR_ID, name: "Charlie (20%)", ownershipPercent: 20 },
     ];
+    // Normalize: replace "operator" or any non-Hedera ID with the actual operator
+    const holders = rawHolders.map((h: any) => ({
+      ...h,
+      accountId: (!h.accountId || h.accountId === "operator" || !/^\d+\.\d+\.\d+$/.test(h.accountId))
+        ? OPERATOR_ID
+        : h.accountId,
+    }));
     const result = await vault.distribute(amount, holders, body.propertyName || "Dashboard Test Distribution");
     return json(res, result);
   }
