@@ -9,15 +9,15 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0b0f19;--bg-raised:#111827;--bg-card:#151c2c;--bg-card-hover:#1a2338;
-  --bg-surface:#0f1525;--bg-input:#1a2236;--bg-overlay:rgba(11,15,25,.92);
-  --border:#1f2a40;--border-light:#2a3652;--border-focus:rgba(99,91,255,.5);
-  --text:#f8fafc;--text-secondary:#c9d1d9;--text-muted:#7c8898;--text-dim:#4e5969;
-  --primary:#635BFF;--primary-light:#8B85FF;--primary-glow:rgba(99,91,255,.12);--primary-border:rgba(99,91,255,.25);
-  --teal:#17a2b8;--teal-light:#22d3ee;--teal-glow:rgba(23,162,184,.1);--teal-border:rgba(23,162,184,.25);
-  --green:#10b981;--green-glow:rgba(16,185,129,.08);--green-border:rgba(16,185,129,.2);
-  --red:#ef4444;--red-glow:rgba(239,68,68,.08);--red-border:rgba(239,68,68,.2);
-  --amber:#f59e0b;--amber-glow:rgba(245,158,11,.08);--amber-border:rgba(245,158,11,.2);
+  --bg:#e6e7ea;--bg-raised:#12101f;--bg-card:#1a1530;--bg-card-hover:#211a3a;
+  --bg-surface:#150f28;--bg-input:#211a3a;--bg-overlay:rgba(15,16,38,.94);
+  --border:#3b2f52;--border-light:#4a3d65;--border-focus:rgba(122,99,255,.5);
+  --text:#f0f2f5;--text-secondary:#c0b8d0;--text-muted:#7d6f96;--text-dim:#564a6e;
+  --primary:#7A63FF;--primary-light:#9B8AFF;--primary-glow:rgba(122,99,255,.12);--primary-border:rgba(122,99,255,.25);
+  --teal:#1FB6D6;--teal-light:#3ECAE8;--teal-glow:rgba(31,182,214,.1);--teal-border:rgba(31,182,214,.25);
+  --green:#10b981;--green-glow:rgba(16,185,129,.1);--green-border:rgba(16,185,129,.25);
+  --red:#FF586E;--red-glow:rgba(255,88,110,.1);--red-border:rgba(255,88,110,.25);
+  --amber:#F6A623;--amber-glow:rgba(246,166,35,.1);--amber-border:rgba(246,166,35,.25);
   --shadow-sm:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
   --shadow-md:0 4px 12px rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.2);
   --shadow-lg:0 12px 40px rgba(0,0,0,.4);
@@ -43,7 +43,9 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 
 /* ── Sidebar ── */
 .sidebar{
-  width:var(--sidebar-w);background:var(--bg-raised);border-right:1px solid var(--border);
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,#12101f 0%,#19122a 100%);
+  border-right:none;
   position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:60;
   overflow-y:auto;overflow-x:hidden;transition:transform .3s var(--ease);
 }
@@ -54,9 +56,9 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 }
 .logo-mark{
   width:36px;height:36px;border-radius:var(--radius-sm);
-  background:linear-gradient(135deg,#0e7490,#4f46e5,#7c3aed);
+  background:linear-gradient(135deg,#1FB6D6,#7A63FF,#7F4BFF);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 10px rgba(99,91,255,.25);
+  box-shadow:0 2px 12px rgba(127,75,255,.3);
 }
 .logo-mark svg{width:18px;height:18px;color:#fff}
 .logo-text{font-size:1.2rem;font-weight:700;letter-spacing:-.03em;color:var(--text)}
@@ -83,12 +85,12 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 .nav-item:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
 .nav-item:active{background:rgba(255,255,255,.08)}
 .nav-item.active{
-  background:linear-gradient(90deg,rgba(99,91,255,.12),rgba(99,91,255,.04));
+  background:linear-gradient(90deg,rgba(122,99,255,.14),rgba(122,99,255,.04));
   color:var(--primary-light);font-weight:600;
 }
 .nav-item.active::before{
   content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
-  width:3px;height:22px;background:linear-gradient(180deg,var(--primary),#7c3aed);border-radius:0 3px 3px 0;
+  width:3px;height:22px;background:linear-gradient(180deg,#7A63FF,#7F4BFF);border-radius:0 3px 3px 0;
 }
 .nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
 .nav-item.active svg{opacity:1}
@@ -109,13 +111,13 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 .powered a:hover{text-decoration:underline}
 
 /* ── Main ── */
-.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:#0f1026;border-radius:20px 0 0 20px;margin-top:12px;margin-bottom:12px;margin-right:12px;overflow:hidden}
 
 /* ── Topbar ── */
 .topbar{
   position:sticky;top:0;z-index:40;
   display:flex;align-items:center;gap:12px;padding:0 32px;height:var(--topbar-h);
-  background:var(--bg-overlay);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(15,16,38,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
 .topbar-burger{
@@ -152,10 +154,10 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 }
 .stat:hover{border-color:var(--border-light);transform:translateY(-2px);box-shadow:var(--shadow-md)}
 .stat.featured{
-  background:linear-gradient(135deg,#0e7490 0%,#4f46e5 60%,#7c3aed 100%);border:none;color:#fff;
-  box-shadow:0 4px 20px rgba(99,91,255,.2);
+  background:linear-gradient(135deg,#1FB6D6 0%,#7A63FF 50%,#7F4BFF 100%);border:none;color:#fff;
+  box-shadow:0 4px 24px rgba(127,75,255,.25);
 }
-.stat.featured:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,91,255,.35)}
+.stat.featured:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(127,75,255,.4)}
 .stat-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:10px}
 .stat.featured .stat-label{color:rgba(255,255,255,.8)}
 .stat-val{font-size:1.9rem;font-weight:700;font-family:var(--mono);letter-spacing:-.03em;margin-bottom:4px;line-height:1.1}
@@ -355,7 +357,7 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 
 /* ── Init ── */
 .init{
-  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;
+  position:fixed;inset:0;background:#0f1026;display:flex;align-items:center;
   justify-content:center;flex-direction:column;gap:20px;z-index:200;
 }
 .init.hidden{display:none}
@@ -406,7 +408,7 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
   .sidebar{transform:translateX(-100%);width:280px}
   .sidebar.open{transform:translateX(0)}
   .sidebar-close{display:flex}
-  .main{margin-left:0}
+  .main{margin-left:0;border-radius:0;margin:0}
   .topbar-burger{display:flex}
   .content-grid{flex-direction:column}
   .col-side{width:100%}
@@ -456,17 +458,17 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 
 /* ── Hero Banner ── */
 .hero-banner{
-  background:linear-gradient(135deg,#0f172a 0%,#1e1145 50%,#0c2340 100%);
+  background:linear-gradient(135deg,#0f1026 0%,#2d1442 50%,#19122a 100%);
   border:1px solid rgba(99,91,255,.3);border-radius:var(--radius);
   padding:36px 40px 32px;margin-bottom:24px;position:relative;overflow:hidden;
 }
 .hero-banner::before{
   content:'';position:absolute;top:-80px;right:-60px;width:350px;height:350px;
-  background:radial-gradient(circle,rgba(99,91,255,.2) 0%,rgba(23,162,184,.08) 40%,transparent 70%);pointer-events:none;
+  background:radial-gradient(circle,rgba(127,75,255,.2) 0%,rgba(31,182,214,.08) 40%,transparent 70%);pointer-events:none;
 }
 .hero-banner::after{
   content:'';position:absolute;bottom:-100px;left:-40px;width:300px;height:300px;
-  background:radial-gradient(circle,rgba(23,162,184,.12),transparent 60%);pointer-events:none;
+  background:radial-gradient(circle,rgba(31,182,214,.15),transparent 60%);pointer-events:none;
 }
 .hero-dismiss{
   position:absolute;top:16px;right:16px;width:32px;height:32px;border:none;
@@ -480,12 +482,12 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
 .hero-badge{
   font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
   padding:5px 14px;border-radius:20px;
-  background:linear-gradient(135deg,var(--primary),#8B85FF);color:#fff;
-  box-shadow:0 2px 12px rgba(99,91,255,.3);
+  background:linear-gradient(135deg,#059669,#10b981);color:#fff;
+  box-shadow:0 2px 12px rgba(16,185,129,.35);
 }
 .hero-top h2{font-size:1.5rem;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-.02em}
 .hero-top h2 span{
-  background:linear-gradient(135deg,var(--primary-light),var(--teal-light));
+  background:linear-gradient(135deg,#3FB6FF,#9B8AFF);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .hero-subtitle{font-size:.95rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:10px;max-width:680px}
@@ -644,8 +646,8 @@ select.finput{font-family:var(--sans);appearance:none;
 .modal-result .result-tx a{color:var(--primary-light);text-decoration:none}
 .modal-result .result-tx a:hover{text-decoration:underline}
 
-.btn-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent}
-.btn-primary:hover{background:linear-gradient(135deg,#4338ca,#6d28d9);transform:translateY(-1px);box-shadow:0 4px 16px rgba(99,91,255,.35)}
+.btn-primary{background:linear-gradient(135deg,#6A53FF,#7F4BFF);color:#fff;border-color:transparent}
+.btn-primary:hover{background:linear-gradient(135deg,#5A43EF,#6E3BEF);transform:translateY(-1px);box-shadow:0 4px 16px rgba(127,75,255,.4)}
 .btn-primary:active{transform:scale(.97)}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 .btn-ghost{background:transparent;color:var(--text-muted);border-color:var(--border)}
@@ -694,7 +696,7 @@ select.finput{font-family:var(--sans);appearance:none;
 
 <div class="init" id="initOverlay">
   <div class="init-spin"></div>
-  <div class="init-text">Connecting to AgentVault…</div>
+  <div class="init-text">Connecting to Hedera Testnet…</div>
 </div>
 
 <!-- Sidebar Overlay -->
@@ -752,7 +754,7 @@ select.finput{font-family:var(--sans);appearance:none;
   <div class="sidebar-footer">
     <div class="net-badge">
       <span class="net-dot live"></span>
-      <span>Hedera Testnet</span>
+      <span>Hedera Testnet — Live</span>
     </div>
     <div class="powered">Powered by <a href="https://www.npmjs.com/package/dappily-agent-kit" target="_blank">Hedera Agent Kit</a></div>
   </div>
@@ -783,17 +785,17 @@ select.finput{font-family:var(--sans);appearance:none;
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="hero-top">
-        <span class="hero-badge">Live Demo</span>
+        <span class="hero-badge">⚡ Live on Hedera Testnet</span>
         <h2>Agent<span>Vault</span> — Secure AI Money on Hedera</h2>
       </div>
       <div class="hero-subtitle">
-        AgentVault is a programmable vault for AI agents. Set spending rules, require human approvals for large transactions, and log every action on-chain via Hedera Consensus Service.
+        AgentVault is a programmable vault for AI agents. Set spending rules, require human approvals for large transactions, and log every action on-chain via Hedera Consensus Service. <strong style="color:rgba(255,255,255,.9)">Everything below is real</strong> — every transaction hits Hedera testnet and is verifiable on HashScan.
       </div>
       <div class="hero-killer">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         This prevents AI from sending money to the wrong place, overspending, or acting without approval.
       </div>
-      <div class="demo-label">👋 Try the demo — click each step</div>
+      <div class="demo-label">👋 Try it — every action runs on real Hedera testnet</div>
       <div class="demo-steps">
         <div class="demo-step step-red" onclick="demoStep1()">
           <div class="demo-step-num">1</div>
@@ -824,7 +826,7 @@ select.finput{font-family:var(--sans);appearance:none;
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
         <div class="stat-label">Vault Balance</div>
         <div class="stat-val"><span id="balHbar">—</span><span class="unit"> ℏ</span></div>
-        <div class="stat-meta"><span class="up">● Active</span> Hedera Testnet</div>
+        <div class="stat-meta"><span class="up">● Live</span> Hedera Testnet — real HBAR</div>
       </div>
       <div class="stat fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
@@ -837,7 +839,7 @@ select.finput{font-family:var(--sans);appearance:none;
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
         <div class="stat-label">Audit Entries</div>
         <div class="stat-val" id="auditBig">0</div>
-        <div class="stat-meta">HCS-backed records</div>
+        <div class="stat-meta">On-chain via Hedera HCS</div>
       </div>
       <div class="stat fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
@@ -892,7 +894,7 @@ select.finput{font-family:var(--sans);appearance:none;
             <div class="scroll" id="apprList">
               <div class="empty">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-                <div>No pending approvals</div>
+                <div>No pending approvals<br><span style="font-size:.75rem;color:var(--text-dim)">Try Step 2 above to trigger one</span></div>
               </div>
             </div>
           </div>
@@ -1263,9 +1265,9 @@ function renderAgent(s){
   document.getElementById('agentId').textContent=a.id||'—';
   document.getElementById('agentWallet').textContent=a.wallet||'—';
   const nft=document.getElementById('agentNFT');
-  nft.innerHTML=id.nftTokenId?`<a href="${esc(id.nftUrl)}" target="_blank">${esc(id.nftTokenId)}</a>`:'Not minted';
+  nft.innerHTML=id.nftTokenId?`<a href="${esc(id.nftUrl)}" target="_blank">${esc(id.nftTokenId)} ↗</a>`:'Not minted';
   const hcs=document.getElementById('agentHCS');
-  hcs.innerHTML=id.hcsTopicId?`<a href="${esc(id.topicUrl)}" target="_blank">${esc(id.hcsTopicId)}</a>`:'Not created';
+  hcs.innerHTML=id.hcsTopicId?`<a href="${esc(id.topicUrl)}" target="_blank">${esc(id.hcsTopicId)} ↗</a>`:'Not created';
 }
 
 function renderBalance(s){
@@ -1329,7 +1331,7 @@ function renderAudit(d){
       <div class="audit-body">
         <div class="audit-head"><span class="audit-action">${esc(e.action)}</span><span class="audit-vtag vt-${v}">${v.replace('_',' ')}</span></div>
         <div class="audit-sum">${esc(e.summary)}</div>
-        ${tx?`<div class="audit-tx">${tx}</div>`:''}
+        ${tx?`<div class="audit-tx">🔗 Verify on HashScan: ${tx}</div>`:''}
       </div>
       <div class="audit-time">${e.timestamp?timeAgo(e.timestamp):''}</div>
     </div>`}).join('');
@@ -1477,13 +1479,14 @@ async function txExecute(){
       data=await apiPost('/api/demo/distribute',{amount:amt,holders:[{accountId:to,name:'Direct Transfer',ownershipPercent:100}],propertyName:memo||'Direct Transfer'});
     }
     if(data.ok){
-      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join('<br>');
+      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">🔗 Verify on HashScan →</a>`}).join('<br>');
       res.className='modal-result show pass';
       res.style.display='block';
-      res.innerHTML=`<span class="verdict-badge vb-pass">Success</span>
+      res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
         <div class="result-text">✅ ${esc(data.summary||'Transfer executed')}</div>
-        ${txLinks?'<div class="result-tx">'+txLinks+'</div>':''}`;
-      showToast('Transfer sent successfully!','success');
+        ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">This is a real on-chain transaction — click the link above to verify.</div>`;
+      showToast('Transfer sent on-chain! ✅','success');
       await refresh();
     } else {
       res.className='modal-result show deny';
@@ -1527,13 +1530,14 @@ async function distExecute(){
       data=await apiPost('/api/demo/distribute',{amount:amt,propertyName:prop,holders});
     }
     if(data.ok){
-      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join('<br>');
+      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">🔗 Verify on HashScan →</a>`}).join('<br>');
       res.className='modal-result show pass';
       res.style.display='block';
-      res.innerHTML=`<span class="verdict-badge vb-pass">Success</span>
+      res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
         <div class="result-text">✅ ${esc(data.summary||'Distribution complete')}</div>
-        ${txLinks?'<div class="result-tx">'+txLinks+'</div>':''}`;
-      showToast('Distribution complete!','success');
+        ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">Real on-chain transaction — click above to verify on HashScan.</div>`;
+      showToast('Distribution executed on-chain! ✅','success');
       await refresh();
     } else {
       res.className='modal-result show deny';
@@ -1575,9 +1579,9 @@ async function polCheck(){
     res.className='modal-result show '+v;
     res.style.display='block';
     res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
-      <div class="result-text" style="margin-top:8px">${v==='pass'?'✅ This action would be <strong>allowed</strong> by the policy engine.'
-        :v==='deny'?'❌ This action would be <strong>blocked</strong>. The agent cannot proceed.'
-        :'⚠️ This action would <strong>require human approval</strong> before the agent can proceed.'}</div>
+      <div class="result-text" style="margin-top:8px">${v==='pass'?'✅ This action is <strong>allowed</strong> by the policy engine. The agent can proceed.'
+        :v==='deny'?'❌ This action is <strong>blocked</strong>. The agent cannot proceed — logged to HCS audit trail.'
+        :'⚠️ This action <strong>requires human approval</strong> before the agent can proceed. Check the Approval Queue.'}</div>
       <div style="margin-top:10px;font-size:.78rem;color:var(--text-dim)">Action: ${esc(action)} · Amount: ${amt} ℏ${recip?' · To: '+esc(recip):''}</div>`;
     showToast(v==='pass'?'Policy: PASS ✅':v==='deny'?'Policy: DENIED ❌':'Policy: Approval Required ⚠️',v==='pass'?'success':v==='deny'?'error':'warn');
   }catch(e){showToast('Policy check failed: '+e.message,'error')}
@@ -1596,27 +1600,24 @@ async function quickCheckBalance(){
    GUIDED DEMO STEPS
    ═══════════════════════════════════════════════ */
 function demoStep1(){
-  // Step 1: Open policy tester pre-filled with a too-high amount that triggers DENY
   openModal('policy');
   document.getElementById('polAction').value='HBAR_TRANSFER';
   document.getElementById('polAmt').value='75';
   document.getElementById('polRecip').value='0.0.99999';
-  showToast('Step 1: Click "Check Policy" to see it get blocked!','info',5000);
+  showToast('Step 1: Click "Check Policy" — 75 ℏ exceeds the 50 ℏ per-TX limit','info',6000);
 }
 function demoStep2(){
-  // Step 2: Open transfer modal pre-filled with amount above approval threshold
   openModal('transfer');
   document.getElementById('txTo').value='0.0.55443';
   document.getElementById('txAmt').value='35';
   document.getElementById('txMemo').value='Office rent — March 2026';
-  showToast('Step 2: Click "Check Policy" — this needs human approval!','warn',5000);
+  showToast('Step 2: Click "Check Policy" — 35 ℏ triggers human approval (threshold: 25 ℏ)','warn',6000);
 }
 function demoStep3(){
-  // Step 3: Open distribute modal pre-filled
   openModal('distribute');
   document.getElementById('distAmt').value='15';
   document.getElementById('distProp').value='March Rent — 123 Main St';
-  showToast('Step 3: Click "Distribute" to split payments on-chain!','success',5000);
+  showToast('Step 3: Click "Distribute" — this executes a real Hedera testnet transaction!','success',6000);
 }
 </script>
 </body>
