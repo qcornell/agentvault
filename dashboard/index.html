@@ -443,6 +443,71 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
   .appr-btns .btn{width:100%;justify-content:center}
 }
 
+/* ── Hero Banner ── */
+.hero-banner{
+  background:linear-gradient(135deg,rgba(99,91,255,.12) 0%,rgba(23,162,184,.08) 100%);
+  border:1px solid var(--primary-border);border-radius:var(--radius);
+  padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;
+}
+.hero-banner::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(99,91,255,.15),transparent 70%);pointer-events:none;
+}
+.hero-dismiss{
+  position:absolute;top:14px;right:14px;width:30px;height:30px;border:none;
+  background:rgba(255,255,255,.06);border-radius:var(--radius-xs);color:var(--text-muted);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;
+  z-index:1;
+}
+.hero-dismiss:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.hero-dismiss svg{width:14px;height:14px}
+.hero-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.hero-badge{
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:4px 12px;border-radius:20px;background:var(--primary);color:#fff;
+}
+.hero-top h2{font-size:1.25rem;font-weight:700;color:var(--text);line-height:1.3}
+.hero-top h2 span{color:var(--primary-light)}
+.hero-subtitle{font-size:.92rem;color:var(--text-secondary);line-height:1.6;margin-bottom:6px;max-width:720px}
+.hero-killer{
+  font-size:.88rem;font-weight:600;color:var(--amber);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-killer svg{width:16px;height:16px;flex-shrink:0}
+
+/* ── Demo Walkthrough ── */
+.demo-steps{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+}
+.demo-step{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px 18px;cursor:pointer;transition:all .2s var(--ease);position:relative;
+}
+.demo-step:hover{background:rgba(99,91,255,.08);border-color:var(--primary-border);transform:translateY(-2px)}
+.demo-step:active{transform:scale(.98)}
+.demo-step-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;font-size:.78rem;font-weight:700;
+  margin-bottom:8px;
+}
+.step-red .demo-step-num{background:var(--red-glow);color:var(--red);border:1px solid var(--red-border)}
+.step-amber .demo-step-num{background:var(--amber-glow);color:var(--amber);border:1px solid var(--amber-border)}
+.step-green .demo-step-num{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.demo-step-title{font-size:.88rem;font-weight:600;margin-bottom:4px;color:var(--text)}
+.demo-step-desc{font-size:.78rem;color:var(--text-muted);line-height:1.4}
+.demo-step-icon{position:absolute;top:14px;right:14px;color:var(--text-dim);opacity:.5}
+.demo-step-icon svg{width:16px;height:16px}
+
+@media(max-width:768px){
+  .demo-steps{grid-template-columns:1fr}
+  .hero-banner{padding:22px 20px}
+  .hero-top h2{font-size:1.1rem}
+}
+@media(max-width:480px){
+  .hero-subtitle{font-size:.84rem}
+  .hero-killer{font-size:.82rem;flex-wrap:wrap}
+}
+
 /* ── Animations ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fade-up{animation:fadeUp .5s var(--ease) both}
@@ -623,16 +688,16 @@ select.finput{font-family:var(--sans);appearance:none;
     <div class="nav-section">Identity</div>
     <a class="nav-item" data-nav="identity" onclick="navigateTo('identity')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M14 10h4M14 14h2"/></svg>
-      <span>Agent NFT</span>
+      <span>Agent Identity (NFT)</span>
     </a>
     <a class="nav-item" data-nav="hcs" onclick="navigateTo('hcs')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span>HCS Topic</span>
+      <span>On-Chain Audit Log</span>
     </a>
     <div class="nav-section">Tools</div>
     <a class="nav-item" data-nav="actions" onclick="navigateTo('actions')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-      <span>MCP Tools</span>
+      <span>AI Action Tools</span>
     </a>
     <a class="nav-item" data-nav="distribute" onclick="navigateTo('distribute')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
@@ -667,6 +732,44 @@ select.finput{font-family:var(--sans);appearance:none;
   </div>
 
   <div class="content">
+    <!-- Hero Banner -->
+    <div class="hero-banner fade-up" id="heroBanner">
+      <button class="hero-dismiss" onclick="document.getElementById('heroBanner').style.display='none'" aria-label="Dismiss">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="hero-top">
+        <span class="hero-badge">Live Demo</span>
+        <h2>Agent<span>Vault</span> — Secure AI Money on Hedera</h2>
+      </div>
+      <div class="hero-subtitle">
+        AgentVault is a programmable vault for AI agents. Set spending rules, require human approvals for large transactions, and log every action on-chain via Hedera Consensus Service.
+      </div>
+      <div class="hero-killer">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        This prevents AI from sending money to the wrong place, overspending, or acting without approval.
+      </div>
+      <div class="demo-steps">
+        <div class="demo-step step-red" onclick="demoStep1()">
+          <div class="demo-step-num">1</div>
+          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <div class="demo-step-title">❌ See a Blocked Transfer</div>
+          <div class="demo-step-desc">Try sending too much — the policy engine stops it instantly.</div>
+        </div>
+        <div class="demo-step step-amber" onclick="demoStep2()">
+          <div class="demo-step-num">2</div>
+          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <div class="demo-step-title">⚠️ Trigger an Approval</div>
+          <div class="demo-step-desc">A mid-range transfer needs human sign-off before proceeding.</div>
+        </div>
+        <div class="demo-step step-green" onclick="demoStep3()">
+          <div class="demo-step-num">3</div>
+          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <div class="demo-step-title">✅ Run a Distribution</div>
+          <div class="demo-step-desc">Split rent payments across holders — logged on-chain.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="stats">
       <div class="stat featured fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
@@ -788,8 +891,8 @@ select.finput{font-family:var(--sans);appearance:none;
         <!-- Audit -->
         <div class="card fade-up" id="auditSection">
           <div class="card-head">
-            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Audit Trail</span></h2>
-            <span class="card-tag tag-live">HCS-Backed</span>
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>On-Chain Audit Trail</span></h2>
+            <span class="card-tag tag-live">Hedera HCS</span>
           </div>
           <div class="card-body flush">
             <div class="scroll" id="auditList">
@@ -1029,7 +1132,7 @@ function navigateTo(name){
     el.classList.toggle('active',el.dataset.bnav===name);
   });
   // Update topbar title
-  const titles={overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent NFT',hcs:'HCS Topic',actions:'MCP Tools',distribute:'Distribute'};
+  const titles={overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent Identity (NFT)',hcs:'On-Chain Audit Log',actions:'AI Action Tools',distribute:'Distribute'};
   document.querySelector('.topbar h1').textContent=titles[name]||'Overview';
   // Special cases
   if(name==='distribute'){openModal('distribute');return}
@@ -1052,23 +1155,27 @@ let USE_DEMO=false,chartInst=null;
 
 const DEMO={
   status:{
-    agent:{name:'DeedSlice Agent',id:'deedslice-rent-agent-v1',wallet:'0.0.7420047',network:'testnet'},
-    identity:{nftTokenId:'0.0.7420100',nftUrl:'https://hashscan.io/testnet/token/0.0.7420100',hcsTopicId:'0.0.7420101',topicUrl:'https://hashscan.io/testnet/topic/0.0.7420101'},
-    balance:{hbar:42.35},
-    policy:{dailySpendLimitHbar:100,perTxLimitHbar:25,approvalRequiredAboveHbar:15,allowedActions:['HBAR_TRANSFER','DISTRIBUTE_TO_HOLDERS','GET_BALANCE','GET_AUDIT_LOG']},
+    agent:{name:'DeedSlice Distributor',id:'agentvault:deedslice-distributor',wallet:'0.0.7420047',network:'testnet'},
+    identity:{nftTokenId:'0.0.8306757',nftUrl:'https://hashscan.io/testnet/token/0.0.8306757',hcsTopicId:'0.0.8306756',topicUrl:'https://hashscan.io/testnet/topic/0.0.8306756'},
+    balance:{hbar:932.38},
+    policy:{dailySpendLimitHbar:100,perTxLimitHbar:50,approvalRequiredAboveHbar:25,allowedActions:['HBAR_TRANSFER','DISTRIBUTE_TO_HOLDERS','GET_BALANCE','GET_AUDIT_LOG']},
     dailySpent:18.5
   },
   approvals:{
-    pending:[{id:'apr-001',action:'Transfer',amount:30,reason:'Exceeds per-TX limit of 25 ℏ — requires human approval',recipient:'0.0.98765',createdAt:new Date(Date.now()-120000).toISOString(),status:'pending'}],
-    resolved:[{id:'apr-000',action:'Distribution',amount:22,reason:'Above approval threshold of 15 ℏ',recipient:'3 holders',createdAt:new Date(Date.now()-3600000).toISOString(),status:'approved',resolvedBy:'operator'}]
+    pending:[{id:'apr-002',action:'HBAR_TRANSFER',amount:35,reason:'Amount (35 ℏ) exceeds approval threshold of 25 ℏ — requires human approval',recipient:'0.0.55443',createdAt:new Date(Date.now()-90000).toISOString(),status:'pending'}],
+    resolved:[
+      {id:'apr-001',action:'DISTRIBUTE_TO_HOLDERS',amount:45,reason:'Distribution of 45 ℏ exceeds approval threshold (25 ℏ)',recipient:'3 holders',createdAt:new Date(Date.now()-5400000).toISOString(),status:'approved',resolvedBy:'operator'},
+      {id:'apr-000',action:'HBAR_TRANSFER',amount:40,reason:'Suspicious recipient — flagged by operator',recipient:'0.0.99999',createdAt:new Date(Date.now()-7200000).toISOString(),status:'denied',resolvedBy:'operator'}
+    ]
   },
   audit:{entries:[
-    {action:'vault_init',policyCheck:{verdict:'pass'},summary:'Agent vault initialized · Account created · NFT minted',txIds:['0.0.7420047@1710864601.123456789'],timestamp:new Date(Date.now()-7200000).toISOString()},
-    {action:'hcs_topic_create',policyCheck:{verdict:'pass'},summary:'HCS audit topic created: 0.0.7420101',txIds:[],timestamp:new Date(Date.now()-7100000).toISOString()},
-    {action:'nft_mint',policyCheck:{verdict:'pass'},summary:'Agent identity NFT minted: 0.0.7420100 serial #1',txIds:['0.0.7420047@1710864620.456789012'],timestamp:new Date(Date.now()-7000000).toISOString()},
-    {action:'transfer',policyCheck:{verdict:'deny',rule:'unauthorized_recipient'},summary:'Blocked: recipient 0.0.99999 not in allowlist',txIds:[],timestamp:new Date(Date.now()-5400000).toISOString()},
-    {action:'distribute',policyCheck:{verdict:'pass'},summary:'Rent distribution: 10 ℏ to 3 holders (3.33 ℏ each)',txIds:['0.0.7420047@1710864901.987654321'],timestamp:new Date(Date.now()-3600000).toISOString()},
-    {action:'transfer',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'Transfer 30 ℏ requires approval (threshold: 15 ℏ)',txIds:[],timestamp:new Date(Date.now()-120000).toISOString()},
+    {action:'VAULT_INITIALIZED',policyCheck:{verdict:'pass'},summary:'AgentVault initialized: DeedSlice Distributor | NFT: 0.0.8306757 | Topic: 0.0.8306756',txIds:['0.0.7420047@1710864601.123456789'],timestamp:new Date(Date.now()-14400000).toISOString()},
+    {action:'HBAR_TRANSFER',policyCheck:{verdict:'deny',rule:'per_tx_limit'},summary:'❌ Blocked: Transfer of 75 ℏ exceeds per-TX limit of 50 ℏ. Agent cannot proceed.',txIds:[],timestamp:new Date(Date.now()-10800000).toISOString()},
+    {action:'HBAR_TRANSFER',policyCheck:{verdict:'deny',rule:'unauthorized_recipient'},summary:'❌ Blocked: Recipient 0.0.99999 is not on the approved allowlist.',txIds:[],timestamp:new Date(Date.now()-9000000).toISOString()},
+    {action:'HBAR_TRANSFER',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'⚠️ Transfer of 40 ℏ requires human approval (threshold: 25 ℏ). Waiting for operator.',txIds:[],timestamp:new Date(Date.now()-7200000).toISOString()},
+    {action:'DISTRIBUTE_TO_HOLDERS',policyCheck:{verdict:'pass'},summary:'✅ Rent distribution: 45 ℏ split to 3 holders — Alice: 20.25 ℏ, Bob: 15.75 ℏ, Charlie: 9.00 ℏ',txIds:['0.0.7420047@1710864901.987654321'],timestamp:new Date(Date.now()-5400000).toISOString()},
+    {action:'GET_BALANCE',policyCheck:{verdict:'pass'},summary:'✅ Balance check: 932.38 ℏ available.',txIds:[],timestamp:new Date(Date.now()-3600000).toISOString()},
+    {action:'HBAR_TRANSFER',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'⚠️ Transfer of 35 ℏ to 0.0.55443 requires human approval (threshold: 25 ℏ). Pending.',txIds:[],timestamp:new Date(Date.now()-90000).toISOString()},
   ]}
 };
 
@@ -1083,8 +1190,8 @@ function initChart(){
   g.addColorStop(0,'rgba(99,91,255,.15)');g.addColorStop(1,'rgba(99,91,255,.01)');
   chartInst=new Chart(ctx,{
     type:'line',
-    data:{labels:['11:30','11:35','11:40','11:45','11:50','11:55','12:00','12:05'],
-      datasets:[{label:'TX Volume (ℏ)',data:[0,5,5,15,15,25,25,42.35],
+    data:{labels:['10:00','10:30','11:00','11:30','12:00','12:30','13:00','Now'],
+      datasets:[{label:'TX Volume (ℏ)',data:[0,0,75,40,45,45,35,932],
         borderColor:'#635BFF',backgroundColor:g,borderWidth:2.5,fill:true,tension:.4,
         pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#635BFF',
         pointBorderColor:'var(--bg-card)',pointBorderWidth:2,pointHoverBorderColor:'#fff'}]},
@@ -1434,6 +1541,33 @@ async function quickCheckBalance(){
   await refresh();
   const bal=document.getElementById('balHbar').textContent;
   showToast(`Balance: ${bal} ℏ`,'success',3000);
+}
+
+/* ═══════════════════════════════════════════════
+   GUIDED DEMO STEPS
+   ═══════════════════════════════════════════════ */
+function demoStep1(){
+  // Step 1: Open policy tester pre-filled with a too-high amount that triggers DENY
+  openModal('policy');
+  document.getElementById('polAction').value='HBAR_TRANSFER';
+  document.getElementById('polAmt').value='75';
+  document.getElementById('polRecip').value='0.0.99999';
+  showToast('Step 1: Click "Check Policy" to see it get blocked!','info',5000);
+}
+function demoStep2(){
+  // Step 2: Open transfer modal pre-filled with amount above approval threshold
+  openModal('transfer');
+  document.getElementById('txTo').value='0.0.55443';
+  document.getElementById('txAmt').value='35';
+  document.getElementById('txMemo').value='Office rent — March 2026';
+  showToast('Step 2: Click "Check Policy" — this needs human approval!','warn',5000);
+}
+function demoStep3(){
+  // Step 3: Open distribute modal pre-filled
+  openModal('distribute');
+  document.getElementById('distAmt').value='15';
+  document.getElementById('distProp').value='March Rent — 123 Main St';
+  showToast('Step 3: Click "Distribute" to split payments on-chain!','success',5000);
 }
 </script>
 </body>
