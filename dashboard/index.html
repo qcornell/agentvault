@@ -807,6 +807,16 @@ select.finput{font-family:var(--sans);appearance:none;
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Proof, not promises: every trade is checked before funds move and recorded immutably on-chain.
       </div>
+      <div style="margin-top:4px;margin-bottom:24px;display:flex;gap:14px;flex-wrap:wrap">
+        <a href="/strategy-builder.html" class="btn btn-primary" style="background:linear-gradient(135deg,#f6a623,#9b8aff);color:#fff;border-radius:14px;box-shadow:none;display:inline-flex;align-items:center;gap:10px;font-weight:700;padding:14px 32px;text-decoration:none;font-size:1rem;transition:background 0.24s cubic-bezier(.4,0,.2,1), color 0.24s cubic-bezier(.4,0,.2,1);">
+          <svg width="20" height="20" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-3px"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.42 1.42"/><path d="M17.66 17.66l1.42 1.42"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.42-1.42"/><path d="M17.66 6.34l1.42-1.42"/></svg>
+          Build Your First Strategy
+        </a>
+        <a href="https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865" target="_blank" class="btn btn-ghost" style="background:transparent;color:#fff;border-radius:14px;box-shadow:none;display:inline-flex;align-items:center;gap:10px;font-weight:600;padding:14px 24px;text-decoration:none;font-size:.98rem;border:1px solid var(--border);transition:background 0.24s cubic-bezier(.4,0,.2,1), color 0.24s cubic-bezier(.4,0,.2,1);">
+          <svg width="20" height="20" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-3px"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Mainnet Proof
+        </a>
+      </div>
       <div class="demo-label">🏆 Mainnet Proof</div>
       <div class="demo-steps" style="margin-bottom:18px">
         <div class="demo-step step-green" onclick="window.open('https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865','_blank')">
@@ -828,28 +838,28 @@ select.finput{font-family:var(--sans);appearance:none;
           <div class="demo-step-cta">See Safety Rules <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
         </div>
       </div>
-      <div class="demo-label">🧪 Testnet Policy Demo (below)</div>
+      <div class="demo-label">🚀 How It Works</div>
       <div class="demo-steps">
-        <div class="demo-step step-red" onclick="demoStep1()" id="policyDemoStart">
+        <div class="demo-step step-green" onclick="window.location.href='/strategy-builder.html'">
           <div class="demo-step-num">1</div>
           <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">❌ See a Blocked Transfer</div>
-          <div class="demo-step-desc">Try sending 75 ℏ — the policy engine blocks it instantly.</div>
-          <div class="demo-step-cta">Try it <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <div class="demo-step-title">🧠 Pick a Strategy</div>
+          <div class="demo-step-desc">Choose from templates like DCA, Buy the Dip, or Take Profits — or build your own.</div>
+          <div class="demo-step-cta">Open Strategy Builder <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
         </div>
-        <div class="demo-step step-amber" onclick="demoStep2()">
+        <div class="demo-step step-amber" onclick="demoStep1()">
           <div class="demo-step-num">2</div>
           <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">⚠️ Trigger an Approval</div>
-          <div class="demo-step-desc">A 35 ℏ transfer needs human sign-off before proceeding.</div>
+          <div class="demo-step-title">🛡️ See Safety in Action</div>
+          <div class="demo-step-desc">Try a dangerous trade — watch the policy engine block it before any money moves.</div>
           <div class="demo-step-cta">Try it <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
         </div>
-        <div class="demo-step step-green" onclick="demoStep3()">
+        <div class="demo-step step-green" onclick="window.open('https://hashscan.io/mainnet/topic/0.0.10384249','_blank')">
           <div class="demo-step-num">3</div>
           <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">✅ Run a Distribution</div>
-          <div class="demo-step-desc">Split 15 ℏ rent across 3 holders — executed on-chain.</div>
-          <div class="demo-step-cta">Try it <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+          <div class="demo-step-title">📜 Verify Everything On-Chain</div>
+          <div class="demo-step-desc">Every trade, every policy check, every approval — logged immutably on Hedera.</div>
+          <div class="demo-step-cta">View Audit Trail <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
         </div>
       </div>
     </div>
