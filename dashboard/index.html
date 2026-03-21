@@ -691,6 +691,12 @@ select.finput{font-family:var(--sans);appearance:none;
   .toast{max-width:100%}
 }
 </style>
+<script>
+  function scrollToElement(id){
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
 </head>
 <body>
 
@@ -785,19 +791,40 @@ select.finput{font-family:var(--sans);appearance:none;
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="hero-top">
-        <span class="hero-badge">⚡ Live on Hedera Testnet</span>
-        <h2>Agent<span>Vault</span> — Secure AI Money on Hedera</h2>
+        <span class="hero-badge">⚡ Live Hedera Mainnet Trade</span>
+        <h2>Trade on Hedera with <span>AI Safety Rails</span></h2>
       </div>
       <div class="hero-subtitle">
-        AgentVault is a programmable vault for AI agents. Set spending rules, require human approvals for large transactions, and log every action on-chain via Hedera Consensus Service. <strong style="color:rgba(255,255,255,.9)">Everything below is real</strong> — every transaction hits Hedera testnet and is verifiable on HashScan.
+        AgentVault just executed a **real SaucerSwap V2 trade on Hedera mainnet** with safety rails: the AI built the swap, the policy engine checked it, and only then did the transaction execute and get logged to Hedera Consensus Service.
       </div>
       <div class="hero-killer">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        This prevents AI from sending money to the wrong place, overspending, or acting without approval.
+        Proof, not promises: every trade is checked before funds move and recorded immutably on-chain.
       </div>
-      <div class="demo-label">👋 Try it — every action runs on real Hedera testnet</div>
+      <div class="demo-label">🏆 Mainnet Proof</div>
+      <div class="demo-steps" style="margin-bottom:18px">
+        <div class="demo-step step-green" onclick="window.open('https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865','_blank')">
+          <div class="demo-step-num">TX</div>
+          <div class="demo-step-title">Live Swap: 0.5 HBAR → 2.10 SAUCE</div>
+          <div class="demo-step-desc">Executed on SaucerSwap V2 via AgentVault safety rails. Click to view the transaction on HashScan.</div>
+          <div class="demo-step-cta">View Transaction <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+        </div>
+        <div class="demo-step step-amber" onclick="window.open('https://hashscan.io/mainnet/topic/0.0.10384249','_blank')">
+          <div class="demo-step-num">HCS</div>
+          <div class="demo-step-title">On-Chain Audit Trail</div>
+          <div class="demo-step-desc">Every action in the demo — including the live swap — is logged to this Hedera Consensus Service topic.</div>
+          <div class="demo-step-cta">View Audit Trail <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+        </div>
+        <div class="demo-step step-red" onclick="scrollToElement('policySection')">
+          <div class="demo-step-num">WHY</div>
+          <div class="demo-step-title">Why It’s Safer</div>
+          <div class="demo-step-desc">AI can’t overspend or send to the wrong place: per-TX limits, daily caps, and approvals are enforced before every trade.</div>
+          <div class="demo-step-cta">See Safety Rules <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
+        </div>
+      </div>
+      <div class="demo-label">🧪 Testnet Policy Demo (below)</div>
       <div class="demo-steps">
-        <div class="demo-step step-red" onclick="demoStep1()">
+        <div class="demo-step step-red" onclick="demoStep1()" id="policyDemoStart">
           <div class="demo-step-num">1</div>
           <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
           <div class="demo-step-title">❌ See a Blocked Transfer</div>
