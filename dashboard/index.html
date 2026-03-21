@@ -702,7 +702,7 @@ select.finput{font-family:var(--sans);appearance:none;
 
 <div class="init" id="initOverlay">
   <div class="init-spin"></div>
-  <div class="init-text">Connecting to Hedera Testnet…</div>
+  <div class="init-text">Connecting to Hedera Mainnet…</div>
 </div>
 
 <!-- Sidebar Overlay -->
@@ -756,11 +756,17 @@ select.finput{font-family:var(--sans);appearance:none;
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
       <span>Distribute</span>
     </a>
+    <div class="nav-section">Trading</div>
+    <a class="nav-item" onclick="window.open('/strategy-builder.html','_blank')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Strategy Builder</span>
+      <span class="nav-badge" style="background:var(--green);font-size:.6rem">NEW</span>
+    </a>
   </nav>
   <div class="sidebar-footer">
     <div class="net-badge">
       <span class="net-dot live"></span>
-      <span>Hedera Testnet — Live</span>
+      <span>Hedera Mainnet — Live</span>
     </div>
     <div class="powered">Powered by <a href="https://www.npmjs.com/package/dappily-agent-kit" target="_blank">Hedera Agent Kit</a></div>
   </div>

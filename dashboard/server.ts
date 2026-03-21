@@ -39,6 +39,7 @@ const policy: AgentPolicy = {
     "DISTRIBUTE_TO_HOLDERS",
     "GET_BALANCE",
     "GET_AUDIT_LOG",
+    "SWAP",
   ],
   allowedRecipients: [OPERATOR_ID],
   approvalMethod: "web",
@@ -210,10 +211,162 @@ const server = http.createServer(async (req, res) => {
     return json(res, { ok: true, data: { policyCheck: check } });
   }
 
+  // ── Strategy Endpoints ──────────────────────────────────────
+
+  // POST /api/strategy/test — validate a strategy against the policy engine
+  if (pathname === "/api/strategy/test" && req.method === "POST") {
+    if (!vault) return json(res, { ok: false, error: "Vault not initialized" }, 503);
+    const body = await parseBody(req);
+    const blocks = body.blocks || [];
+    const guardrails = body.guardrails || {};
+    const steps: any[] = [];
+
+    // 1. Validate structure
+    const conditions = blocks.filter((b: any) => b.type === "condition");
+    const actions = blocks.filter((b: any) => b.type === "action");
+    steps.push({
+      icon: blocks.length > 0 ? "pass" : "fail",
+      label: "Strategy structure",
+      detail: blocks.length > 0 ? `${conditions.length} condition(s), ${actions.length} action(s)` : "No blocks defined",
+    });
+
+    // 2. Check guardrails against vault policy
+    const maxTrade = Number(guardrails.maxPerTrade) || 0;
+    const policyPerTx = vault.policy.perTxLimitHbar;
+    steps.push({
+      icon: maxTrade <= policyPerTx ? "pass" : "warn",
+      label: "Per-trade limit check",
+      detail: maxTrade <= policyPerTx
+        ? `Max per-trade (${maxTrade} ℏ) within vault limit (${policyPerTx} ℏ)`
+        : `Max per-trade (${maxTrade} ℏ) exceeds vault limit (${policyPerTx} ℏ) — trades above ${policyPerTx} ℏ will be denied`,
+    });
+
+    const maxDaily = Number(guardrails.maxDailySpend) || 0;
+    const policyDaily = vault.policy.dailySpendLimitHbar;
+    steps.push({
+      icon: maxDaily <= policyDaily ? "pass" : "warn",
+      label: "Daily spend limit check",
+      detail: maxDaily <= policyDaily
+        ? `Max daily (${maxDaily} ℏ) within vault limit (${policyDaily} ℏ)`
+        : `Max daily (${maxDaily} ℏ) exceeds vault limit (${policyDaily} ℏ) — will be capped`,
+    });
+
+    // 3. Check if SWAP is allowed
+    const swapAllowed = vault.policy.allowedActions.includes("SWAP");
+    const hasSwapBlock = actions.some((a: any) => ["swap-tokens", "dca-buy", "take-profit", "stop-loss", "limit-order"].includes(a.block));
+    if (hasSwapBlock) {
+      steps.push({
+        icon: swapAllowed ? "pass" : "fail",
+        label: "Swap action authorized",
+        detail: swapAllowed ? "SWAP is in the vault's allowed actions" : "SWAP is NOT in the vault's allowed actions — trades will be denied",
+      });
+    }
+
+    // 4. Risk controls
+    const hasRisk = blocks.some((b: any) => b.block === "stop-loss" || b.block === "take-profit");
+    steps.push({
+      icon: hasRisk ? "pass" : "warn",
+      label: "Risk controls",
+      detail: hasRisk ? "Stop-loss or take-profit detected" : "Consider adding stop-loss or take-profit for downside protection",
+    });
+
+    // 5. Approval threshold
+    const approvalThreshold = Number(guardrails.approvalThreshold) || vault.policy.approvalRequiredAboveHbar;
+    steps.push({
+      icon: "pass",
+      label: "Human approval threshold",
+      detail: `Trades above ${approvalThreshold} ℏ will require human approval on the dashboard`,
+    });
+
+    // 6. Token allowlist
+    const tokens = body.allowedTokens || [];
+    steps.push({
+      icon: tokens.length > 0 ? "pass" : "warn",
+      label: "Token allowlist",
+      detail: tokens.length > 0 ? `Tokens: ${tokens.join(", ")}` : "No tokens specified — strategy may not execute",
+    });
+
+    // 7. Simulate a policy check for a typical trade
+    const testAmount = Math.min(maxTrade || 1, 1);
+    const simCheck = vault.checkPolicy("SWAP", testAmount, "self");
+    steps.push({
+      icon: simCheck.verdict === "PASS" ? "pass" : simCheck.verdict === "APPROVAL_REQUIRED" ? "warn" : "fail",
+      label: `Simulated trade (${testAmount} ℏ SWAP)`,
+      detail: `Policy verdict: ${simCheck.verdict} — ${simCheck.reason}`,
+    });
+
+    return json(res, {
+      ok: true,
+      steps,
+      summary: {
+        totalBlocks: blocks.length,
+        conditions: conditions.length,
+        actions: actions.length,
+        policyCompatible: steps.every((s: any) => s.icon !== "fail"),
+      },
+    });
+  }
+
+  // POST /api/strategy/deploy — deploy a strategy (execute its first swap action)
+  if (pathname === "/api/strategy/deploy" && req.method === "POST") {
+    if (!vault) return json(res, { ok: false, error: "Vault not initialized" }, 503);
+    const body = await parseBody(req);
+    const strategyName = body.name || "Untitled Strategy";
+    const blocks = body.blocks || [];
+    const guardrails = body.guardrails || {};
+
+    // Find the first actionable swap block
+    const swapBlock = blocks.find((b: any) =>
+      b.type === "action" && ["swap-tokens", "dca-buy", "limit-order"].includes(b.block)
+    );
+
+    if (!swapBlock) {
+      return json(res, {
+        ok: false,
+        error: "No executable swap action found in strategy",
+        detail: "Add a Swap Tokens, DCA Buy, or Limit Order block",
+      });
+    }
+
+    // Determine swap parameters from strategy config
+    const amountHbar = Math.min(
+      Number(body.swapAmount) || 0.5,
+      Number(guardrails.maxPerTrade) || vault.policy.perTxLimitHbar
+    );
+    const toToken = body.toToken || "SAUCE";
+
+    // Execute via the vault's swap pipeline (policy → approval → execute → HCS log)
+    try {
+      const result = await vault.swap({
+        toToken,
+        amountHbar,
+        feeTier: "0.30%",
+      });
+      return json(res, {
+        ...result,
+        strategyName,
+        swapBlock: swapBlock.block,
+        note: result.ok
+          ? `Strategy "${strategyName}" executed: swapped ${amountHbar} HBAR → ${toToken}`
+          : `Strategy "${strategyName}" failed: ${(result as any).error}`,
+      });
+    } catch (err) {
+      return json(res, {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+        strategyName,
+      }, 500);
+    }
+  }
+
   // ── Static Files ────────────────────────────────────────────
 
   if (pathname === "/" || pathname === "/index.html") {
     return serveFile(res, path.join(__dirname, "index.html"), "text/html");
+  }
+
+  if (pathname === "/strategy-builder.html" || pathname === "/strategy-builder") {
+    return serveFile(res, path.join(__dirname, "strategy-builder.html"), "text/html");
   }
 
   // Fallback
