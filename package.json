@@ -10,7 +10,14 @@
     "demo:identity": "npx ts-node examples/mint-identity.ts",
     "demo:policy": "npx ts-node examples/policy-demo.ts",
     "demo:distribution": "npx ts-node examples/distribution-demo.ts",
-    "dashboard": "npx ts-node dashboard/server.ts"
+    "demo:trading": "npx ts-node examples/trading-demo.ts",
+    "trade": "npx ts-node examples/live-trading-test.ts",
+    "trade:testnet": "NETWORK=testnet npx ts-node examples/live-trading-test.ts",
+    "trade:mainnet": "NETWORK=mainnet npx ts-node examples/live-trading-test.ts",
+    "test:balance": "npx ts-node check-balance.ts",
+    "test:safe": "npx ts-node test-mainnet-safe.ts",
+    "dashboard": "npx ts-node dashboard/server.ts",
+    "strategy-builder": "open dashboard/strategy-builder.html"
   },
   "keywords": [
     "hedera",
@@ -26,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@hashgraph/sdk": "^2.58.0",
+    "ethers": "^5.7.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {

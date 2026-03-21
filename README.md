@@ -218,6 +218,34 @@ This is a hackathon build. Some simplifications were made intentionally:
 
 The architecture is designed for this evolution — every component (identity, policy, audit, approval) is a separate module with clean interfaces.
 
+## 🚀 Next Evolution: Trading & Strategy Marketplace
+
+AgentVault isn't just safety rails — it's becoming an **AI Financial Operating System**.
+
+### Phase 1: Trading Bot (In Progress)
+- **SaucerSwap Integration** - Native DEX trading on Hedera
+- **Strategy Builder** - Drag-and-drop, no code required
+- **Pre-built Templates** - DCA, Buy the Dip, Take Profits
+- **Safety First** - All trades go through the policy engine
+
+Try the Strategy Builder: Open `dashboard/strategy-builder.html`
+
+### Phase 2: Strategy Marketplace (Coming Soon)
+- **Create & Share** - Build strategies, publish to marketplace
+- **Earn Revenue** - Strategy creators get 70% of subscription fees
+- **Performance Tracking** - Real ROI, win rate, drawdown visible
+- **Community-Driven** - The best strategies rise to the top
+
+### Phase 3: Full AI Financial OS
+- Trading bots
+- Bill payments
+- Payroll automation
+- DAO treasury management
+- Yield farming
+- Arbitrage
+
+**The Vision:** Shopify for DeFi. Where anyone can build, share, and run financial automations — safely.
+
 ## License
 
 MIT

@@ -9,6 +9,7 @@ import { evaluatePolicy, recordSpending, formatPolicyResult } from "./policy";
 import { createAuditTopic, logToHCS, buildAuditEntry, getLocalLogs, HCSLoggerConfig } from "./audit";
 import { createApprovalRequest, waitForApproval } from "./approval";
 import { distributeToHolders, Holder } from "./actions";
+import { executeHbarSwap, SwapParams, SwapResult } from "./actions/live-swap";
 
 export interface VaultConfig {
   operatorId: string;
@@ -249,6 +250,158 @@ export class AgentVault {
     return this.distribute(amount, [
       { accountId: to, name: "recipient", ownershipPercent: 100 },
     ], memo || "Direct transfer");
+  }
+
+  /** Execute a swap with full policy + approval + HCS audit pipeline */
+  async swap(params: SwapParams): Promise<VaultResult> {
+    if (!this.hcsConfig) {
+      return { ok: false, error: "Vault not initialized", code: "NOT_INITIALIZED" };
+    }
+
+    const action = "SWAP";
+    const amount = params.amountHbar;
+
+    // 1. Policy check
+    const policyCheck = evaluatePolicy(this.policy, action, amount, "self");
+
+    // Log the policy check
+    const checkEntry = buildAuditEntry(
+      this.config.agentId,
+      "POLICY_CHECK",
+      `Policy check for SWAP ${amount} HBAR → ${params.toToken}: ${policyCheck.verdict}`,
+      policyCheck,
+      [],
+      { amountHbar: amount, toToken: params.toToken, feeTier: params.feeTier || "0.30%" },
+      {}
+    );
+    await logToHCS(this.hcsConfig, checkEntry);
+
+    // 2. Handle DENY
+    if (policyCheck.verdict === "DENY") {
+      return {
+        ok: false,
+        error: `Policy DENIED: ${policyCheck.reason}`,
+        code: "POLICY_DENIED",
+        details: JSON.stringify(policyCheck),
+      };
+    }
+
+    // 3. Handle APPROVAL_REQUIRED
+    if (policyCheck.verdict === "APPROVAL_REQUIRED") {
+      const approvalReq = createApprovalRequest(
+        this.config.agentId,
+        action,
+        amount,
+        "self",
+        `Swap ${amount} HBAR → ${params.toToken} on SaucerSwap V2`,
+        policyCheck
+      );
+
+      // Log approval request to HCS
+      const reqEntry = buildAuditEntry(
+        this.config.agentId,
+        "APPROVAL_REQUESTED",
+        `Approval requested: swap ${amount} HBAR → ${params.toToken}`,
+        policyCheck,
+        [],
+        { approvalId: approvalReq.id, amountHbar: amount, toToken: params.toToken },
+        {}
+      );
+      await logToHCS(this.hcsConfig, reqEntry);
+
+      // Wait for human (5 min timeout)
+      const approved = await waitForApproval(approvalReq.id, 300000);
+
+      if (!approved) {
+        const denyEntry = buildAuditEntry(
+          this.config.agentId,
+          "APPROVAL_DENIED",
+          `Swap of ${amount} HBAR → ${params.toToken} was denied or timed out`,
+          { ...policyCheck, verdict: "DENY" as const, rule: "HUMAN_DENIED" },
+          [],
+          { approvalId: approvalReq.id },
+          {}
+        );
+        await logToHCS(this.hcsConfig, denyEntry);
+        return {
+          ok: false,
+          error: "Swap denied by human operator",
+          code: "APPROVAL_DENIED",
+          details: JSON.stringify({ approvalId: approvalReq.id }),
+        };
+      }
+
+      // Approved!
+      const approveEntry = buildAuditEntry(
+        this.config.agentId,
+        "APPROVAL_GRANTED",
+        `Human approved swap of ${amount} HBAR → ${params.toToken}`,
+        { ...policyCheck, verdict: "PASS" as const, rule: "HUMAN_APPROVED" },
+        [],
+        { approvalId: approvalReq.id },
+        {}
+      );
+      await logToHCS(this.hcsConfig, approveEntry);
+    }
+
+    // 4. Execute the swap
+    const swapResult = await executeHbarSwap(this.client, params);
+
+    // 5. Record spending & log result to HCS
+    if (swapResult.ok) {
+      recordSpending(this.config.agentId, amount);
+
+      const successEntry = buildAuditEntry(
+        this.config.agentId,
+        "SWAP_EXECUTED",
+        `Swapped ${amount} HBAR → ${swapResult.amountOut} ${swapResult.tokenSymbol} on SaucerSwap V2`,
+        { ...policyCheck, verdict: "PASS" as const },
+        swapResult.txId ? [swapResult.txId] : [],
+        { amountHbar: amount, toToken: params.toToken },
+        {
+          txId: swapResult.txId,
+          amountOut: swapResult.amountOut,
+          tokenId: swapResult.tokenId,
+          hashScanUrl: swapResult.hashScanUrl,
+          gasUsed: swapResult.gasUsed,
+        }
+      );
+      await logToHCS(this.hcsConfig, successEntry);
+
+      const network = this.config.network;
+      return {
+        ok: true,
+        summary: `✅ Swapped ${amount} HBAR → ${swapResult.amountOut} ${swapResult.tokenSymbol}\n   TX: ${swapResult.txId}\n   HashScan: ${swapResult.hashScanUrl}`,
+        txId: swapResult.txId,
+        data: {
+          amountInHbar: amount,
+          amountOut: swapResult.amountOut,
+          tokenSymbol: swapResult.tokenSymbol,
+          tokenId: swapResult.tokenId,
+          txId: swapResult.txId,
+          hashScanUrl: swapResult.hashScanUrl,
+          gasUsed: swapResult.gasUsed,
+        },
+      };
+    } else {
+      const failEntry = buildAuditEntry(
+        this.config.agentId,
+        "SWAP_FAILED",
+        `Swap of ${amount} HBAR → ${params.toToken} failed: ${swapResult.error}`,
+        policyCheck,
+        [],
+        { amountHbar: amount, toToken: params.toToken },
+        { error: swapResult.error }
+      );
+      await logToHCS(this.hcsConfig, failEntry);
+
+      return {
+        ok: false,
+        error: `Swap failed: ${swapResult.error}`,
+        code: "SWAP_FAILED",
+        details: JSON.stringify(swapResult),
+      };
+    }
   }
 
   /** Get audit log */
