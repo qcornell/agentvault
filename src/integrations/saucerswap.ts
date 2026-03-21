@@ -1,10 +1,10 @@
 /**
  * SaucerSwap V2 Integration for AgentVault
  * REAL MAINNET INTEGRATION - No mocks!
- * 
+ *
  * Contract addresses from official docs:
  * - V2 Factory: 0.0.3946833
- * - V2 SwapRouter: 0.0.3949434  
+ * - V2 SwapRouter: 0.0.3949434
  * - V2 QuoterV2: 0.0.3949424
  * - WHBAR: 0.0.1456985 (Token: 0.0.1456986)
  */
@@ -37,7 +37,8 @@ export const SAUCERSWAP_CONTRACTS = {
     swapRouter: "0.0.1414040",
     quoter: "0.0.1390002",
     whbar: "0.0.15057",
-    whbarToken: "0.0.15058"
+    whbarToken: "0.0.15058",
+    routerWithFee: "0.0.1414040"
   }
 };
 
@@ -56,7 +57,12 @@ export const POPULAR_TOKENS = {
   testnet: {
     HBAR: "NATIVE",
     WHBAR: "0.0.15058",
-    SAUCE: "0.0.1183558"
+    SAUCE: "0.0.1183558",
+    USDC: "",
+    KARATE: "",
+    HST: "",
+    DOVU: "",
+    GRELF: ""
   }
 };
 
@@ -131,19 +137,14 @@ export class SaucerSwapV2 {
       const contractQuery = new ContractCallQuery()
         .setContractId(ContractId.fromString(this.contracts.quoter))
         .setGas(100000)
-        .setFunctionWithString(functionName,
-          actualTokenIn,
-          actualTokenOut,
-          fee.toString(),
-          amountIn.toString(),
-          "0" // sqrtPriceLimitX96
-        );
+        .setFunction(functionName);
+
 
       const result = await contractQuery.execute(this.client);
-      
+
       // Decode the result
       const decoded = this.decodeQuoteResult(result.bytes);
-      
+
       return decoded;
     } catch (error: any) {
       console.error("Quote error:", error);
@@ -170,13 +171,13 @@ export class SaucerSwapV2 {
       // Handle HBAR wrapping if needed
       let tokenIn = params.tokenIn;
       let tokenOut = params.tokenOut;
-      
+
       // If swapping from HBAR, first wrap it
       if (params.tokenIn === 'HBAR') {
         await this.wrapHbar(params.amountIn);
         tokenIn = this.tokens.WHBAR;
       }
-      
+
       // If swapping to HBAR, we'll unwrap after
       const needsUnwrap = params.tokenOut === 'HBAR';
       if (needsUnwrap) {
@@ -193,16 +194,8 @@ export class SaucerSwapV2 {
       const swapTx = new ContractExecuteTransaction()
         .setContractId(ContractId.fromString(this.contracts.swapRouter))
         .setGas(300000)
-        .setFunctionWithString("exactInputSingle", 
-          tokenIn,
-          tokenOut,
-          (params.fee || FEE_TIERS.MEDIUM).toString(),
-          params.recipient,
-          params.deadline.toString(),
-          params.amountIn.toString(),
-          params.amountOutMinimum.toString(),
-          "0" // sqrtPriceLimitX96
-        );
+        .setFunction("exactInputSingle");
+
 
       // Execute the swap
       const txResponse = await swapTx.execute(this.client);
@@ -247,7 +240,7 @@ export class SaucerSwapV2 {
     const unwrapTx = new ContractExecuteTransaction()
       .setContractId(ContractId.fromString(this.contracts.whbar))
       .setGas(50000)
-      .setFunctionWithString("withdraw", amount.toString());
+      .setFunction("withdraw");
 
     await unwrapTx.execute(this.client);
   }
@@ -286,7 +279,7 @@ export class SaucerSwapV2 {
   }> {
     // For V1, check direct path first
     const directQuote = await this.getQuote(tokenIn, tokenOut, amountIn);
-    
+
     // Check if going through WHBAR is better
     let throughWhbarOutput = 0;
     if (tokenIn !== 'HBAR' && tokenOut !== 'HBAR') {
@@ -328,11 +321,11 @@ export class SaucerSwapV2 {
   private encodeQuoteParams(params: any): Uint8Array {
     // Import ABI encoder functions
     const { encodeAddress, encodeUint256 } = require('./abi-encoder');
-    
+
     // Build the encoded params for quoteExactInputSingle
     const encoded = new Uint8Array(256);
     let offset = 0;
-    
+
     // Encode each parameter
     encoded.set(encodeAddress(params.tokenIn), offset);
     offset += 32;
@@ -343,7 +336,7 @@ export class SaucerSwapV2 {
     encoded.set(encodeUint256(params.amountIn), offset);
     offset += 32;
     encoded.set(encodeUint256(params.sqrtPriceLimitX96), offset);
-    
+
     return encoded;
   }
 
@@ -388,13 +381,13 @@ export async function executeSwap(
 }> {
   try {
     const saucer = new SaucerSwapV2(client, network);
-    
+
     // Get the best path
     const pathResult = await saucer.findBestPath(fromToken, toToken, amountIn);
-    
+
     // Calculate minimum output with slippage
     const amountOutMinimum = pathResult.expectedOutput * (1 - slippageTolerance / 100);
-    
+
     // Execute the swap
     const swapResult = await saucer.swap({
       tokenIn: fromToken,
@@ -424,4 +417,3 @@ export async function executeSwap(
       error: `Swap execution failed: ${error.message}`
     };
   }
-}
