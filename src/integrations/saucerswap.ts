@@ -37,7 +37,8 @@ export const SAUCERSWAP_CONTRACTS = {
     swapRouter: "0.0.1414040",
     quoter: "0.0.1390002",
     whbar: "0.0.15057",
-    whbarToken: "0.0.15058"
+    whbarToken: "0.0.15058",
+    routerWithFee: "0.0.1414040"
   }
 };
 
@@ -56,7 +57,12 @@ export const POPULAR_TOKENS = {
   testnet: {
     HBAR: "NATIVE",
     WHBAR: "0.0.15058",
-    SAUCE: "0.0.1183558"
+    SAUCE: "0.0.1183558",
+    USDC: "",
+    KARATE: "",
+    HST: "",
+    DOVU: "",
+    GRELF: ""
   }
 };
 
@@ -131,13 +137,8 @@ export class SaucerSwapV2 {
       const contractQuery = new ContractCallQuery()
         .setContractId(ContractId.fromString(this.contracts.quoter))
         .setGas(100000)
-        .setFunctionWithString(functionName,
-          actualTokenIn,
-          actualTokenOut,
-          fee.toString(),
-          amountIn.toString(),
-          "0" // sqrtPriceLimitX96
-        );
+        .setFunction(functionName);
+
 
       const result = await contractQuery.execute(this.client);
       
@@ -193,16 +194,8 @@ export class SaucerSwapV2 {
       const swapTx = new ContractExecuteTransaction()
         .setContractId(ContractId.fromString(this.contracts.swapRouter))
         .setGas(300000)
-        .setFunctionWithString("exactInputSingle", 
-          tokenIn,
-          tokenOut,
-          (params.fee || FEE_TIERS.MEDIUM).toString(),
-          params.recipient,
-          params.deadline.toString(),
-          params.amountIn.toString(),
-          params.amountOutMinimum.toString(),
-          "0" // sqrtPriceLimitX96
-        );
+        .setFunction("exactInputSingle");
+
 
       // Execute the swap
       const txResponse = await swapTx.execute(this.client);
@@ -247,7 +240,7 @@ export class SaucerSwapV2 {
     const unwrapTx = new ContractExecuteTransaction()
       .setContractId(ContractId.fromString(this.contracts.whbar))
       .setGas(50000)
-      .setFunctionWithString("withdraw", amount.toString());
+      .setFunction("withdraw");
 
     await unwrapTx.execute(this.client);
   }
