@@ -331,10 +331,3 @@ export const STRATEGY_TEMPLATES: Record<string, TradingStrategy> = {
   }
 };
 
-// Export everything
-export {
-  TradingCondition,
-  TradingAction,
-  TradingStrategy,
-  PriceQuote
-};
