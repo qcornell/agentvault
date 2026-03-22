@@ -658,7 +658,7 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
       <span class="logo-text">Agent<span>Vault</span></span>
     </a>
     <nav class="header-nav">
-      <a href="index.html">← Dashboard</a>
+      <a href="index.html">← Back to Swap</a>
       <a href="strategy-builder.html" class="active">Strategy Builder</a>
       <span class="header-badge" style="background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(16,185,129,.05));color:#10b981;border-color:rgba(16,185,129,.25)">Mainnet</span>
     </nav>
@@ -685,6 +685,10 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
     Visual Strategy Builder for AI-Driven Trading
   </h1>
   <p class="page-subtitle fade-up">Design strategies as blocks instead of code. Choose a template, set hard guardrails, test against the policy engine, then deploy to trade on Hedera.</p>
+  <div class="fade-up" style="padding:10px 16px;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.18);border-radius:10px;margin-bottom:16px;font-size:.82rem;color:var(--text-muted);display:flex;align-items:center;gap:8px">
+    <svg fill="none" stroke="#14b8a6" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Strategies execute through AgentVault's <strong style="color:var(--text)">same policy engine</strong> protecting the Swap page — per-TX limits, daily caps, and approval thresholds all apply.
+  </div>
 
   <!-- ── QUICK START TEMPLATES ── -->
   <div class="card fade-up" style="margin-bottom:24px">
@@ -1541,6 +1545,17 @@ async function deployStrategy(){
             <div class="test-detail">${data.data.amountOut} ${esc(data.data.tokenSymbol || 'tokens')} (smallest unit)</div>
           </div>
         </div>` : ''}
+      `;
+        <div class="test-step" style="margin-top:12px">
+          <div class="test-dot pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div>
+            <div class="test-label">What's Next?</div>
+            <div class="test-detail">
+              <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:8px 16px;background:var(--primary);color:#000;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none">← Back to Swap</a>
+              <span style="font-size:.78rem;color:var(--text-dim);margin-left:8px">Your strategy executes through the same policy engine.</span>
+            </div>
+          </div>
+        </div>
       `;
       panel.classList.add('visible');
       panel.scrollIntoView({behavior:'smooth',block:'nearest'});

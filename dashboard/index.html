@@ -972,6 +972,11 @@ select.finput{font-family:var(--sans);appearance:none;
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Swap Now
           </button>
+          <!-- Strategy link -->
+          <a href="/strategy-builder.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);font-size:.82rem;font-weight:500;text-decoration:none;transition:all .15s" onmouseover="this.style.background='var(--bg-surface)';this.style.color='var(--teal-light)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-muted)'">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Advanced: Strategy Builder →
+          </a>
           <!-- Result -->
           <div id="swapResult" style="display:none;margin-top:16px;padding:16px;border-radius:var(--radius-sm)"></div>
         </div>
@@ -1962,6 +1967,11 @@ function gdRunStep(n){
     // All done?
     if(gdState.completed.length===3){
       document.getElementById('gdComplete').classList.add('show');
+      // Auto-navigate to swap after a short pause so judge sees it
+      setTimeout(()=>{
+        navigateTo('swap');
+        showToast('🎯 Demo complete! Try a live swap below','success',6000);
+      },2500);
     }
   },1500);
 }
