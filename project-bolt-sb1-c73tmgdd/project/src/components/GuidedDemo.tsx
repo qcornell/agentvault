@@ -40,7 +40,7 @@ const stepDefs: StepDef[] = [
     title: 'Step 3: Safe Execution',
     description: 'Execute a distribution within all safety limits',
     defaultAction: 'DISTRIBUTE_TO_HOLDERS',
-    defaultAmount: 15,
+    defaultAmount: 0.3,
     defaultRecipient: '3 holders (March Rent)',
   },
 ];

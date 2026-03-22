@@ -868,7 +868,7 @@ select.finput{font-family:var(--sans);appearance:none;
             <div class="gd-desc">Execute a distribution within all safety limits</div>
             <div class="gd-action-box">
               <div class="gd-action-label">Action</div>
-              <div class="gd-action-code">DISTRIBUTE - 15 ℏ to 3 holders (March Rent)</div>
+              <div class="gd-action-code">DISTRIBUTE - 0.3 ℏ to 3 holders (March Rent)</div>
             </div>
             <button class="gd-run-btn" id="gdBtn3" onclick="gdRunStep(3)">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -876,7 +876,7 @@ select.finput{font-family:var(--sans);appearance:none;
             </button>
             <div class="gd-result" id="gdResult3">
               <div class="gd-result-badge gd-rb-success">EXECUTED</div>
-              <div style="color:var(--text-secondary)">Distribution executed on Hedera testnet! 15 ℏ split to 3 holders. Transaction logged to HCS audit trail.</div>
+              <div style="color:var(--text-secondary)">Distribution executed on Hedera mainnet! 0.3 ℏ split to 3 holders. Transaction logged to HCS audit trail.</div>
             </div>
           </div>
         </div>
@@ -1848,7 +1848,7 @@ function demoStep2Real(){
 }
 function demoStep3Real(){
   openModal('distribute');
-  document.getElementById('distAmt').value='15';
+  document.getElementById('distAmt').value='0.3';
   document.getElementById('distProp').value='March Rent — 123 Main St';
   showToast('Step 3: Click "Distribute" — this executes a real Hedera testnet transaction!','success',6000);
 }
