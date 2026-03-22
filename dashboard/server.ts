@@ -44,7 +44,7 @@ const policy: AgentPolicy = {
     "GET_AUDIT_LOG",
     "SWAP",
   ],
-  allowedRecipients: [OPERATOR_ID],
+  allowedRecipients: [],  // Empty = allow any recipient (recipient filtering done at UI level)
   approvalMethod: "web",
 };
 
