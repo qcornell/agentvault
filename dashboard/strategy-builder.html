@@ -228,7 +228,35 @@ body{
 
 /* ── Builder Layout ── */
 .builder-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;margin-bottom:28px}
-@media(max-width:900px){.builder-layout{grid-template-columns:1fr}}
+.builder-layout.config-open{grid-template-columns:300px 1fr 300px}
+@media(max-width:1100px){.builder-layout.config-open{grid-template-columns:1fr 300px}}
+@media(max-width:900px){.builder-layout,.builder-layout.config-open{grid-template-columns:1fr}}
+
+/* ── Config Panel ── */
+.config-panel{display:none}
+.config-panel.open{display:block}
+.config-panel .card{position:sticky;top:100px}
+.config-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.config-panel-head h4{font-size:.92rem;font-weight:700;color:var(--text)}
+.config-panel-close{
+  width:28px;height:28px;border-radius:var(--radius-xs);border:none;
+  background:rgba(255,255,255,.04);color:var(--text-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.config-panel-close:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.config-panel-close svg{width:14px;height:14px}
+.config-block-type{
+  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:3px 10px;border-radius:12px;margin-bottom:12px;display:inline-block;
+}
+.config-block-type.condition{background:var(--teal-glow);color:var(--teal);border:1px solid var(--teal-border)}
+.config-block-type.action{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.config-policy-check{
+  margin-top:16px;padding:12px 16px;border-radius:var(--radius-xs);
+  font-size:.82rem;
+}
+.config-policy-check.ok{background:var(--green-glow);border:1px solid var(--green-border);color:var(--green)}
+.config-policy-check.warn{background:var(--amber-glow);border:1px solid var(--amber-border);color:var(--amber)}
 
 /* ── Block Items ── */
 .blocks-section{margin-bottom:20px}
@@ -586,11 +614,19 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
 .fade-up:nth-child(4){animation-delay:.24s}
 
 /* ── Mobile ── */
+@media(max-width:768px){
+  .header-inner{flex-wrap:wrap;height:auto;padding:12px 0;gap:6px}
+  .logo .logo-text{font-size:1.05rem}
+  .header-nav{width:100%;justify-content:flex-start;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .header-nav::-webkit-scrollbar{display:none}
+  .header-nav a{padding:6px 10px;font-size:.78rem;white-space:nowrap;flex-shrink:0}
+  .header-badge{padding:4px 10px;font-size:.62rem}
+}
 @media(max-width:640px){
-  .header{padding:0 20px}
-  .header-inner{height:64px}
-  .header-nav{gap:4px}
-  .header-nav a{padding:7px 12px;font-size:.85rem}
+  .header{padding:0 14px}
+  .header-inner{gap:4px}
+  .header-nav a{padding:5px 8px;font-size:.74rem}
+  .header-badge{font-size:.58rem;padding:3px 8px}
   .main{padding:24px 16px 80px}
   .page-title{font-size:1.5rem}
   .page-subtitle{font-size:.88rem}
@@ -619,9 +655,6 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
 <header class="header">
   <div class="header-inner">
     <a href="index.html" class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
-      </div>
       <span class="logo-text">Agent<span>Vault</span></span>
     </a>
     <nav class="header-nav">
@@ -769,6 +802,32 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
             <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             <div class="canvas-ph-text">Drag blocks here to build your strategy</div>
             <div class="canvas-ph-sub">or select a template above</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Config Panel (right side) -->
+    <div class="config-panel" id="configPanel">
+      <div class="card fade-up">
+        <div class="card-head">
+          <div class="card-head-icon teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </div>
+          <span class="card-title">Block Configuration</span>
+        </div>
+        <div class="card-body" id="configBody">
+          <div class="config-panel-head">
+            <h4 id="configBlockName">—</h4>
+            <button class="config-panel-close" onclick="closeConfigPanel()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div id="configBlockType"></div>
+          <div id="configFields"></div>
+          <div class="config-policy-check ok" id="configPolicyCheck">
+            ✓ Configuration is within policy limits
           </div>
         </div>
       </div>
@@ -960,6 +1019,153 @@ textarea.finput{resize:vertical;min-height:80px;line-height:1.6}
 <script>
 /* ── State ── */
 let canvasBlocks=[];
+let selectedBlockIdx=-1;
+
+/* ── Block config definitions ── */
+const blockConfigs={
+  'price-above':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','USDC','SAUCE','ETH','BTC'],default:'HBAR'},
+    {key:'price',label:'Price (USD)',type:'number',placeholder:'0.25',default:'0.25',step:'0.01'},
+    {key:'source',label:'Price Source',type:'select',options:['SaucerSwap','CoinGecko','Oracle'],default:'SaucerSwap'}
+  ],
+  'price-below':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','USDC','SAUCE','ETH','BTC'],default:'HBAR'},
+    {key:'price',label:'Price (USD)',type:'number',placeholder:'0.15',default:'0.15',step:'0.01'},
+    {key:'source',label:'Price Source',type:'select',options:['SaucerSwap','CoinGecko','Oracle'],default:'SaucerSwap'}
+  ],
+  'price-change':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','USDC','SAUCE'],default:'HBAR'},
+    {key:'change',label:'Change %',type:'number',placeholder:'-5',default:'-5',step:'0.5'},
+    {key:'window',label:'Time Window',type:'select',options:['1h','4h','24h','7d'],default:'24h'}
+  ],
+  'time-window':[
+    {key:'frequency',label:'Frequency',type:'select',options:['Hourly','Every 4h','Daily','Weekly'],default:'Daily'},
+    {key:'time',label:'Time (UTC)',type:'time',default:'12:00'},
+    {key:'timezone',label:'Timezone',type:'select',options:['UTC','US/Central','US/Eastern','US/Pacific','Europe/London'],default:'UTC'}
+  ],
+  'balance-check':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','USDC','SAUCE'],default:'USDC'},
+    {key:'operator',label:'Operator',type:'select',options:['>','<','>=','<=','='],default:'>'},
+    {key:'amount',label:'Amount',type:'number',placeholder:'100',default:'100',step:'1'}
+  ],
+  'swap-tokens':[
+    {key:'fromToken',label:'From Token',type:'select',options:['HBAR','USDC','SAUCE','ETH'],default:'HBAR'},
+    {key:'toToken',label:'To Token',type:'select',options:['SAUCE','USDC','HBAR','ETH'],default:'SAUCE'},
+    {key:'amount',label:'Amount',type:'number',placeholder:'10',default:'10',step:'0.1'},
+    {key:'slippage',label:'Max Slippage %',type:'number',placeholder:'1.0',default:'1.0',step:'0.1',min:'0',max:'10'}
+  ],
+  'limit-order':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','SAUCE','USDC'],default:'HBAR'},
+    {key:'targetPrice',label:'Target Price (USD)',type:'number',placeholder:'0.30',default:'0.30',step:'0.01'},
+    {key:'amount',label:'Amount',type:'number',placeholder:'100',default:'100',step:'1'},
+    {key:'side',label:'Side',type:'select',options:['Buy','Sell'],default:'Buy'}
+  ],
+  'dca-buy':[
+    {key:'fromToken',label:'Spend Token',type:'select',options:['USDC','HBAR'],default:'USDC'},
+    {key:'toToken',label:'Buy Token',type:'select',options:['HBAR','SAUCE','ETH'],default:'HBAR'},
+    {key:'amount',label:'Amount per Buy',type:'number',placeholder:'25',default:'25',step:'1'},
+    {key:'slippage',label:'Max Slippage %',type:'number',placeholder:'1.0',default:'1.0',step:'0.1'}
+  ],
+  'take-profit':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','SAUCE','ETH'],default:'HBAR'},
+    {key:'gain',label:'Trigger at % Gain',type:'number',placeholder:'20',default:'20',step:'1'},
+    {key:'sellPct',label:'Sell % of Position',type:'number',placeholder:'25',default:'25',step:'5',min:'1',max:'100'}
+  ],
+  'stop-loss':[
+    {key:'token',label:'Token',type:'select',options:['HBAR','SAUCE','ETH'],default:'HBAR'},
+    {key:'loss',label:'Trigger at % Loss',type:'number',placeholder:'15',default:'15',step:'1'},
+    {key:'sellPct',label:'Sell % of Position',type:'number',placeholder:'100',default:'100',step:'5',min:'1',max:'100'}
+  ]
+};
+
+/* ── Block config storage (per canvas index) ── */
+let blockConfigValues=[];
+
+function openConfigPanel(idx){
+  selectedBlockIdx=idx;
+  const block=canvasBlocks[idx];
+  const fields=blockConfigs[block]||[];
+  const layout=document.querySelector('.builder-layout');
+  const panel=document.getElementById('configPanel');
+  const nameEl=document.getElementById('configBlockName');
+  const typeEl=document.getElementById('configBlockType');
+  const fieldsEl=document.getElementById('configFields');
+
+  nameEl.textContent=blockLabels[block]||block;
+  const btype=blockTypes[block]||'condition';
+  typeEl.innerHTML=`<span class="config-block-type ${btype}">${btype}</span>`;
+
+  // Init stored config if needed
+  if(!blockConfigValues[idx]){
+    blockConfigValues[idx]={};
+    fields.forEach(f=>{blockConfigValues[idx][f.key]=f.default||''});
+  }
+  const vals=blockConfigValues[idx];
+
+  let html='';
+  fields.forEach(f=>{
+    if(f.type==='select'){
+      html+=`<div class="field"><label>${f.label}</label><select class="finput" onchange="updateBlockConfig('${f.key}',this.value)">`;
+      f.options.forEach(o=>{html+=`<option value="${o}" ${vals[f.key]===o?'selected':''}>${o}</option>`});
+      html+=`</select></div>`;
+    } else if(f.type==='time'){
+      html+=`<div class="field"><label>${f.label}</label><input type="time" class="finput mono" value="${vals[f.key]||f.default||''}" onchange="updateBlockConfig('${f.key}',this.value)"></div>`;
+    } else {
+      html+=`<div class="field"><label>${f.label}</label><input type="number" class="finput mono" value="${vals[f.key]||f.default||''}" placeholder="${f.placeholder||''}" step="${f.step||'1'}" ${f.min?'min="'+f.min+'"':''} ${f.max?'max="'+f.max+'"':''} onchange="updateBlockConfig('${f.key}',this.value)"></div>`;
+    }
+  });
+
+  if(!fields.length){
+    html='<p style="color:var(--text-dim);font-size:.85rem">No configuration needed for this block.</p>';
+  }
+
+  fieldsEl.innerHTML=html;
+
+  // Show panel
+  layout.classList.add('config-open');
+  panel.classList.add('open');
+
+  // Update policy check
+  checkConfigPolicy();
+
+  // Highlight selected block in canvas
+  document.querySelectorAll('.dropped-block').forEach((el,i)=>{
+    el.style.borderColor=i===idx?'var(--primary)':'';
+    el.style.boxShadow=i===idx?'0 0 16px rgba(245,158,11,.15)':'';
+  });
+}
+
+function updateBlockConfig(key,val){
+  if(selectedBlockIdx>=0&&blockConfigValues[selectedBlockIdx]){
+    blockConfigValues[selectedBlockIdx][key]=val;
+    checkConfigPolicy();
+    renderCanvas(); // refresh config tags
+  }
+}
+
+function checkConfigPolicy(){
+  const check=document.getElementById('configPolicyCheck');
+  const vals=blockConfigValues[selectedBlockIdx]||{};
+  const maxTrade=Number(document.getElementById('maxTrade').value)||25;
+  const amount=Number(vals.amount||vals.amountPerBuy||0);
+  if(amount>maxTrade){
+    check.className='config-policy-check warn';
+    check.textContent='⚠ Amount exceeds per-trade limit ('+maxTrade+' ℏ)';
+  } else {
+    check.className='config-policy-check ok';
+    check.textContent='✓ Configuration is within policy limits';
+  }
+}
+
+function closeConfigPanel(){
+  selectedBlockIdx=-1;
+  document.querySelector('.builder-layout').classList.remove('config-open');
+  document.getElementById('configPanel').classList.remove('open');
+  document.querySelectorAll('.dropped-block').forEach(el=>{
+    el.style.borderColor='';el.style.boxShadow='';
+  });
+}
+
 const blockLabels={
   'price-above':'Price Above','price-below':'Price Below','price-change':'Price Change %',
   'time-window':'Time Window','balance-check':'Balance Check',
@@ -1013,6 +1219,14 @@ function selectTemplate(el){
   const tpl=templates[el.dataset.template];
   if(!tpl)return;
   canvasBlocks=[...tpl.blocks];
+  // Init config values from defaults
+  blockConfigValues=tpl.blocks.map(b=>{
+    const fields=blockConfigs[b]||[];
+    const vals={};
+    fields.forEach(f=>{vals[f.key]=f.default||''});
+    return vals;
+  });
+  closeConfigPanel();
   document.getElementById('strategyName').value=tpl.name;
   document.getElementById('strategyDesc').value=tpl.desc;
 
@@ -1042,7 +1256,33 @@ canvas.addEventListener('dragleave',()=>canvas.classList.remove('drag-over'));
 canvas.addEventListener('drop',e=>{
   e.preventDefault();canvas.classList.remove('drag-over');
   const block=e.dataTransfer.getData('text/plain');
-  if(block&&blockLabels[block]){canvasBlocks.push(block);renderCanvas()}
+  if(block&&blockLabels[block]){
+    canvasBlocks.push(block);
+    // Init config with defaults
+    const fields=blockConfigs[block]||[];
+    const vals={};
+    fields.forEach(f=>{vals[f.key]=f.default||''});
+    blockConfigValues.push(vals);
+    renderCanvas();
+    // Auto-open config panel for newly added block
+    openConfigPanel(canvasBlocks.length-1);
+  }
+});
+
+// Also add click-to-add for blocks panel
+document.querySelectorAll('.block-item[draggable]').forEach(item=>{
+  item.addEventListener('click',()=>{
+    const block=item.dataset.block;
+    if(block&&blockLabels[block]){
+      canvasBlocks.push(block);
+      const fields=blockConfigs[block]||[];
+      const vals={};
+      fields.forEach(f=>{vals[f.key]=f.default||''});
+      blockConfigValues.push(vals);
+      renderCanvas();
+      openConfigPanel(canvasBlocks.length-1);
+    }
+  });
 });
 
 function renderCanvas(){
@@ -1080,20 +1320,49 @@ function renderCanvas(){
       'stop-loss':'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
     };
     const svg = blockSvgs[block] || '<rect x="3" y="3" width="18" height="18" rx="2"/>';
-    el.innerHTML=`
-      <div class="block-icon ${color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${svg}</svg></div>
-      <span class="db-label">${blockLabels[block]||block}</span>
-      <button class="db-remove" onclick="removeBlock(${i})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>`;
+    // Build config tags HTML
+    let configTags='';
+    if(blockConfigValues[i]&&Object.keys(blockConfigValues[i]).length){
+      const vals=blockConfigValues[i];
+      const entries=Object.entries(vals).filter(([k,v])=>v!==''&&v!==undefined);
+      if(entries.length){
+        configTags='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">';
+        entries.forEach(([k,v])=>{
+          configTags+=`<span style="font-size:.7rem;padding:3px 9px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text-muted)"><span style="font-weight:600;color:var(--text-secondary)">${k}:</span> ${v}</span>`;
+        });
+        configTags+='</div>';
+      }
+    }
+    el.style.cursor='pointer';
+    el.setAttribute('data-idx',i);
+    el.onclick=function(e){if(!e.target.closest('.db-remove'))openConfigPanel(Number(this.getAttribute('data-idx')))};
+    const label=blockLabels[block]||block;
+    el.innerHTML=
+      '<div class="block-icon '+color+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'+svg+'</svg></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<span class="db-label">'+label+'</span>'+
+        configTags+
+      '</div>'+
+      '<button class="db-remove" onclick="removeBlock('+i+')">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
+      '</button>';
     canvas.appendChild(el);
   });
 }
 
-function removeBlock(i){canvasBlocks.splice(i,1);renderCanvas()}
+function removeBlock(i){
+  canvasBlocks.splice(i,1);
+  blockConfigValues.splice(i,1);
+  if(selectedBlockIdx===i)closeConfigPanel();
+  else if(selectedBlockIdx>i)selectedBlockIdx--;
+  renderCanvas();
+}
 
 function clearCanvas(){
   canvasBlocks=[];
+  blockConfigValues=[];
+  selectedBlockIdx=-1;
+  closeConfigPanel();
   document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('strategyName').value='';
   document.getElementById('strategyDesc').value='';

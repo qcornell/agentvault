@@ -461,106 +461,108 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg);min-height:1
   .appr-btns .btn{width:100%;justify-content:center}
 }
 
-/* ── Hero Banner ── */
-.hero-banner{
-  background:linear-gradient(135deg,#0f0d1a 0%,#1a1428 50%,#12101f 100%);
-  border:1px solid rgba(232,160,78,.2);border-radius:var(--radius);
-  padding:36px 40px 32px;margin-bottom:24px;position:relative;overflow:hidden;
+/* ── Guided Demo Panel ── */
+.guided-demo{
+  background:linear-gradient(135deg,rgba(122,99,255,.08),rgba(232,160,78,.06));
+  border:1px solid rgba(122,99,255,.2);border-radius:var(--radius);
+  padding:28px 28px 24px;margin-bottom:24px;position:relative;overflow:hidden;
 }
-.hero-banner::before{
-  content:'';position:absolute;top:-80px;right:-60px;width:350px;height:350px;
-  background:radial-gradient(circle,rgba(182,99,14,.12) 0%,rgba(255,191,75,.06) 40%,transparent 70%);pointer-events:none;
-}
-.hero-banner::after{
-  content:'';position:absolute;bottom:-100px;left:-40px;width:300px;height:300px;
-  background:radial-gradient(circle,rgba(232,160,78,.08),transparent 60%);pointer-events:none;
-}
-.hero-dismiss{
-  position:absolute;top:16px;right:16px;width:32px;height:32px;border:none;
-  background:rgba(255,255,255,.08);border-radius:var(--radius-xs);color:var(--text-muted);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;
-  z-index:1;
-}
-.hero-dismiss:hover{background:rgba(255,255,255,.15);color:var(--text)}
-.hero-dismiss svg{width:14px;height:14px}
-.hero-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.hero-badge{
-  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
-  padding:5px 14px;border-radius:20px;
+.guided-demo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.guided-demo-head h3{font-size:1.1rem;font-weight:700;color:#fff}
+.guided-demo-head p{font-size:.82rem;color:var(--text-muted);margin-top:2px}
+.guided-demo-badge{
+  font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  padding:4px 12px;border-radius:16px;
   background:linear-gradient(135deg,#b6630e,#e8a04e);color:#fff;
-  box-shadow:0 2px 12px rgba(182,99,14,.35);
 }
-.hero-top h2{font-size:1.5rem;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-.02em}
-.hero-top h2 span{
-  background:linear-gradient(135deg,#e8a04e,#ffbf4b);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.guided-demo-reset{
+  font-size:.78rem;font-weight:600;color:var(--primary-light);cursor:pointer;
+  background:none;border:none;padding:6px 12px;border-radius:var(--radius-xs);
+  transition:all .15s;display:none;
 }
-.hero-subtitle{font-size:.95rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:10px;max-width:680px}
-.hero-killer{
-  font-size:.9rem;font-weight:600;color:var(--amber);margin-bottom:24px;
-  display:flex;align-items:center;gap:10px;
-  padding:10px 16px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);
-  border-radius:var(--radius-sm);width:fit-content;
+.guided-demo-reset:hover{background:rgba(122,99,255,.15)}
+.gd-step{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-sm);padding:18px 20px;margin-bottom:12px;
+  transition:all .3s var(--ease);position:relative;
 }
-.hero-killer svg{width:18px;height:18px;flex-shrink:0}
-
-/* ── Demo Walkthrough ── */
-.demo-label{
-  font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;
-  color:rgba(255,255,255,.4);margin-bottom:12px;
+.gd-step:last-child{margin-bottom:0}
+.gd-step.locked{opacity:.4;pointer-events:none}
+.gd-step.active{border-color:rgba(122,99,255,.4);background:rgba(122,99,255,.06);box-shadow:0 0 20px rgba(122,99,255,.1)}
+.gd-step.completed{opacity:.85}
+.gd-step-top{display:flex;align-items:flex-start;gap:14px}
+.gd-num{
+  width:38px;height:38px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;flex-shrink:0;transition:all .3s;
 }
-.demo-steps{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+.gd-num.default{background:rgba(255,255,255,.06);color:var(--text-dim);border:1px solid rgba(255,255,255,.1)}
+.gd-num.deny{background:var(--red-glow);color:var(--red);border:1px solid var(--red-border)}
+.gd-num.approval{background:var(--amber-glow);color:var(--amber);border:1px solid var(--amber-border)}
+.gd-num.success{background:var(--green-glow);color:var(--green);border:1px solid var(--green-border)}
+.gd-info{flex:1;min-width:0}
+.gd-title{font-size:.88rem;font-weight:600;color:#fff;margin-bottom:3px}
+.gd-desc{font-size:.76rem;color:var(--text-muted);margin-bottom:10px}
+.gd-action-box{
+  background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xs);
+  padding:10px 14px;margin-bottom:12px;
 }
-.demo-step{
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);
-  padding:20px 20px 18px;cursor:pointer;transition:all .25s var(--ease);position:relative;
-  backdrop-filter:blur(8px);
+.gd-action-label{font-size:.68rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.gd-action-code{font-family:var(--mono);font-size:.82rem;color:var(--text)}
+.gd-run-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 20px;
+  background:linear-gradient(135deg,#7A63FF,#f6a623);color:#fff;border:none;
+  border-radius:var(--radius-xs);font-size:.82rem;font-weight:600;cursor:pointer;
+  transition:all .2s var(--ease);font-family:var(--sans);
 }
-.demo-step:hover{
-  background:rgba(255,255,255,.08);border-color:rgba(232,160,78,.3);
-  transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3);
+.gd-run-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(122,99,255,.4)}
+.gd-run-btn:active{transform:scale(.97)}
+.gd-run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.gd-run-btn svg{width:14px;height:14px}
+.gd-run-btn .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.gd-result{
+  margin-top:12px;padding:12px 16px;border-radius:var(--radius-xs);
+  font-size:.8rem;line-height:1.5;display:none;
+  animation:fadeUp .3s var(--ease);
 }
-.demo-step:active{transform:scale(.97)}
-.demo-step-num{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:30px;height:30px;border-radius:50%;font-size:.82rem;font-weight:700;
-  margin-bottom:10px;
+.gd-result.show{display:block}
+.gd-result.deny{background:var(--red-glow);border:1px solid var(--red-border);color:var(--text)}
+.gd-result.approval{background:var(--amber-glow);border:1px solid var(--amber-border);color:var(--text)}
+.gd-result.success{background:var(--green-glow);border:1px solid var(--green-border);color:var(--text)}
+.gd-result-badge{
+  display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;padding:2px 9px;border-radius:8px;margin-bottom:6px;
 }
-.step-red .demo-step-num{background:rgba(239,68,68,.15);color:var(--red);border:1.5px solid rgba(239,68,68,.3)}
-.step-amber .demo-step-num{background:rgba(245,158,11,.15);color:var(--amber);border:1.5px solid rgba(245,158,11,.3)}
-.step-green .demo-step-num{background:rgba(16,185,129,.15);color:var(--green);border:1.5px solid rgba(16,185,129,.3)}
-.step-red:hover .demo-step-num{background:rgba(239,68,68,.25);box-shadow:0 0 12px rgba(239,68,68,.2)}
-.step-amber:hover .demo-step-num{background:rgba(245,158,11,.25);box-shadow:0 0 12px rgba(245,158,11,.2)}
-.step-green:hover .demo-step-num{background:rgba(16,185,129,.25);box-shadow:0 0 12px rgba(16,185,129,.2)}
-.demo-step-title{font-size:.9rem;font-weight:600;margin-bottom:5px;color:#fff}
-.demo-step-desc{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.5}
-.demo-step-icon{position:absolute;top:16px;right:16px;color:rgba(255,255,255,.2)}
-.demo-step-icon svg{width:16px;height:16px}
-.demo-step:hover .demo-step-icon{color:rgba(255,255,255,.4)}
-.demo-step-cta{
-  margin-top:10px;font-size:.72rem;font-weight:600;color:#e8a04e;
-  text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:4px;
-  opacity:.7;transition:opacity .15s;
+.gd-rb-deny{background:rgba(255,88,110,.15);color:var(--red)}
+.gd-rb-approval{background:rgba(246,166,35,.15);color:var(--amber)}
+.gd-rb-success{background:rgba(16,185,129,.15);color:var(--green)}
+.gd-complete{
+  margin-top:16px;padding:14px 18px;border-radius:var(--radius-sm);
+  background:var(--green-glow);border:1px solid var(--green-border);
+  display:none;animation:fadeUp .4s var(--ease);
 }
-.demo-step:hover .demo-step-cta{opacity:1}
-.demo-step-cta svg{width:12px;height:12px}
+.gd-complete.show{display:flex;align-items:flex-start;gap:10px}
+.gd-complete svg{width:18px;height:18px;color:var(--green);flex-shrink:0;margin-top:1px}
+.gd-complete-text{font-size:.85rem;font-weight:600;color:var(--text)}
+.gd-complete-sub{font-size:.76rem;color:var(--text-muted);margin-top:2px}
+/* Proof links row */
+.gd-proof-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.gd-proof-link{
+  font-size:.72rem;font-weight:600;color:#e8a04e;text-decoration:none;
+  padding:6px 14px;border-radius:20px;border:1px solid rgba(232,160,78,.25);
+  background:rgba(232,160,78,.06);transition:all .15s;display:inline-flex;align-items:center;gap:5px;
+}
+.gd-proof-link:hover{background:rgba(232,160,78,.12);border-color:rgba(232,160,78,.4)}
+.gd-proof-link svg{width:12px;height:12px}
 
 @media(max-width:768px){
-  .demo-steps{grid-template-columns:1fr;gap:10px}
-  .demo-step{padding:16px 18px}
-  .hero-banner{padding:24px 22px 22px}
-  .hero-top{flex-direction:column;align-items:flex-start;gap:10px}
-  .hero-top h2{font-size:1.2rem}
-  .hero-killer{font-size:.84rem;width:auto}
+  .guided-demo{padding:20px 18px 18px}
+  .gd-step-top{flex-direction:column;gap:10px}
+  .gd-proof-row{flex-direction:column}
 }
 @media(max-width:480px){
-  .hero-banner{padding:20px 18px 18px}
-  .hero-subtitle{font-size:.84rem}
-  .hero-killer{font-size:.8rem;flex-wrap:wrap;padding:8px 12px}
-  .hero-top h2{font-size:1.1rem}
-  .demo-step{padding:16px}
-  .demo-step-desc{font-size:.76rem}
+  .guided-demo{padding:16px 14px 14px}
+  .guided-demo-head h3{font-size:1rem}
+  .gd-step{padding:14px 16px}
 }
 
 /* ── Animations ── */
@@ -719,9 +721,6 @@ select.finput{font-family:var(--sans);appearance:none;
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
-    </div>
     <div class="logo-text">Agent<span>Vault</span></div>
     <button class="sidebar-close" id="sidebarClose" onclick="closeSidebar()" aria-label="Close menu">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -774,9 +773,10 @@ select.finput{font-family:var(--sans);appearance:none;
   <div class="sidebar-footer">
     <div class="net-badge">
       <span class="net-dot live"></span>
-      <span>Hedera Mainnet — Live</span>
+      <span>Hedera Mainnet - Live</span>
     </div>
     <div class="powered">Powered by <a href="https://www.npmjs.com/package/dappily-agent-kit" target="_blank">Hedera Agent Kit</a></div>
+
   </div>
 </aside>
 
@@ -792,101 +792,134 @@ select.finput{font-family:var(--sans);appearance:none;
         <span class="live-dot"></span>
         <span class="label-text">Live</span>
         <span style="color:var(--text-dim)" class="label-text">·</span>
-        <span id="lastRefresh" class="label-text">—</span>
+        <span id="lastRefresh" class="label-text">-</span>
       </div>
-      <div class="topbar-bal"><span id="topBal">—</span> <span class="u">ℏ</span></div>
+      <div class="topbar-bal"><span id="topBal">-</span> <span class="u">ℏ</span></div>
     </div>
   </div>
 
   <div class="content">
     <!-- Hero Banner -->
-    <div class="hero-banner fade-up" id="heroBanner">
-      <button class="hero-dismiss" onclick="document.getElementById('heroBanner').style.display='none'" aria-label="Dismiss">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="hero-top">
-        <span class="hero-badge">⚡ Live Mainnet Proof</span>
-        <h2>AI-Safe Wallet Infrastructure for <span>Autonomous Agents</span></h2>
+    <!-- Guided Demo (Bolt-style sequential) -->
+    <div class="guided-demo fade-up" id="guidedDemo">
+      <div class="guided-demo-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <span class="guided-demo-badge">For Hackathon Judges</span>
+          </div>
+          <h3>Guided Demo</h3>
+          <p>See how AgentVault protects your assets in 3 steps</p>
+        </div>
+        <button class="guided-demo-reset" id="gdReset" onclick="gdResetAll()">Reset</button>
       </div>
-      <div class="hero-subtitle">
-        AgentVault wraps a Hedera wallet in safety layers: on-chain identity, a strict policy engine, an immutable audit trail, and human approvals — so autonomous agents can trade without ever touching your keys.
+
+      <!-- Step 1: Denied -->
+      <div class="gd-step active" id="gdStep1">
+        <div class="gd-step-top">
+          <div class="gd-num default" id="gdNum1">1</div>
+          <div class="gd-info">
+            <div class="gd-title">Step 1: Denied Action</div>
+            <div class="gd-desc">Attempt a transfer that exceeds the per-TX limit</div>
+            <div class="gd-action-box">
+              <div class="gd-action-label">Action</div>
+              <div class="gd-action-code">HBAR_TRANSFER - 75 ℏ to 0.0.99999</div>
+            </div>
+            <button class="gd-run-btn" id="gdBtn1" onclick="gdRunStep(1)">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Step
+            </button>
+            <div class="gd-result" id="gdResult1">
+              <div class="gd-result-badge gd-rb-deny">DENIED</div>
+              <div style="color:var(--text-secondary)">Action denied: 75 ℏ exceeds the per-transaction limit of 50 ℏ. No funds were moved. The policy engine blocked this before it reached the network.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="hero-killer">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Private keys never leave AgentVault. Agents propose actions; AgentVault enforces policy and signs.
+
+      <!-- Step 2: Approval Required -->
+      <div class="gd-step locked" id="gdStep2">
+        <div class="gd-step-top">
+          <div class="gd-num default" id="gdNum2">2</div>
+          <div class="gd-info">
+            <div class="gd-title">Step 2: Approval Required</div>
+            <div class="gd-desc">Transfer above the human approval threshold</div>
+            <div class="gd-action-box">
+              <div class="gd-action-label">Action</div>
+              <div class="gd-action-code">HBAR_TRANSFER - 35 ℏ to 0.0.55443</div>
+            </div>
+            <button class="gd-run-btn" id="gdBtn2" onclick="gdRunStep(2)">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Step
+            </button>
+            <div class="gd-result" id="gdResult2">
+              <div class="gd-result-badge gd-rb-approval">APPROVAL REQUIRED</div>
+              <div style="color:var(--text-secondary)">Transfer of 35 ℏ exceeds the approval threshold (25 ℏ). A human must approve before execution. Check the Approval Queue.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="margin-top:4px;margin-bottom:24px;display:flex;gap:14px;flex-wrap:wrap">
-        <a href="/strategy-builder.html" class="btn btn-primary" style="background:linear-gradient(135deg,#f6a623,#9b8aff);color:#fff;border-radius:14px;box-shadow:none;display:inline-flex;align-items:center;gap:10px;font-weight:700;padding:14px 32px;text-decoration:none;font-size:1rem;transition:background 0.24s cubic-bezier(.4,0,.2,1), color 0.24s cubic-bezier(.4,0,.2,1);">
-          <svg width="20" height="20" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-3px"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.42 1.42"/><path d="M17.66 17.66l1.42 1.42"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.42-1.42"/><path d="M17.66 6.34l1.42-1.42"/></svg>
-          Build Your First Strategy
+
+      <!-- Step 3: Safe Execution -->
+      <div class="gd-step locked" id="gdStep3">
+        <div class="gd-step-top">
+          <div class="gd-num default" id="gdNum3">3</div>
+          <div class="gd-info">
+            <div class="gd-title">Step 3: Safe Execution</div>
+            <div class="gd-desc">Execute a distribution within all safety limits</div>
+            <div class="gd-action-box">
+              <div class="gd-action-label">Action</div>
+              <div class="gd-action-code">DISTRIBUTE - 15 ℏ to 3 holders (March Rent)</div>
+            </div>
+            <button class="gd-run-btn" id="gdBtn3" onclick="gdRunStep(3)">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Step
+            </button>
+            <div class="gd-result" id="gdResult3">
+              <div class="gd-result-badge gd-rb-success">EXECUTED</div>
+              <div style="color:var(--text-secondary)">Distribution executed on Hedera testnet! 15 ℏ split to 3 holders. Transaction logged to HCS audit trail.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion message -->
+      <div class="gd-complete" id="gdComplete">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M9 11l3 3L22 4"/></svg>
+        <div>
+          <div class="gd-complete-text">Demo Complete!</div>
+          <div class="gd-complete-sub">You've seen how AgentVault's policy engine denies unsafe actions, requires human approval for high-value transfers, and executes safe operations - all logged on-chain.</div>
+        </div>
+      </div>
+
+      <!-- Proof links -->
+      <div class="gd-proof-row">
+        <a class="gd-proof-link" href="https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865" target="_blank">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Mainnet Swap TX
         </a>
-        <a href="https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865" target="_blank" class="btn btn-ghost" style="background:transparent;color:#fff;border-radius:14px;box-shadow:none;display:inline-flex;align-items:center;gap:10px;font-weight:600;padding:14px 24px;text-decoration:none;font-size:.98rem;border:1px solid var(--border);transition:background 0.24s cubic-bezier(.4,0,.2,1), color 0.24s cubic-bezier(.4,0,.2,1);">
-          <svg width="20" height="20" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:-3px"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          View Mainnet Proof
+        <a class="gd-proof-link" href="https://hashscan.io/mainnet/topic/0.0.10384249" target="_blank">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          HCS Audit Topic
         </a>
-      </div>
-      <div class="demo-label">🏆 Mainnet Proof</div>
-      <div class="demo-steps" style="margin-bottom:18px">
-        <div class="demo-step step-green" onclick="window.open('https://hashscan.io/mainnet/transaction/0.0.10206295@1774081400.725992865','_blank')">
-          <div class="demo-step-num">TX</div>
-          <div class="demo-step-title">Live Swap: 0.5 HBAR → 2.10 SAUCE</div>
-          <div class="demo-step-desc">Executed on SaucerSwap V2 via AgentVault safety rails. Click to view the transaction on HashScan.</div>
-          <div class="demo-step-cta">View Transaction <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
-        <div class="demo-step step-amber" onclick="window.open('https://hashscan.io/mainnet/topic/0.0.10384249','_blank')">
-          <div class="demo-step-num">HCS</div>
-          <div class="demo-step-title">On-Chain Audit Trail</div>
-          <div class="demo-step-desc">Every action in the demo — including the live swap — is logged to this Hedera Consensus Service topic.</div>
-          <div class="demo-step-cta">View Audit Trail <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
-        <div class="demo-step step-red" onclick="scrollToElement('policySection')">
-          <div class="demo-step-num">WHY</div>
-          <div class="demo-step-title">Why It’s Safer</div>
-          <div class="demo-step-desc">AI can’t overspend or send to the wrong place: per-TX limits, daily caps, and approvals are enforced before every trade.</div>
-          <div class="demo-step-cta">See Safety Rules <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
-      </div>
-      <div class="demo-label">🚀 How It Works</div>
-      <div style="margin-top:-2px;margin-bottom:14px;color:rgba(255,255,255,.55);font-size:.85rem;max-width:820px">
-        Agents never get raw keys. Every action is evaluated by the policy engine first; high-value actions require human approval; all outcomes are logged to Hedera Consensus Service.
-      </div>
-      <div class="demo-steps">
-        <div class="demo-step step-green" onclick="window.location.href='/strategy-builder.html'">
-          <div class="demo-step-num">1</div>
-          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">🧠 Pick a Strategy</div>
-          <div class="demo-step-desc">Choose from templates like DCA, Buy the Dip, or Take Profits — or build your own.</div>
-          <div class="demo-step-cta">Open Strategy Builder <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
-        <div class="demo-step step-amber" onclick="demoStep1()">
-          <div class="demo-step-num">2</div>
-          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">🛡️ See Safety in Action</div>
-          <div class="demo-step-desc">Try a dangerous trade — watch the policy engine block it before any money moves.</div>
-          <div class="demo-step-cta">Try it <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
-        <div class="demo-step step-green" onclick="window.open('https://hashscan.io/mainnet/topic/0.0.10384249','_blank')">
-          <div class="demo-step-num">3</div>
-          <div class="demo-step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-          <div class="demo-step-title">📜 Verify Everything On-Chain</div>
-          <div class="demo-step-desc">Every trade, every policy check, every approval — logged immutably on Hedera.</div>
-          <div class="demo-step-cta">View Audit Trail <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
+        <a class="gd-proof-link" href="https://github.com/qcornell/agentvault" target="_blank">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M15 22v-4a4.8 4.8 0 00-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 004 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/></svg>
+          GitHub
+        </a>
       </div>
     </div>
 
     <div class="stats">
       <div class="stat featured fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
-        <div class="stat-label">Vault Balance — Testnet Sandbox</div>
-        <div class="stat-val"><span id="balHbar">—</span><span class="unit"> ℏ</span></div>
+        <div class="stat-label">Vault Balance - Testnet Sandbox</div>
+        <div class="stat-val"><span id="balHbar">-</span><span class="unit"> ℏ</span></div>
         <div class="stat-meta"><span class="up">● Live</span> Testnet demo vault (mainnet proof above)</div>
       </div>
       <div class="stat fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
         <div class="stat-label">Daily Spent</div>
         <div class="stat-val"><span id="dailySpent">0</span><span class="unit"> ℏ</span></div>
-        <div class="stat-meta">of <span id="dailyLimit">—</span> ℏ limit</div>
+        <div class="stat-meta">of <span id="dailyLimit">-</span> ℏ limit</div>
         <div class="stat-secondary"><div id="dailyBar" style="height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:4px"><div id="dailyFill" style="height:100%;width:0%;border-radius:2px;background:var(--teal);transition:width .6s var(--ease)"></div></div></div>
       </div>
       <div class="stat fade-up">
@@ -926,12 +959,12 @@ select.finput{font-family:var(--sans);appearance:none;
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
               </div>
               <div>
-                <div class="id-name" id="agentName">—</div>
-                <div class="id-sub" id="agentId">—</div>
+                <div class="id-name" id="agentName">-</div>
+                <div class="id-sub" id="agentId">-</div>
                 <div class="id-rows">
-                  <div class="id-row"><span class="id-label">Wallet</span><span class="id-val" id="agentWallet">—</span></div>
-                  <div class="id-row"><span class="id-label">NFT</span><span class="id-val" id="agentNFT">—</span></div>
-                  <div class="id-row"><span class="id-label">HCS</span><span class="id-val" id="agentHCS">—</span></div>
+                  <div class="id-row"><span class="id-label">Wallet</span><span class="id-val" id="agentWallet">-</span></div>
+                  <div class="id-row"><span class="id-label">NFT</span><span class="id-val" id="agentNFT">-</span></div>
+                  <div class="id-row"><span class="id-label">HCS</span><span class="id-val" id="agentHCS">-</span></div>
                 </div>
               </div>
             </div>
@@ -956,6 +989,46 @@ select.finput{font-family:var(--sans);appearance:none;
       </div>
 
       <div class="col-side">
+        <!-- Verifiable Proof -->
+        <div class="card fade-up">
+          <div class="card-head">
+            <h2><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M9 17H7A5 5 0 017 7h2"/><path d="M15 7h2a5 5 0 010 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg><span>Verifiable Proof</span></h2>
+            <span class="card-tag tag-live">On-Chain</span>
+          </div>
+          <div class="card-body" style="padding:14px 16px">
+            <a href="https://hashscan.io/mainnet/transaction/0.0.10206295@1774081112.259723721" target="_blank" class="qa" style="text-decoration:none">
+              <div style="width:36px;height:36px;border-radius:var(--radius-xs);background:rgba(31,182,214,.1);border:1px solid rgba(31,182,214,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;color:var(--teal)"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.85rem;font-weight:600;color:var(--text)">Mainnet Swap TX</div>
+                <div style="font-size:.72rem;color:var(--text-muted)">0.5 HBAR → 2.10 SAUCE · View on HashScan</div>
+              </div>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </a>
+            <a href="https://hashscan.io/mainnet/topic/0.0.10384249" target="_blank" class="qa" style="text-decoration:none">
+              <div style="width:36px;height:36px;border-radius:var(--radius-xs);background:rgba(122,99,255,.1);border:1px solid rgba(122,99,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;color:var(--primary)"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.85rem;font-weight:600;color:var(--text)">HCS Audit Topic</div>
+                <div style="font-size:.72rem;color:var(--text-muted)">Immutable audit trail · Topic 0.0.10384249</div>
+              </div>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </a>
+            <a href="https://github.com/qcornell/agentvault" target="_blank" class="qa" style="text-decoration:none">
+              <div style="width:36px;height:36px;border-radius:var(--radius-xs);background:rgba(255,255,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;color:var(--text-secondary)"><path d="M15 22v-4a4.8 4.8 0 00-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 004 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.85rem;font-weight:600;color:var(--text)">Open Source</div>
+                <div style="font-size:.72rem;color:var(--text-muted)">View on GitHub · qcornell/agentvault</div>
+              </div>
+              <svg class="qa-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>
+            </a>
+          </div>
+        </div>
+
         <!-- Policy -->
         <div class="card fade-up" id="policySection">
           <div class="card-head">
@@ -967,19 +1040,19 @@ select.finput{font-family:var(--sans);appearance:none;
               <div class="pol-row">
                 <div class="pol-icon g"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
                 <div class="pol-text"><div class="pol-name">Daily Spend Limit</div><div class="pol-desc">Max total outflow per 24h</div></div>
-                <div class="pol-val"><span id="polDaily">—</span> <span class="pvu">ℏ</span></div>
+                <div class="pol-val"><span id="polDaily">-</span> <span class="pvu">ℏ</span></div>
                 <span class="pol-status ps-on">Active</span>
               </div>
               <div class="pol-row">
                 <div class="pol-icon g"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
                 <div class="pol-text"><div class="pol-name">Per-TX Limit</div><div class="pol-desc">Max single transaction</div></div>
-                <div class="pol-val"><span id="polPerTx">—</span> <span class="pvu">ℏ</span></div>
+                <div class="pol-val"><span id="polPerTx">-</span> <span class="pvu">ℏ</span></div>
                 <span class="pol-status ps-on">Active</span>
               </div>
               <div class="pol-row">
                 <div class="pol-icon a"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                 <div class="pol-text"><div class="pol-name">Approval Threshold</div><div class="pol-desc">Human approval required above</div></div>
-                <div class="pol-val"><span id="polAppr">—</span> <span class="pvu">ℏ</span></div>
+                <div class="pol-val"><span id="polAppr">-</span> <span class="pvu">ℏ</span></div>
                 <span class="pol-status ps-warn">Threshold</span>
               </div>
               <div class="pol-row">
@@ -1267,10 +1340,10 @@ const DEMO={
     dailySpent:18.5
   },
   approvals:{
-    pending:[{id:'apr-002',action:'HBAR_TRANSFER',amount:35,reason:'Amount (35 ℏ) exceeds approval threshold of 25 ℏ — requires human approval',recipient:'0.0.55443',createdAt:new Date(Date.now()-90000).toISOString(),status:'pending'}],
+    pending:[{id:'apr-002',action:'HBAR_TRANSFER',amount:35,reason:'Amount (35 ℏ) exceeds approval threshold of 25 ℏ - requires human approval',recipient:'0.0.55443',createdAt:new Date(Date.now()-90000).toISOString(),status:'pending'}],
     resolved:[
       {id:'apr-001',action:'DISTRIBUTE_TO_HOLDERS',amount:45,reason:'Distribution of 45 ℏ exceeds approval threshold (25 ℏ)',recipient:'3 holders',createdAt:new Date(Date.now()-5400000).toISOString(),status:'approved',resolvedBy:'operator'},
-      {id:'apr-000',action:'HBAR_TRANSFER',amount:40,reason:'Suspicious recipient — flagged by operator',recipient:'0.0.99999',createdAt:new Date(Date.now()-7200000).toISOString(),status:'denied',resolvedBy:'operator'}
+      {id:'apr-000',action:'HBAR_TRANSFER',amount:40,reason:'Suspicious recipient - flagged by operator',recipient:'0.0.99999',createdAt:new Date(Date.now()-7200000).toISOString(),status:'denied',resolvedBy:'operator'}
     ]
   },
   audit:{entries:[
@@ -1278,7 +1351,7 @@ const DEMO={
     {action:'HBAR_TRANSFER',policyCheck:{verdict:'deny',rule:'per_tx_limit'},summary:'❌ Blocked: Transfer of 75 ℏ exceeds per-TX limit of 50 ℏ. Agent cannot proceed.',txIds:[],timestamp:new Date(Date.now()-10800000).toISOString()},
     {action:'HBAR_TRANSFER',policyCheck:{verdict:'deny',rule:'unauthorized_recipient'},summary:'❌ Blocked: Recipient 0.0.99999 is not on the approved allowlist.',txIds:[],timestamp:new Date(Date.now()-9000000).toISOString()},
     {action:'HBAR_TRANSFER',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'⚠️ Transfer of 40 ℏ requires human approval (threshold: 25 ℏ). Waiting for operator.',txIds:[],timestamp:new Date(Date.now()-7200000).toISOString()},
-    {action:'DISTRIBUTE_TO_HOLDERS',policyCheck:{verdict:'pass'},summary:'✅ Rent distribution: 45 ℏ split to 3 holders — Alice: 20.25 ℏ, Bob: 15.75 ℏ, Charlie: 9.00 ℏ',txIds:['0.0.7420047@1710864901.987654321'],timestamp:new Date(Date.now()-5400000).toISOString()},
+    {action:'DISTRIBUTE_TO_HOLDERS',policyCheck:{verdict:'pass'},summary:'✅ Rent distribution: 45 ℏ split to 3 holders - Alice: 20.25 ℏ, Bob: 15.75 ℏ, Charlie: 9.00 ℏ',txIds:['0.0.7420047@1710864901.987654321'],timestamp:new Date(Date.now()-5400000).toISOString()},
     {action:'GET_BALANCE',policyCheck:{verdict:'pass'},summary:'✅ Balance check: 932.38 ℏ available.',txIds:[],timestamp:new Date(Date.now()-3600000).toISOString()},
     {action:'HBAR_TRANSFER',policyCheck:{verdict:'approval_required',rule:'amount_threshold'},summary:'⚠️ Transfer of 35 ℏ to 0.0.55443 requires human approval (threshold: 25 ℏ). Pending.',txIds:[],timestamp:new Date(Date.now()-90000).toISOString()},
   ]}
@@ -1316,8 +1389,8 @@ function initChart(){
 function renderAgent(s){
   const a=s.agent||{},id=s.identity||{};
   document.getElementById('agentName').textContent=a.name||'Vault Alpha Trader';
-  document.getElementById('agentId').textContent=a.id||'—';
-  document.getElementById('agentWallet').textContent=a.wallet||'—';
+  document.getElementById('agentId').textContent=a.id||'-';
+  document.getElementById('agentWallet').textContent=a.wallet||'-';
   const nft=document.getElementById('agentNFT');
   nft.innerHTML=id.nftTokenId?`<a href="${esc(id.nftUrl)}" target="_blank">${esc(id.nftTokenId)} ↗</a>`:'Not minted';
   const hcs=document.getElementById('agentHCS');
@@ -1326,18 +1399,18 @@ function renderAgent(s){
 
 function renderBalance(s){
   const b=s.balance;
-  const v=(b&&typeof b.hbar==='number')?b.hbar.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}):'—';
+  const v=(b&&typeof b.hbar==='number')?b.hbar.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}):'-';
   document.getElementById('balHbar').textContent=v;
   document.getElementById('topBal').textContent=v;
 }
 
 function renderPolicy(s){
   const p=s.policy||{};
-  document.getElementById('polDaily').textContent=p.dailySpendLimitHbar??'—';
-  document.getElementById('polPerTx').textContent=p.perTxLimitHbar??'—';
-  document.getElementById('polAppr').textContent=p.approvalRequiredAboveHbar??'—';
+  document.getElementById('polDaily').textContent=p.dailySpendLimitHbar??'-';
+  document.getElementById('polPerTx').textContent=p.perTxLimitHbar??'-';
+  document.getElementById('polAppr').textContent=p.approvalRequiredAboveHbar??'-';
   document.getElementById('dailySpent').textContent=s.dailySpent??'0';
-  document.getElementById('dailyLimit').textContent=p.dailySpendLimitHbar??'—';
+  document.getElementById('dailyLimit').textContent=p.dailySpendLimitHbar??'-';
   const pct=p.dailySpendLimitHbar?Math.min(100,((s.dailySpent||0)/p.dailySpendLimitHbar)*100):0;
   document.getElementById('dailyFill').style.width=pct+'%';
   document.getElementById('dailyFill').style.background=pct>80?'var(--red)':pct>50?'var(--amber)':'var(--teal)';
@@ -1368,7 +1441,7 @@ function renderApprovals(d){
       <div class="appr-reason">${esc(a.reason)}</div>
       <div class="appr-meta">${esc(a.recipient||'')} · ${timeAgo(a.createdAt)}</div>
       ${ip?`<div class="appr-btns"><button class="btn btn-approve" onclick="resolveAppr('${a.id}',true)">Approve</button><button class="btn btn-deny" onclick="resolveAppr('${a.id}',false)">Deny</button></div>`
-        :`<div class="appr-resolved">${a.status==='approved'?'✓':'✗'} ${a.status} by ${esc(a.resolvedBy||'—')}</div>`}
+        :`<div class="appr-resolved">${a.status==='approved'?'✓':'✗'} ${a.status} by ${esc(a.resolvedBy||'-')}</div>`}
     </div>`}).join('');
 }
 
@@ -1527,7 +1600,7 @@ async function txExecute(){
     let data;
     if(USE_DEMO){
       data={ok:true,summary:`Transferred ${amt} ℏ to ${to}`,data:{txIds:['0.0.7420047@'+Math.floor(Date.now()/1000)+'.123456789']}};
-      DEMO.audit.entries.push({action:'transfer',policyCheck:{verdict:'pass'},summary:`Transfer ${amt} ℏ to ${to}${memo?' — '+memo:''}`,txIds:data.data.txIds,timestamp:new Date().toISOString()});
+      DEMO.audit.entries.push({action:'transfer',policyCheck:{verdict:'pass'},summary:`Transfer ${amt} ℏ to ${to}${memo?' - '+memo:''}`,txIds:data.data.txIds,timestamp:new Date().toISOString()});
       renderAudit(DEMO.audit);
     } else {
       data=await apiPost('/api/demo/distribute',{amount:amt,holders:[{accountId:to,name:'Direct Transfer',ownershipPercent:100}],propertyName:memo||'Direct Transfer'});
@@ -1539,7 +1612,7 @@ async function txExecute(){
       res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
         <div class="result-text">✅ ${esc(data.summary||'Transfer executed')}</div>
         ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
-        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">This is a real on-chain transaction — click the link above to verify.</div>`;
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">This is a real on-chain transaction - click the link above to verify.</div>`;
       showToast('Transfer sent on-chain! ✅','success');
       await refresh();
     } else {
@@ -1576,7 +1649,7 @@ async function distExecute(){
     if(USE_DEMO){
       const txId='0.0.7420047@'+Math.floor(Date.now()/1000)+'.987654321';
       const splits=holders.map(h=>`${h.name}: ${(amt*h.ownershipPercent/100).toFixed(2)} ℏ`).join(', ');
-      data={ok:true,summary:`Distributed ${amt} ℏ for "${prop}" — ${splits}`,data:{txIds:[txId]}};
+      data={ok:true,summary:`Distributed ${amt} ℏ for "${prop}" - ${splits}`,data:{txIds:[txId]}};
       DEMO.audit.entries.push({action:'distribute',policyCheck:{verdict:'pass'},summary:data.summary,txIds:[txId],timestamp:new Date().toISOString()});
       DEMO.status.dailySpent=(DEMO.status.dailySpent||0)+amt;
       renderAudit(DEMO.audit);renderPolicy(DEMO.status);
@@ -1590,7 +1663,7 @@ async function distExecute(){
       res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
         <div class="result-text">✅ ${esc(data.summary||'Distribution complete')}</div>
         ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
-        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">Real on-chain transaction — click above to verify on HashScan.</div>`;
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">Real on-chain transaction - click above to verify on HashScan.</div>`;
       showToast('Distribution executed on-chain! ✅','success');
       await refresh();
     } else {
@@ -1634,7 +1707,7 @@ async function polCheck(){
     res.style.display='block';
     res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
       <div class="result-text" style="margin-top:8px">${v==='pass'?'✅ This action is <strong>allowed</strong> by the policy engine. The agent can proceed.'
-        :v==='deny'?'❌ This action is <strong>blocked</strong>. The agent cannot proceed — logged to HCS audit trail.'
+        :v==='deny'?'❌ This action is <strong>blocked</strong>. The agent cannot proceed - logged to HCS audit trail.'
         :'⚠️ This action <strong>requires human approval</strong> before the agent can proceed. Check the Approval Queue.'}</div>
       <div style="margin-top:10px;font-size:.78rem;color:var(--text-dim)">Action: ${esc(action)} · Amount: ${amt} ℏ${recip?' · To: '+esc(recip):''}</div>`;
     showToast(v==='pass'?'Policy: PASS ✅':v==='deny'?'Policy: DENIED ❌':'Policy: Approval Required ⚠️',v==='pass'?'success':v==='deny'?'error':'warn');
@@ -1653,21 +1726,100 @@ async function quickCheckBalance(){
 /* ═══════════════════════════════════════════════
    GUIDED DEMO STEPS
    ═══════════════════════════════════════════════ */
-function demoStep1(){
+/* ── Guided Demo Logic ── */
+const gdState={completed:[],running:false};
+
+function gdRunStep(n){
+  if(gdState.running)return;
+  gdState.running=true;
+  const btn=document.getElementById('gdBtn'+n);
+  const result=document.getElementById('gdResult'+n);
+  const num=document.getElementById('gdNum'+n);
+  const step=document.getElementById('gdStep'+n);
+
+  // Show spinner
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div> Running...';
+
+  // Simulate processing delay
+  setTimeout(()=>{
+    // Show result
+    if(n===1){
+      num.className='gd-num deny';
+      num.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+      result.className='gd-result deny show';
+      // Also trigger the real policy check modal
+      demoStep1Real();
+    } else if(n===2){
+      num.className='gd-num approval';
+      num.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      result.className='gd-result approval show';
+      demoStep2Real();
+    } else if(n===3){
+      num.className='gd-num success';
+      num.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M9 11l3 3L22 4"/></svg>';
+      result.className='gd-result success show';
+      demoStep3Real();
+    }
+
+    step.classList.remove('active');
+    step.classList.add('completed');
+    btn.style.display='none';
+    gdState.completed.push(n);
+    gdState.running=false;
+
+    // Unlock next step
+    const next=document.getElementById('gdStep'+(n+1));
+    if(next){
+      next.classList.remove('locked');
+      next.classList.add('active');
+    }
+
+    // Show reset button
+    document.getElementById('gdReset').style.display='inline-block';
+
+    // All done?
+    if(gdState.completed.length===3){
+      document.getElementById('gdComplete').classList.add('show');
+    }
+  },1500);
+}
+
+function gdResetAll(){
+  gdState.completed=[];
+  gdState.running=false;
+  for(let i=1;i<=3;i++){
+    const step=document.getElementById('gdStep'+i);
+    const btn=document.getElementById('gdBtn'+i);
+    const result=document.getElementById('gdResult'+i);
+    const num=document.getElementById('gdNum'+i);
+    step.className='gd-step'+(i===1?' active':' locked');
+    btn.style.display='';
+    btn.disabled=false;
+    btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Step';
+    result.className='gd-result';
+    num.className='gd-num default';
+    num.innerHTML=i;
+  }
+  document.getElementById('gdComplete').classList.remove('show');
+  document.getElementById('gdReset').style.display='none';
+}
+
+function demoStep1Real(){
   openModal('policy');
   document.getElementById('polAction').value='HBAR_TRANSFER';
   document.getElementById('polAmt').value='75';
   document.getElementById('polRecip').value='0.0.99999';
   showToast('Step 1: Click "Check Policy" — 75 ℏ exceeds the 50 ℏ per-TX limit','info',6000);
 }
-function demoStep2(){
+function demoStep2Real(){
   openModal('transfer');
   document.getElementById('txTo').value='0.0.55443';
   document.getElementById('txAmt').value='35';
   document.getElementById('txMemo').value='Office rent — March 2026';
   showToast('Step 2: Click "Check Policy" — 35 ℏ triggers human approval (threshold: 25 ℏ)','warn',6000);
 }
-function demoStep3(){
+function demoStep3Real(){
   openModal('distribute');
   document.getElementById('distAmt').value='15';
   document.getElementById('distProp').value='March Rent — 123 Main St';
