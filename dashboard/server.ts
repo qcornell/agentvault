@@ -234,10 +234,8 @@ const server = http.createServer(async (req, res) => {
   if (pathname === "/api/tokens" && req.method === "GET") {
     return json(res, {
       tokens: [
-        { symbol: "SAUCE", id: "0.0.731861", decimals: 6, name: "SaucerSwap" },
-        { symbol: "USDC", id: "0.0.456858", decimals: 6, name: "USD Coin" },
-        { symbol: "KARATE", id: "0.0.1463958", decimals: 8, name: "Karate Combat" },
-        { symbol: "HST", id: "0.0.1460784", decimals: 8, name: "HeadStarter" },
+        { symbol: "SAUCE", id: "0.0.731861", decimals: 6, name: "SaucerSwap", fee: "0.30%" },
+        { symbol: "USDC", id: "0.0.456858", decimals: 6, name: "USD Coin", fee: "0.15%" },
       ],
     });
   }

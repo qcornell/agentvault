@@ -34,10 +34,11 @@ const FEE_TIERS: Record<string, number> = {
 
 // Well-known mainnet tokens
 const KNOWN_TOKENS: Record<string, { id: string; decimals: number; defaultFee?: number }> = {
-  SAUCE:  { id: "0.0.731861",   decimals: 6, defaultFee: 3000 },   // 0.30%
-  USDC:   { id: "0.0.456858",   decimals: 6, defaultFee: 1500 },   // 0.15% (main WHBAR/USDC pool per GeckoTerminal)
-  KARATE: { id: "0.0.1463958",  decimals: 8, defaultFee: 3000 },   // 0.30%
-  HST:    { id: "0.0.1460784",  decimals: 8, defaultFee: 3000 },   // 0.30%
+  SAUCE:  { id: "0.0.731861",   decimals: 6, defaultFee: 3000 },   // 0.30% — V2 pool confirmed
+  USDC:   { id: "0.0.456858",   decimals: 6, defaultFee: 1500 },   // 0.15% — V2 pool confirmed (GeckoTerminal)
+  // KARATE and HST only have V1 pools — no V2 liquidity, swaps will revert
+  // KARATE: { id: "0.0.1463958",  decimals: 8 },
+  // HST:    { id: "0.0.1460784",  decimals: 8 },
   WHBAR:  { id: "0.0.1456986",  decimals: 8 },
 };
 
@@ -91,6 +92,8 @@ export interface SwapResult {
   txId?: string;
   amountInHbar?: number;
   amountOut?: number;
+  amountOutRaw?: number;
+  decimals?: number;
   tokenSymbol?: string;
   tokenId?: string;
   hashScanUrl?: string;
@@ -206,14 +209,18 @@ export async function executeHbarSwap(
       // Non-fatal
     }
 
-    const amountOut = tokenAfter - tokenBefore;
+    const amountOutRaw = tokenAfter - tokenBefore;
+    const decimals = KNOWN_TOKENS[knownUpper]?.decimals || 8;
+    const amountOutFormatted = amountOutRaw / Math.pow(10, decimals);
     const network = client.ledgerId?.toString() === "mainnet" ? "mainnet" : "testnet";
 
     return {
       ok: true,
       txId,
       amountInHbar: params.amountHbar,
-      amountOut,
+      amountOut: amountOutFormatted,
+      amountOutRaw,
+      decimals,
       tokenSymbol,
       tokenId,
       hashScanUrl: `https://hashscan.io/${network}/transaction/${txId}`,

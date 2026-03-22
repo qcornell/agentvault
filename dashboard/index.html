@@ -962,8 +962,6 @@ select.finput{font-family:var(--sans);appearance:none;
               <select id="swapToken" onchange="swapPrecheck()" style="background:var(--bg-card);padding:8px 16px;border-radius:var(--radius-xs);border:1px solid var(--border);font-weight:600;color:var(--text);font-family:var(--sans);font-size:.9rem;cursor:pointer;outline:none">
                 <option value="SAUCE">SAUCE</option>
                 <option value="USDC">USDC</option>
-                <option value="KARATE">KARATE</option>
-                <option value="HST">HST</option>
               </select>
             </div>
           </div>
@@ -1030,7 +1028,7 @@ select.finput{font-family:var(--sans);appearance:none;
     <div class="stats">
       <div class="stat featured fade-up">
         <div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
-        <div class="stat-label">Vault Balance - Testnet Sandbox</div>
+        <div class="stat-label">Vault Balance - Hedera Mainnet</div>
         <div class="stat-val"><span id="balHbar">-</span><span class="unit"> ℏ</span></div>
         <div class="stat-meta"><span class="up">● Live</span> Testnet demo vault (mainnet proof above)</div>
       </div>
@@ -1724,6 +1722,7 @@ async function txCheckPolicy(){
         const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:`Transfer of ${amt} ℏ to ${to} requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
         clientApprovals.pending.push(apprEntry);
         refresh();
+        setTimeout(()=>showToast('⚠️ Approval added to queue — click to review','warn',5000),500);
       }
       else{reason=`Action HBAR_TRANSFER for ${amt} ℏ passed all policy checks`}
       data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
@@ -1738,6 +1737,7 @@ async function txCheckPolicy(){
       const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:pc.reason||`Transfer of ${amt} ℏ requires human approval`,status:'pending',createdAt:new Date().toISOString()};
       clientApprovals.pending.push(apprEntry);
       refresh();
+      setTimeout(()=>showToast('⚠️ Approval added to queue — click to review','warn',5000),500);
     }
     res.className='modal-result show '+v;
     res.style.display='block';
@@ -1873,6 +1873,7 @@ async function polCheck(){
         const apprEntry={id:'appr-'+Date.now(),action:action,amount:amt,recipient:recip||'',reason:`${action} of ${amt} ℏ requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
         clientApprovals.pending.push(apprEntry);
         refresh();
+        setTimeout(()=>showToast('⚠️ Approval added to queue — click to review','warn',5000),500);
       }
       else{reason=`Action "${action}" for ${amt} ℏ passed all policy checks`}
       data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
