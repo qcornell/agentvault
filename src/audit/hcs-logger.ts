@@ -65,7 +65,7 @@ export async function createAuditTopic(
       txId: response.transactionId.toString(),
       data: {
         topicId,
-        hashScanUrl: `https://hashscan.io/testnet/topic/${topicId}`,
+        hashScanUrl: `https://hashscan.io/mainnet/topic/${topicId}`,
       },
     };
   } catch (err) {
@@ -141,7 +141,7 @@ export async function logToHCS(
         topicId: config.topicId,
         sequenceNumber: seqNum,
         entry,
-        hashScanUrl: `https://hashscan.io/testnet/topic/${config.topicId}`,
+        hashScanUrl: `https://hashscan.io/mainnet/topic/${config.topicId}`,
       },
     };
   } catch (err) {

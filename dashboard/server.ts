@@ -432,8 +432,8 @@ async function boot() {
     const result = await vault.initialize();
     if (result.ok) {
       console.log(`   ✅ Vault ready!`);
-      console.log(`   NFT:   ${vault.nftTokenId} → https://hashscan.io/testnet/token/${vault.nftTokenId}`);
-      console.log(`   Topic: ${vault.hcsTopicId} → https://hashscan.io/testnet/topic/${vault.hcsTopicId}`);
+      console.log(`   NFT:   ${vault.nftTokenId} → https://hashscan.io/${HEDERA_NETWORK}/token/${vault.nftTokenId}`);
+      console.log(`   Topic: ${vault.hcsTopicId} → https://hashscan.io/${HEDERA_NETWORK}/topic/${vault.hcsTopicId}`);
       console.log(`\n   Dashboard is live. Approve/deny actions from the browser.\n`);
     } else {
       initError = result.error || "Initialization failed";

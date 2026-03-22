@@ -1574,7 +1574,7 @@ function renderAudit(d){
   el.innerHTML=entries.map((e,i)=>{
     const v=(e.policyCheck?.verdict||'pass').toLowerCase();
     const tx=(e.txIds||[]).filter(Boolean).map(id=>{
-      const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+      const url='https://hashscan.io/mainnet/transaction/'+encodeURIComponent(id);
       return`<a href="${url}" target="_blank">${id}</a>`
     }).join(', ');
     return`<div class="audit">
@@ -1707,6 +1707,12 @@ async function txCheckPolicy(){
     const pc=data.data?.policyCheck||{};
     const v=(pc.verdict||'pass').toLowerCase();
     lastTxCheck=v;
+    // If approval_required from real backend, also add to local approval queue for visibility
+    if(v==='approval_required' && !USE_DEMO){
+      const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:pc.reason||`Transfer of ${amt} ℏ requires human approval`,status:'pending',createdAt:new Date().toISOString()};
+      DEMO.approvals.pending.push(apprEntry);
+      renderApprovals(DEMO.approvals);
+    }
     res.className='modal-result show '+v;
     res.style.display='block';
     const ruleText=pc.rule?`<div style="margin-top:6px;font-family:var(--mono);font-size:.78rem;color:var(--text-dim)">Rule: ${esc(pc.rule)}</div>`:'';
@@ -1740,7 +1746,7 @@ async function txExecute(){
     if(data.ok){
       const isReal = !USE_DEMO && (data.data?.txIds||[]).length;
       const txLinks = isReal ? (data.data?.txIds||[]).map(id=>{
-        const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+        const url='https://hashscan.io/mainnet/transaction/'+encodeURIComponent(id);
         return`<a href="${url}" target="_blank">🔗 Verify on HashScan →</a>`
       }).join('<br>') : '';
       res.className='modal-result show pass';
@@ -1795,7 +1801,7 @@ async function distExecute(){
     if(data.ok){
       const isReal = !USE_DEMO && (data.data?.txIds||[]).length;
       const txLinks = isReal ? (data.data?.txIds||[]).map(id=>{
-        const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+        const url='https://hashscan.io/mainnet/transaction/'+encodeURIComponent(id);
         return`<a href="${url}" target="_blank">🔗 Verify on HashScan →</a>`
       }).join('<br>') : '';
       res.className='modal-result show pass';
@@ -1954,24 +1960,28 @@ function gdResetAll(){
 }
 
 function demoStep1Real(){
+  // Auto-run the policy check (no manual click needed)
   openModal('policy');
   document.getElementById('polAction').value='HBAR_TRANSFER';
   document.getElementById('polAmt').value='75';
   document.getElementById('polRecip').value='0.0.99999';
-  showToast('Step 1: Click "Check Policy" — 75 ℏ exceeds the 50 ℏ per-TX limit','info',6000);
+  // Auto-click after a brief moment so user sees the modal
+  setTimeout(()=>polCheck(),400);
 }
 function demoStep2Real(){
+  // Auto-run the policy check → creates approval entry
   openModal('transfer');
   document.getElementById('txTo').value='0.0.55443';
   document.getElementById('txAmt').value='35';
   document.getElementById('txMemo').value='Office rent — March 2026';
-  showToast('Step 2: Click "Check Policy" — 35 ℏ triggers human approval (threshold: 25 ℏ)','warn',6000);
+  setTimeout(()=>txCheckPolicy(),400);
 }
 function demoStep3Real(){
+  // Auto-run the distribution
   openModal('distribute');
   document.getElementById('distAmt').value='0.3';
   document.getElementById('distProp').value='March Rent — 123 Main St';
-  showToast('Step 3: Click "Distribute" — this executes a real Hedera mainnet transaction!','success',6000);
+  setTimeout(()=>distExecute(),400);
 }
 
 /* ═══════════════════════════════════════════════

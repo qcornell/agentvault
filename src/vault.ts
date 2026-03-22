@@ -101,8 +101,8 @@ export class AgentVault {
         nftTokenId: this.nftTokenId,
         hcsTopicId: this.hcsTopicId,
         identity: this.identity,
-        nftUrl: `https://hashscan.io/testnet/token/${this.nftTokenId}`,
-        topicUrl: `https://hashscan.io/testnet/topic/${this.hcsTopicId}`,
+        nftUrl: `https://hashscan.io/${this.config.network}/token/${this.nftTokenId}`,
+        topicUrl: `https://hashscan.io/${this.config.network}/topic/${this.hcsTopicId}`,
       },
     };
   }
@@ -421,8 +421,8 @@ export class AgentVault {
       identity: {
         nftTokenId: this.nftTokenId,
         hcsTopicId: this.hcsTopicId,
-        nftUrl: this.nftTokenId ? `https://hashscan.io/testnet/token/${this.nftTokenId}` : null,
-        topicUrl: this.hcsTopicId ? `https://hashscan.io/testnet/topic/${this.hcsTopicId}` : null,
+        nftUrl: this.nftTokenId ? `https://hashscan.io/${this.config.network}/token/${this.nftTokenId}` : null,
+        topicUrl: this.hcsTopicId ? `https://hashscan.io/${this.config.network}/topic/${this.hcsTopicId}` : null,
       },
       policy: {
         dailySpendLimitHbar: this.policy.dailySpendLimitHbar,

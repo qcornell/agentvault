@@ -105,8 +105,8 @@ export async function mintAgentNFT(input: MintAgentNFTInput): Promise<VaultResul
         serialNumber,
         identity: fullIdentity,
         policyHash,
-        hashScanUrl: `https://hashscan.io/testnet/token/${tokenId}`,
-        nftUrl: `https://hashscan.io/testnet/token/${tokenId}/1`,
+        hashScanUrl: `https://hashscan.io/mainnet/token/${tokenId}`,
+        nftUrl: `https://hashscan.io/mainnet/token/${tokenId}/1`,
       },
     };
   } catch (err) {
