@@ -727,6 +727,12 @@ select.finput{font-family:var(--sans);appearance:none;
     </button>
   </div>
   <nav class="sidebar-nav">
+    <div class="nav-section">Trade</div>
+    <a class="nav-item" data-nav="swap" onclick="navigateTo('swap')" style="background:linear-gradient(90deg,rgba(31,182,214,.08),transparent);border:1px solid rgba(31,182,214,.15)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+      <span style="font-weight:700;color:var(--teal-light)">Swap</span>
+      <span class="nav-badge" style="background:var(--teal);font-size:.6rem">LIVE</span>
+    </a>
     <div class="nav-section">Main</div>
     <a class="nav-item active" data-nav="overview" onclick="navigateTo('overview')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -905,6 +911,119 @@ select.finput{font-family:var(--sans);appearance:none;
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M15 22v-4a4.8 4.8 0 00-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 004 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/></svg>
           GitHub
         </a>
+      </div>
+    </div>
+
+    <!-- ═══ SWAP SECTION ═══ -->
+    <div class="card fade-up" id="swapSection" style="display:none;margin-bottom:24px">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--teal),#0e7490);display:flex;align-items:center;justify-content:center">
+            <svg fill="none" stroke="#fff" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </div>
+          <div>
+            <h2 style="font-size:1.15rem;font-weight:700;margin:0">Swap Tokens</h2>
+            <div style="font-size:.78rem;color:var(--text-muted)">Live HBAR → Token swaps on SaucerSwap V2 · Protected by AgentVault</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:24px;display:grid;grid-template-columns:1fr 300px;gap:24px">
+        <!-- Left: Swap Form -->
+        <div>
+          <!-- You Pay -->
+          <div style="margin-bottom:12px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px">You Pay</label>
+            <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px">
+              <input type="number" id="swapAmt" value="0.5" min="0" step="0.1" style="flex:1;background:transparent;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:var(--mono)">
+              <div style="background:var(--bg-card);padding:8px 16px;border-radius:var(--radius-xs);border:1px solid var(--border);font-weight:600;display:flex;align-items:center;gap:6px">
+                <span style="width:20px;height:20px;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--text)">ℏ</span>
+                HBAR
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px" id="swapQuickBtns">
+              <button onclick="document.getElementById('swapAmt').value='0.5';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">0.5 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='1';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">1 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='5';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">5 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='10';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">10 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='25';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">25 ℏ</button>
+            </div>
+          </div>
+          <!-- Arrow -->
+          <div style="display:flex;justify-content:center;margin:4px 0">
+            <div style="width:36px;height:36px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;color:var(--text-dim)"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            </div>
+          </div>
+          <!-- You Receive -->
+          <div style="margin-bottom:16px">
+            <label style="font-size:.72rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px">You Receive</label>
+            <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px">
+              <div id="swapOutAmt" style="flex:1;font-size:1.8rem;font-weight:700;color:var(--text-dim);font-family:var(--mono)">—</div>
+              <select id="swapToken" onchange="swapPrecheck()" style="background:var(--bg-card);padding:8px 16px;border-radius:var(--radius-xs);border:1px solid var(--border);font-weight:600;color:var(--text);font-family:var(--sans);font-size:.9rem;cursor:pointer;outline:none">
+                <option value="SAUCE">SAUCE</option>
+                <option value="USDC">USDC</option>
+                <option value="KARATE">KARATE</option>
+                <option value="HST">HST</option>
+              </select>
+            </div>
+          </div>
+          <!-- Policy Preview -->
+          <div id="swapPolicyPreview" style="display:none;padding:10px 14px;border-radius:var(--radius-xs);margin-bottom:12px;font-size:.82rem;display:flex;align-items:center;gap:8px"></div>
+          <!-- Swap Button -->
+          <button id="swapBtn" onclick="executeSwap()" style="width:100%;padding:16px;border:none;border-radius:var(--radius-sm);font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--teal),#0e7490);color:#fff;box-shadow:0 4px 20px rgba(31,182,214,.3);transition:all .2s">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Swap Now
+          </button>
+          <!-- Result -->
+          <div id="swapResult" style="display:none;margin-top:16px;padding:16px;border-radius:var(--radius-sm)"></div>
+        </div>
+        <!-- Right: Info -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- Protection -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <svg fill="none" stroke="var(--green)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style="font-size:.82rem;font-weight:700;color:var(--text)">Protected by AgentVault</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--bg-card);border-radius:var(--radius-xs);font-size:.78rem">
+                <span style="color:var(--text-muted)">Per-TX Limit</span><span style="font-weight:600;font-family:var(--mono)">50 ℏ</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--bg-card);border-radius:var(--radius-xs);font-size:.78rem">
+                <span style="color:var(--text-muted)">Approval Above</span><span style="font-weight:600;font-family:var(--mono)">25 ℏ</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--bg-card);border-radius:var(--radius-xs);font-size:.78rem">
+                <span style="color:var(--text-muted)">Daily Limit</span><span style="font-weight:600;font-family:var(--mono)">100 ℏ</span>
+              </div>
+            </div>
+          </div>
+          <!-- How it works -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px">How It Works</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--teal-glow);border:1px solid var(--teal-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:800;color:var(--teal)">1</div>
+                <div><div style="font-size:.78rem;font-weight:600">Policy Check</div><div style="font-size:.7rem;color:var(--text-dim)">5 safety rules evaluated</div></div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--teal-glow);border:1px solid var(--teal-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:800;color:var(--teal)">2</div>
+                <div><div style="font-size:.78rem;font-weight:600">SaucerSwap V2 Execute</div><div style="font-size:.7rem;color:var(--text-dim)">multicall(exactInput, refundETH)</div></div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <div style="width:22px;height:22px;border-radius:50%;background:var(--teal-glow);border:1px solid var(--teal-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:800;color:var(--teal)">3</div>
+                <div><div style="font-size:.78rem;font-weight:600">HCS Audit Log</div><div style="font-size:.7rem;color:var(--text-dim)">Immutable on-chain record</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Recent Swaps -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px">Recent Swaps</div>
+            <div id="swapHistory" style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:.78rem;color:var(--text-dim);text-align:center;padding:12px">No swaps yet — try one!</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:.7rem;color:var(--text-dim)">Powered by <strong>SaucerSwap V2</strong> on <strong>Hedera</strong></div>
+        </div>
       </div>
     </div>
 
@@ -1117,6 +1236,10 @@ select.finput{font-family:var(--sans);appearance:none;
   <!-- Bottom Nav (mobile only) -->
   <nav class="bottom-nav" id="bottomNav">
     <div class="bottom-nav-inner">
+      <a class="bnav" data-bnav="swap" onclick="navigateTo('swap')" style="color:var(--teal)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span>Swap</span>
+      </a>
       <a class="bnav active" data-bnav="overview" onclick="navigateTo('overview')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span>Overview</span>
@@ -1290,41 +1413,39 @@ document.getElementById('sidebar').addEventListener('touchend',e=>{
 
 /* ── Navigation ── */
 const sectionMap={
-  overview:null, // scroll to top
+  swap:'swapSection',
+  overview:null,
   approvals:'approvalSection',
   audit:'auditSection',
   policy:'policySection',
   identity:'identitySection',
-  hcs:'identitySection', // HCS info lives inside the identity card
+  hcs:'identitySection',
   actions:'actionsSection',
-  distribute:null // opens modal
+  distribute:null
 };
 function navigateTo(name){
   closeSidebar();
-  // Update active state on sidebar nav
   document.querySelectorAll('.nav-item').forEach(el=>{
     el.classList.toggle('active',el.dataset.nav===name);
   });
-  // Update active state on bottom nav
   document.querySelectorAll('.bnav[data-bnav]').forEach(el=>{
     el.classList.toggle('active',el.dataset.bnav===name);
   });
-  // Update topbar title
-  const titles={overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent Identity (NFT)',hcs:'On-Chain Audit Log',actions:'AI Action Tools',distribute:'Distribute'};
+  const titles={swap:'Swap Tokens',overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent Identity (NFT)',hcs:'On-Chain Audit Log',actions:'AI Action Tools',distribute:'Distribute'};
   document.querySelector('.topbar h1').textContent=titles[name]||'Overview';
-  // Special cases
+  // Show/hide swap section
+  const swapEl=document.getElementById('swapSection');
+  if(swapEl) swapEl.style.display=(name==='swap')?'block':'none';
   if(name==='distribute'){openModal('distribute');return}
   if(name==='actions'){openModal('transfer');return}
-  // Scroll to section
+  if(name==='swap'){swapEl.scrollIntoView({behavior:'smooth',block:'start'});swapPrecheck();return}
   if(name==='overview'){
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
   const target=document.getElementById(sectionMap[name]);
-  if(target){
-    target.scrollIntoView({behavior:'smooth',block:'start'});
-  }
+  if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ── Data ── */
@@ -1850,7 +1971,101 @@ function demoStep3Real(){
   openModal('distribute');
   document.getElementById('distAmt').value='0.3';
   document.getElementById('distProp').value='March Rent — 123 Main St';
-  showToast('Step 3: Click "Distribute" — this executes a real Hedera testnet transaction!','success',6000);
+  showToast('Step 3: Click "Distribute" — this executes a real Hedera mainnet transaction!','success',6000);
+}
+
+/* ═══════════════════════════════════════════════
+   SWAP FUNCTIONALITY
+   ═══════════════════════════════════════════════ */
+const SWAP_POLICY={perTxLimit:50,approvalThreshold:25,dailyLimit:100};
+let swapHistory=[];
+
+function swapPrecheck(){
+  const amt=parseFloat(document.getElementById('swapAmt').value)||0;
+  const preview=document.getElementById('swapPolicyPreview');
+  if(amt<=0){preview.style.display='none';return}
+  preview.style.display='flex';
+  if(amt>SWAP_POLICY.perTxLimit){
+    preview.style.background='var(--red-glow)';preview.style.border='1px solid var(--red-border)';
+    preview.innerHTML='<svg fill="none" stroke="var(--red)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="color:var(--red)">Exceeds '+SWAP_POLICY.perTxLimit+' ℏ per-TX limit — will be denied</span>';
+  } else if(amt>SWAP_POLICY.approvalThreshold){
+    preview.style.background='var(--amber-glow)';preview.style.border='1px solid var(--amber-border)';
+    preview.innerHTML='<svg fill="none" stroke="var(--amber)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="color:var(--amber)">Above '+SWAP_POLICY.approvalThreshold+' ℏ — will need human approval</span>';
+  } else {
+    preview.style.background='var(--green-glow)';preview.style.border='1px solid var(--green-border)';
+    preview.innerHTML='<svg fill="none" stroke="var(--green)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="color:var(--green)">Within policy limits ✓</span>';
+  }
+}
+// Run precheck on input
+document.getElementById('swapAmt').addEventListener('input',swapPrecheck);
+
+async function executeSwap(){
+  const amt=parseFloat(document.getElementById('swapAmt').value)||0;
+  const token=document.getElementById('swapToken').value;
+  const btn=document.getElementById('swapBtn');
+  const result=document.getElementById('swapResult');
+  const outAmt=document.getElementById('swapOutAmt');
+  if(amt<=0){showToast('Enter an amount','warn');return}
+
+  // Animate
+  btn.disabled=true;
+  btn.innerHTML='<span class="btn-spin"></span> Checking policy...';
+  btn.style.opacity='.7';
+  result.style.display='none';
+  outAmt.textContent='—';
+
+  await new Promise(r=>setTimeout(r,800));
+
+  if(amt>SWAP_POLICY.perTxLimit){
+    result.style.display='block';
+    result.style.background='var(--red-glow)';result.style.border='1px solid var(--red-border)';
+    result.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px"><svg fill="none" stroke="var(--red)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><div><div style="font-weight:700;color:var(--red)">Policy Denied</div><div style="font-size:.82rem;color:var(--text-secondary);margin-top:4px">'+amt+' ℏ exceeds per-transaction limit of '+SWAP_POLICY.perTxLimit+' ℏ</div><div style="font-size:.72rem;color:var(--text-dim);margin-top:4px;font-family:var(--mono)">Rule: PER_TX_LIMIT</div></div></div>';
+    btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Swap Now';btn.style.opacity='1';
+    showToast('Policy DENIED: exceeds per-TX limit','error');
+    return;
+  }
+
+  btn.innerHTML='<span class="btn-spin"></span> Executing on SaucerSwap V2...';
+
+  try{
+    const res=await fetch(API+'/api/swap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toToken:token,amountHbar:amt})});
+    const data=await res.json();
+
+    if(data.ok){
+      const d=data.data||{};
+      outAmt.textContent=(d.amountOut||0).toLocaleString();
+      result.style.display='block';
+      result.style.background='var(--green-glow)';result.style.border='1px solid var(--green-border)';
+      const txLink=d.hashScanUrl?'<a href="'+esc(d.hashScanUrl)+'" target="_blank" style="color:var(--teal);text-decoration:underline;font-size:.82rem;display:inline-flex;align-items:center;gap:4px;margin-top:8px"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Verify on HashScan →</a>':'';
+      result.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px"><svg fill="none" stroke="var(--green)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M9 11l3 3L22 4"/></svg><div><div style="font-weight:700;color:var(--green)">Swap Executed!</div><div style="font-size:.9rem;color:var(--text);margin-top:4px">'+esc(d.amountInHbar)+' HBAR → '+(d.amountOut||0).toLocaleString()+' '+esc(d.tokenSymbol||token)+'</div>'+txLink+'<div style="font-size:.72rem;color:var(--text-dim);margin-top:6px">Gas: '+(d.gasUsed||0).toLocaleString()+'</div></div></div>';
+      showToast('Swap executed on mainnet! ✅','success');
+      // Add to history
+      swapHistory.unshift(data);
+      renderSwapHistory();
+      refresh();
+    } else {
+      result.style.display='block';
+      result.style.background='var(--red-glow)';result.style.border='1px solid var(--red-border)';
+      result.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px"><svg fill="none" stroke="var(--red)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><div><div style="font-weight:700;color:var(--red)">Swap Failed</div><div style="font-size:.82rem;color:var(--text-secondary);margin-top:4px">'+esc(data.error||'Unknown error')+'</div></div></div>';
+      showToast('Swap failed','error');
+    }
+  }catch(e){
+    result.style.display='block';
+    result.style.background='var(--red-glow)';result.style.border='1px solid var(--red-border)';
+    result.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px"><svg fill="none" stroke="var(--red)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px;flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><div><div style="font-weight:700;color:var(--red)">Connection Error</div><div style="font-size:.82rem;color:var(--text-secondary);margin-top:4px">Could not reach the AgentVault backend.</div></div></div>';
+    showToast('Connection error','error');
+  }
+  btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Swap Now';btn.style.opacity='1';
+}
+
+function renderSwapHistory(){
+  const el=document.getElementById('swapHistory');
+  if(!swapHistory.length){el.innerHTML='<div style="font-size:.78rem;color:var(--text-dim);text-align:center;padding:12px">No swaps yet — try one!</div>';return}
+  el.innerHTML=swapHistory.slice(0,8).map(h=>{
+    const d=h.data||{};
+    const link=d.hashScanUrl?'<a href="'+esc(d.hashScanUrl)+'" target="_blank" style="color:var(--teal);flex-shrink:0"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>':'';
+    return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--green-glow);border:1px solid var(--green-border);border-radius:var(--radius-xs)"><span style="font-size:.78rem;font-weight:500">'+esc(d.amountInHbar)+' ℏ → '+(d.amountOut||0).toLocaleString()+' '+esc(d.tokenSymbol||'')+'</span>'+link+'</div>';
+  }).join('');
 }
 </script>
 </body>
