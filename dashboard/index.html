@@ -1452,7 +1452,10 @@ function renderAudit(d){
   if(!entries.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><div>No audit entries yet</div></div>';return}
   el.innerHTML=entries.map((e,i)=>{
     const v=(e.policyCheck?.verdict||'pass').toLowerCase();
-    const tx=(e.txIds||[]).filter(Boolean).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">${id}</a>`}).join(', ');
+    const tx=(e.txIds||[]).filter(Boolean).map(id=>{
+      const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+      return`<a href="${url}" target="_blank">${id}</a>`
+    }).join(', ');
     return`<div class="audit">
       <div class="audit-dot-col"><div class="audit-dot ${v}"></div>${i<entries.length-1?'<div class="audit-line"></div>':''}</div>
       <div class="audit-body">
@@ -1606,14 +1609,18 @@ async function txExecute(){
       data=await apiPost('/api/demo/distribute',{amount:amt,holders:[{accountId:to,name:'Direct Transfer',ownershipPercent:100}],propertyName:memo||'Direct Transfer'});
     }
     if(data.ok){
-      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">🔗 Verify on HashScan →</a>`}).join('<br>');
+      const isReal = !USE_DEMO && (data.data?.txIds||[]).length;
+      const txLinks = isReal ? (data.data?.txIds||[]).map(id=>{
+        const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+        return`<a href="${url}" target="_blank">🔗 Verify on HashScan →</a>`
+      }).join('<br>') : '';
       res.className='modal-result show pass';
       res.style.display='block';
-      res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
-        <div class="result-text">✅ ${esc(data.summary||'Transfer executed')}</div>
+      res.innerHTML=`<span class="verdict-badge vb-pass">${isReal?'Executed on Hedera Testnet':'Simulated (demo mode)'}</span>
+        <div class="result-text">✅ ${esc(data.summary||'Transfer complete')}</div>
         ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
-        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">This is a real on-chain transaction - click the link above to verify.</div>`;
-      showToast('Transfer sent on-chain! ✅','success');
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">${isReal?'This is a real on-chain transaction - click the link above to verify.':'Backend is offline, so this run is simulated. Start the dashboard server to execute real transactions.'}</div>`;
+      showToast(isReal?'Transfer sent on-chain! ✅':'Simulated transfer (demo mode)','success');
       await refresh();
     } else {
       res.className='modal-result show deny';
@@ -1657,14 +1664,18 @@ async function distExecute(){
       data=await apiPost('/api/demo/distribute',{amount:amt,propertyName:prop,holders});
     }
     if(data.ok){
-      const txLinks=(data.data?.txIds||[]).map(id=>{const f=id.replace(/@/g,'-').replace(/\./g,'-');return`<a href="https://hashscan.io/testnet/transaction/${f}" target="_blank">🔗 Verify on HashScan →</a>`}).join('<br>');
+      const isReal = !USE_DEMO && (data.data?.txIds||[]).length;
+      const txLinks = isReal ? (data.data?.txIds||[]).map(id=>{
+        const url='https://hashscan.io/testnet/transaction/'+encodeURIComponent(id);
+        return`<a href="${url}" target="_blank">🔗 Verify on HashScan →</a>`
+      }).join('<br>') : '';
       res.className='modal-result show pass';
       res.style.display='block';
-      res.innerHTML=`<span class="verdict-badge vb-pass">Executed on Hedera Testnet</span>
+      res.innerHTML=`<span class="verdict-badge vb-pass">${isReal?'Executed on Hedera Testnet':'Simulated (demo mode)'}</span>
         <div class="result-text">✅ ${esc(data.summary||'Distribution complete')}</div>
         ${txLinks?'<div class="result-tx" style="margin-top:10px">'+txLinks+'</div>':''}
-        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">Real on-chain transaction - click above to verify on HashScan.</div>`;
-      showToast('Distribution executed on-chain! ✅','success');
+        <div style="margin-top:8px;font-size:.72rem;color:var(--text-dim)">${isReal?'Real on-chain transaction - click above to verify on HashScan.':'Backend is offline, so this run is simulated. Start the dashboard server to execute real transactions.'}</div>`;
+      showToast(isReal?'Distribution executed on-chain! ✅':'Simulated distribution (demo mode)','success');
       await refresh();
     } else {
       res.className='modal-result show deny';

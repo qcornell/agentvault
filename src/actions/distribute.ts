@@ -241,8 +241,7 @@ export async function distributeToHolders(input: DistributeInput): Promise<Vault
 
   // Build HashScan URLs
   const hashScanUrls = txIds.map((id) => {
-    const formatted = id.replace(/@/g, "-").replace(/\./g, "-");
-    return `https://hashscan.io/testnet/transaction/${formatted}`;
+    return `https://hashscan.io/testnet/transaction/${encodeURIComponent(id)}`;
   });
 
   return {
