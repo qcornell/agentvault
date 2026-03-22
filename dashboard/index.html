@@ -1564,15 +1564,22 @@ async function txCheckPolicy(){
   try{
     let data;
     if(USE_DEMO){
-      // Simulate policy check
-      let v='pass',rule='';
-      if(!['HBAR_TRANSFER','DISTRIBUTE_TO_HOLDERS','GET_BALANCE','GET_AUDIT_LOG'].includes('HBAR_TRANSFER'))v='deny',rule='action_not_allowed';
-      else if(!DEMO.status.policy.allowedActions)v='pass';
-      const lim=DEMO.status.policy.perTxLimitHbar||25;
-      const appr=DEMO.status.policy.approvalRequiredAboveHbar||15;
-      if(amt>lim){v='deny';rule='per_tx_limit'}
-      else if(amt>appr){v='approval_required';rule='amount_threshold'}
-      data={ok:true,data:{policyCheck:{verdict:v,rule}}};
+      // Simulate policy check with real limits
+      let v='pass',rule='',reason='';
+      const lim=DEMO.status.policy.perTxLimitHbar||50;
+      const appr=DEMO.status.policy.approvalRequiredAboveHbar||25;
+      const daily=DEMO.status.policy.dailySpendLimitHbar||100;
+      if(amt>lim){v='deny';rule='PER_TX_LIMIT';reason=`Amount ${amt} ℏ exceeds per-transaction limit of ${lim} ℏ`}
+      else if((DEMO.status.dailySpent||0)+amt>daily){v='deny';rule='DAILY_LIMIT';reason=`Would push daily spending to ${(DEMO.status.dailySpent||0)+amt} ℏ, exceeding ${daily} ℏ daily limit`}
+      else if(amt>appr){
+        v='approval_required';rule='APPROVAL_THRESHOLD';reason=`Amount ${amt} ℏ exceeds the ${appr} ℏ approval threshold — human approval required`;
+        // Add to approval queue so judge can see it
+        const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:`Transfer of ${amt} ℏ to ${to} requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
+        DEMO.approvals.pending.push(apprEntry);
+        renderApprovals(DEMO.approvals);
+      }
+      else{reason=`Action HBAR_TRANSFER for ${amt} ℏ passed all policy checks`}
+      data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
     } else {
       data=await apiPost('/api/demo/check-policy',{action:'HBAR_TRANSFER',amount:amt,recipient:to});
     }
@@ -1582,10 +1589,11 @@ async function txCheckPolicy(){
     res.className='modal-result show '+v;
     res.style.display='block';
     const ruleText=pc.rule?`<div style="margin-top:6px;font-family:var(--mono);font-size:.78rem;color:var(--text-dim)">Rule: ${esc(pc.rule)}</div>`:'';
-    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
+    const reasonText=pc.reason?`<div style="margin-top:4px;font-size:.82rem;color:var(--text-secondary)">${esc(pc.reason)}</div>`:'';
+    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}${reasonText}
       <div class="result-text">${v==='pass'?'✅ Transfer is allowed by policy. Click Execute to send.'
-        :v==='deny'?'❌ Transfer denied by policy rules.'
-        :'⚠️ Transfer requires human approval before execution.'}</div>`;
+        :v==='deny'?'❌ Transfer denied by policy rules. No funds were moved.'
+        :'⚠️ Transfer requires human approval before execution. Check the Approval Queue.'}</div>`;
     if(v==='pass'){document.getElementById('txExecBtn').style.display='';document.getElementById('txCheckBtn').style.display='none'}
     else{document.getElementById('txExecBtn').style.display='none'}
   }catch(e){showToast('Policy check failed: '+e.message,'error')}
@@ -1698,27 +1706,35 @@ async function polCheck(){
   try{
     let data;
     if(USE_DEMO){
-      let v='pass',rule='';
+      let v='pass',rule='',reason='';
       const allowed=DEMO.status.policy.allowedActions||[];
-      const perTx=DEMO.status.policy.perTxLimitHbar||25;
+      const perTx=DEMO.status.policy.perTxLimitHbar||50;
       const daily=DEMO.status.policy.dailySpendLimitHbar||100;
-      const appr=DEMO.status.policy.approvalRequiredAboveHbar||15;
-      if(!allowed.includes(action.toLowerCase())&&!allowed.includes(action)){v='deny';rule='action_not_allowed'}
-      else if(amt>perTx){v='deny';rule='per_tx_limit (max: '+perTx+' ℏ)'}
-      else if((DEMO.status.dailySpent||0)+amt>daily){v='deny';rule='daily_spend_limit (spent: '+(DEMO.status.dailySpent||0)+' / '+daily+' ℏ)'}
-      else if(amt>appr){v='approval_required';rule='amount_threshold (threshold: '+appr+' ℏ)'}
-      data={ok:true,data:{policyCheck:{verdict:v,rule}}};
+      const appr=DEMO.status.policy.approvalRequiredAboveHbar||25;
+      if(!allowed.includes(action.toLowerCase())&&!allowed.includes(action)){v='deny';rule='ALLOWED_ACTIONS';reason=`Action "${action}" is not in the agent's allowed actions list`}
+      else if(amt>perTx){v='deny';rule='PER_TX_LIMIT';reason=`Amount ${amt} ℏ exceeds per-transaction limit of ${perTx} ℏ`}
+      else if((DEMO.status.dailySpent||0)+amt>daily){v='deny';rule='DAILY_LIMIT';reason=`Would push daily spending to ${(DEMO.status.dailySpent||0)+amt} ℏ, exceeding ${daily} ℏ daily limit`}
+      else if(amt>appr){
+        v='approval_required';rule='APPROVAL_THRESHOLD';reason=`Amount ${amt} ℏ exceeds the ${appr} ℏ approval threshold — human approval required`;
+        // Add to approval queue
+        const apprEntry={id:'appr-'+Date.now(),action:action,amount:amt,recipient:recip||'',reason:`${action} of ${amt} ℏ requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
+        DEMO.approvals.pending.push(apprEntry);
+        renderApprovals(DEMO.approvals);
+      }
+      else{reason=`Action "${action}" for ${amt} ℏ passed all policy checks`}
+      data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
     } else {
       data=await apiPost('/api/demo/check-policy',{action,amount:amt,recipient:recip});
     }
     const pc=data.data?.policyCheck||{};
     const v=(pc.verdict||'pass').toLowerCase();
     const ruleText=pc.rule?`<div style="margin-top:8px;font-family:var(--mono);font-size:.82rem;color:var(--text-secondary)">📋 Rule: <strong>${esc(pc.rule)}</strong></div>`:'';
+    const reasonText=pc.reason?`<div style="margin-top:4px;font-size:.82rem;color:var(--text-secondary)">${esc(pc.reason)}</div>`:'';
     res.className='modal-result show '+v;
     res.style.display='block';
-    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}
+    res.innerHTML=`<span class="verdict-badge vb-${v}">${v.replace('_',' ')}</span>${ruleText}${reasonText}
       <div class="result-text" style="margin-top:8px">${v==='pass'?'✅ This action is <strong>allowed</strong> by the policy engine. The agent can proceed.'
-        :v==='deny'?'❌ This action is <strong>blocked</strong>. The agent cannot proceed - logged to HCS audit trail.'
+        :v==='deny'?'❌ This action is <strong>blocked</strong>. The agent cannot proceed — logged to HCS audit trail.'
         :'⚠️ This action <strong>requires human approval</strong> before the agent can proceed. Check the Approval Queue.'}</div>
       <div style="margin-top:10px;font-size:.78rem;color:var(--text-dim)">Action: ${esc(action)} · Amount: ${amt} ℏ${recip?' · To: '+esc(recip):''}</div>`;
     showToast(v==='pass'?'Policy: PASS ✅':v==='deny'?'Policy: DENIED ❌':'Policy: Approval Required ⚠️',v==='pass'?'success':v==='deny'?'error':'warn');

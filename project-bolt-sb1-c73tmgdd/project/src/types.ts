@@ -65,4 +65,4 @@ export interface Strategy {
   successRate: number;
 }
 
-export type Page = 'overview' | 'approvals' | 'policy' | 'audit' | 'strategy' | 'identity';
+export type Page = 'swap' | 'overview' | 'approvals' | 'policy' | 'audit' | 'strategy' | 'identity';

@@ -22,6 +22,7 @@ const PORT = Number(process.env.VAULT_DASHBOARD_PORT || 3099);
 
 const OPERATOR_ID = process.env.HEDERA_OPERATOR_ID;
 const OPERATOR_KEY = process.env.HEDERA_OPERATOR_KEY;
+const HEDERA_NETWORK = (process.env.HEDERA_NETWORK || "testnet") as "testnet" | "mainnet";
 
 if (!OPERATOR_ID || !OPERATOR_KEY) {
   console.error("\n❌ Missing env vars:");
@@ -48,9 +49,9 @@ const policy: AgentPolicy = {
 const vaultConfig: VaultConfig = {
   operatorId: OPERATOR_ID,
   operatorKey: OPERATOR_KEY,
-  network: "testnet",
-  agentName: "DeedSlice Distributor",
-  agentId: "agentvault:deedslice-distributor",
+  network: HEDERA_NETWORK,
+  agentName: "AgentVault Operator",
+  agentId: "agentvault:operator",
   policy,
 };
 
@@ -209,6 +210,41 @@ const server = http.createServer(async (req, res) => {
     const body = await parseBody(req);
     const check = vault.checkPolicy(body.action || "HBAR_TRANSFER", Number(body.amount) || 10, body.recipient);
     return json(res, { ok: true, data: { policyCheck: check } });
+  }
+
+  // POST /api/swap — execute a live HBAR→Token swap via SaucerSwap V2
+  if (pathname === "/api/swap" && req.method === "POST") {
+    if (!vault) return json(res, { ok: false, error: "Vault not initialized" }, 503);
+    const body = await parseBody(req);
+    const toToken = body.toToken || "SAUCE";
+    const amountHbar = Number(body.amountHbar);
+    if (!amountHbar || amountHbar <= 0) return json(res, { ok: false, error: "amountHbar must be > 0" }, 400);
+    if (amountHbar > 50) return json(res, { ok: false, error: `Amount ${amountHbar} exceeds per-TX limit of 50 HBAR` }, 400);
+    try {
+      const result = await vault.swap({ toToken, amountHbar, feeTier: body.feeTier || "0.30%" });
+      return json(res, result);
+    } catch (err) {
+      return json(res, { ok: false, error: err instanceof Error ? err.message : String(err) }, 500);
+    }
+  }
+
+  // GET /api/tokens — list available tokens for swap
+  if (pathname === "/api/tokens" && req.method === "GET") {
+    return json(res, {
+      tokens: [
+        { symbol: "SAUCE", id: "0.0.731861", decimals: 6, name: "SaucerSwap" },
+        { symbol: "USDC", id: "0.0.456858", decimals: 6, name: "USD Coin" },
+        { symbol: "KARATE", id: "0.0.1463958", decimals: 8, name: "Karate Combat" },
+        { symbol: "HST", id: "0.0.1460784", decimals: 8, name: "HeadStarter" },
+      ],
+    });
+  }
+
+  // GET /api/balance — get HBAR + token balances
+  if (pathname === "/api/balance" && req.method === "GET") {
+    if (!vault) return json(res, { ok: false, error: "Vault not initialized" }, 503);
+    const result = await vault.getBalance();
+    return json(res, result);
   }
 
   // ── Strategy Endpoints ──────────────────────────────────────

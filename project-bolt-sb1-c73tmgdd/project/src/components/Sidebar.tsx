@@ -1,4 +1,4 @@
-import { LayoutDashboard, CheckCircle, Shield, FileText, Workflow, User, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, CheckCircle, Shield, FileText, Workflow, User, ChevronLeft, ArrowDownUp } from 'lucide-react';
 import { Page } from '../types';
 
 interface SidebarProps {
@@ -9,6 +9,7 @@ interface SidebarProps {
 }
 
 const navigation = [
+  { id: 'swap' as Page, label: 'Swap', icon: ArrowDownUp, highlight: true },
   { id: 'overview' as Page, label: 'Overview', icon: LayoutDashboard },
   { id: 'strategy' as Page, label: 'Strategy Builder', icon: Workflow },
   { id: 'approvals' as Page, label: 'Approvals', icon: CheckCircle },
@@ -43,14 +44,15 @@ export function Sidebar({ currentPage, onNavigate, collapsed, onToggleCollapse }
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
+            const isHighlight = 'highlight' in item && item.highlight;
             return (
               <li key={item.id}>
                 <button
                   onClick={() => onNavigate(item.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? isHighlight ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md' : 'bg-blue-50 text-blue-700'
+                      : isHighlight ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold' : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   title={collapsed ? item.label : undefined}
                 >

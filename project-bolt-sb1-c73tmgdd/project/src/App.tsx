@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Topbar } from './components/Topbar';
-import { GuidedDemo } from './components/GuidedDemo';
+import { GuidedDemo, ApprovalEntry } from './components/GuidedDemo';
+import { Swap } from './pages/Swap';
 import { Overview } from './pages/Overview';
 import { Approvals } from './pages/Approvals';
 import { Policy } from './pages/Policy';
@@ -11,17 +12,24 @@ import { Identity } from './pages/Identity';
 import { Page } from './types';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('overview');
+  const [currentPage, setCurrentPage] = useState<Page>('swap');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [showDemo, setShowDemo] = useState(true);
+  const [demoApprovals, setDemoApprovals] = useState<ApprovalEntry[]>([]);
+
+  const handleApprovalCreated = (entry: ApprovalEntry) => {
+    setDemoApprovals(prev => [entry, ...prev]);
+  };
 
   const renderPage = () => {
     switch (currentPage) {
+      case 'swap':
+        return <Swap />;
       case 'overview':
         return <Overview />;
       case 'approvals':
-        return <Approvals />;
+        return <Approvals demoApprovals={demoApprovals} />;
       case 'policy':
         return <Policy />;
       case 'audit':
@@ -31,7 +39,7 @@ function App() {
       case 'identity':
         return <Identity />;
       default:
-        return <Overview />;
+        return <Swap />;
     }
   };
 
@@ -60,7 +68,7 @@ function App() {
                     Hide
                   </button>
                 </div>
-                <GuidedDemo />
+                <GuidedDemo onApprovalCreated={handleApprovalCreated} />
               </div>
             )}
 

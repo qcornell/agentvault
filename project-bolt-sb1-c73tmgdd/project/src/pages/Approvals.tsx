@@ -1,6 +1,7 @@
-import { Check, X, Clock, Filter } from 'lucide-react';
+import { Check, X, Clock, Filter, AlertCircle } from 'lucide-react';
 import { Approval } from '../types';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { ApprovalEntry } from '../components/GuidedDemo';
 
 const mockApprovals: Approval[] = [
   {
@@ -55,20 +56,69 @@ const mockApprovals: Approval[] = [
   },
 ];
 
-export function Approvals() {
+interface Props {
+  demoApprovals?: ApprovalEntry[];
+}
+
+export function Approvals({ demoApprovals = [] }: Props) {
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'denied'>('all');
+  const [resolvedDemo, setResolvedDemo] = useState<Record<string, 'approved' | 'denied'>>({});
+
+  // Convert demo approvals to the Approval format and merge
+  const allApprovals: Approval[] = useMemo(() => {
+    const demoConverted: Approval[] = demoApprovals.map(da => ({
+      id: da.id,
+      action: da.action,
+      amount: `${da.amount}`,
+      token: 'HBAR',
+      reason: da.reason,
+      status: resolvedDemo[da.id] || da.status,
+      createdAt: new Date(da.createdAt).toLocaleString(),
+      requestedBy: 'AgentVault Demo',
+    }));
+    return [...demoConverted, ...mockApprovals];
+  }, [demoApprovals, resolvedDemo]);
 
   const filteredApprovals = filter === 'all'
-    ? mockApprovals
-    : mockApprovals.filter(a => a.status === filter);
+    ? allApprovals
+    : allApprovals.filter(a => a.status === filter);
+
+  const pendingCount = allApprovals.filter(a => a.status === 'pending').length;
+
+  const handleResolve = (id: string, verdict: 'approved' | 'denied') => {
+    setResolvedDemo(prev => ({ ...prev, [id]: verdict }));
+    setSelectedApproval(null);
+  };
 
   return (
     <div className="space-y-6">
+      {/* Demo approvals banner */}
+      {demoApprovals.length > 0 && demoApprovals.some(da => !resolvedDemo[da.id]) && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-amber-900">
+              New approval from Guided Demo!
+            </p>
+            <p className="text-xs text-amber-700 mt-1">
+              Step 2 triggered a human-approval request. You can approve or deny it below — this is the human-in-the-loop control that makes AgentVault safe.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Approvals</h1>
-          <p className="text-sm text-gray-600 mt-1">Review and manage approval requests</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Review and manage approval requests
+            {pendingCount > 0 && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                {pendingCount} pending
+              </span>
+            )}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -129,7 +179,14 @@ export function Approvals() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredApprovals.map((approval) => (
-                <tr key={approval.id} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={approval.id}
+                  className={`hover:bg-gray-50 transition-colors ${
+                    approval.requestedBy === 'AgentVault Demo' && approval.status === 'pending'
+                      ? 'bg-amber-50/50'
+                      : ''
+                  }`}
+                >
                   <td className="px-6 py-4">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{approval.action}</p>
@@ -137,7 +194,7 @@ export function Approvals() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-sm font-semibold text-gray-900">${approval.amount}</p>
+                    <p className="text-sm font-semibold text-gray-900">{approval.amount} ℏ</p>
                     <p className="text-xs text-gray-600">{approval.token}</p>
                   </td>
                   <td className="px-6 py-4">
@@ -162,14 +219,14 @@ export function Approvals() {
                     {approval.status === 'pending' && (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => setSelectedApproval(approval)}
+                          onClick={() => handleResolve(approval.id, 'approved')}
                           className="p-1.5 bg-green-100 hover:bg-green-200 rounded-lg transition-colors"
                           title="Approve"
                         >
                           <Check className="w-4 h-4 text-green-700" />
                         </button>
                         <button
-                          onClick={() => setSelectedApproval(approval)}
+                          onClick={() => handleResolve(approval.id, 'denied')}
                           className="p-1.5 bg-red-100 hover:bg-red-200 rounded-lg transition-colors"
                           title="Deny"
                         >
@@ -203,10 +260,16 @@ export function Approvals() {
               >
                 Cancel
               </button>
-              <button className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium text-white transition-colors">
+              <button
+                onClick={() => handleResolve(selectedApproval.id, 'approved')}
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium text-white transition-colors"
+              >
                 Approve
               </button>
-              <button className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium text-white transition-colors">
+              <button
+                onClick={() => handleResolve(selectedApproval.id, 'denied')}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium text-white transition-colors"
+              >
                 Deny
               </button>
             </div>
