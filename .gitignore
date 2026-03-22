@@ -1,5 +1,8 @@
 node_modules/
 dist/
 *.js.map
+
+# Secrets — NEVER commit these
 .env
-.env.local
+.env.*
+!.env.example

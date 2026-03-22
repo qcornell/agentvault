@@ -1,12 +1,14 @@
 // ── AgentVault Dashboard Server ─────────────────────────────────
 // Serves the dashboard UI + API endpoints for the vault.
 // Boots a live vault on startup so the dashboard shows real data.
-// No frameworks, no dependencies — just Node.js http module.
+// No frameworks, no dependencies — just Node.js http module + dotenv.
 //
 // Usage:
-//   HEDERA_OPERATOR_ID=0.0.xxxx HEDERA_OPERATOR_KEY=302e... npx ts-node dashboard/server.ts
+//   1. Create .env in project root (see .env.example)
+//   2. npx ts-node dashboard/server.ts
 //   Then open http://localhost:3099
 
+import "dotenv/config";
 import http from "http";
 import fs from "fs";
 import path from "path";
