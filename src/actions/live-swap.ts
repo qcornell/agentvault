@@ -27,16 +27,17 @@ const WHBAR_TOKEN_ID = "0.0.1456986";
 const FEE_TIERS: Record<string, number> = {
   "0.01%": 100,
   "0.05%": 500,
+  "0.15%": 1500,
   "0.30%": 3000,
   "1.00%": 10000,
 };
 
 // Well-known mainnet tokens
-const KNOWN_TOKENS: Record<string, { id: string; decimals: number }> = {
-  SAUCE:  { id: "0.0.731861",   decimals: 6 },
-  USDC:   { id: "0.0.456858",   decimals: 6 },
-  KARATE: { id: "0.0.1463958",  decimals: 8 },
-  HST:    { id: "0.0.1460784",  decimals: 8 },
+const KNOWN_TOKENS: Record<string, { id: string; decimals: number; defaultFee?: number }> = {
+  SAUCE:  { id: "0.0.731861",   decimals: 6, defaultFee: 3000 },   // 0.30%
+  USDC:   { id: "0.0.456858",   decimals: 6, defaultFee: 1500 },   // 0.15% (main WHBAR/USDC pool per GeckoTerminal)
+  KARATE: { id: "0.0.1463958",  decimals: 8, defaultFee: 3000 },   // 0.30%
+  HST:    { id: "0.0.1460784",  decimals: 8, defaultFee: 3000 },   // 0.30%
   WHBAR:  { id: "0.0.1456986",  decimals: 8 },
 };
 
@@ -114,7 +115,9 @@ export async function executeHbarSwap(
 
   const operatorId = client.operatorAccountId!.toString();
   const recipientId = params.recipient || operatorId;
-  const fee = FEE_TIERS[params.feeTier || "0.30%"] || 3000;
+  // Use token's known fee tier, or user override, or 0.30% default
+  const knownFee = KNOWN_TOKENS[knownUpper]?.defaultFee;
+  const fee = params.feeTier ? (FEE_TIERS[params.feeTier] || 3000) : (knownFee || 3000);
 
   // 1. Ensure token is associated
   try {
