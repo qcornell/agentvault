@@ -1,12 +1,12 @@
 /**
  * Token Swap Action for AgentVault
  * Integrates with SaucerSwap V2 for DEX trading on Hedera
- * 
+ *
  * This is the foundation for the trading bot functionality
  */
 
-import { 
-  Client, 
+import {
+  Client,
   ContractExecuteTransaction,
   ContractId,
   TokenId,
@@ -17,11 +17,11 @@ import {
 } from "@hashgraph/sdk";
 
 // Import the REAL SaucerSwap integration
-import { 
-  SaucerSwapV2, 
+import {
+  SaucerSwapV2,
   executeSwap as saucerSwapExecute,
   POPULAR_TOKENS,
-  SAUCERSWAP_CONTRACTS 
+  SAUCERSWAP_CONTRACTS
 } from "../integrations/saucerswap";
 
 export interface SwapInput {
@@ -63,17 +63,17 @@ export async function getSwapQuote(
   try {
     // Determine network
     const network = client.ledgerId?.toString() === "mainnet" ? "mainnet" : "testnet";
-    
+
     // Create SaucerSwap instance
     const saucer = new SaucerSwapV2(client, network);
-    
+
     // Get the best path and quote from REAL SaucerSwap
     const pathResult = await saucer.findBestPath(
       input.fromToken,
       input.toToken,
       input.amountIn
     );
-    
+
     return {
       amountOut: pathResult.expectedOutput,
       priceImpact: pathResult.priceImpact,
@@ -108,30 +108,30 @@ export async function swapTokens(
         error: "Both fromToken and toToken are required"
       };
     }
-    
+
     if (input.fromToken === input.toToken) {
       return {
         ok: false,
         error: "Cannot swap token to itself"
       };
     }
-    
+
     if (input.amountIn <= 0) {
       return {
         ok: false,
         error: "Amount must be positive"
       };
     }
-    
+
     // Determine network
     const network = client.ledgerId?.toString() === "mainnet" ? "mainnet" : "testnet";
-    
+
     console.log(`🔄 Executing REAL swap on SaucerSwap ${network}`);
     console.log(`   ${input.amountIn} ${input.fromToken} -> ${input.toToken}`);
-    
+
     // Calculate slippage tolerance (default 1%)
     const slippageTolerance = ((input.amountIn - input.minAmountOut) / input.amountIn) * 100;
-    
+
     // Execute the REAL swap on SaucerSwap!
     const result = await saucerSwapExecute(
       client,
@@ -141,18 +141,18 @@ export async function swapTokens(
       slippageTolerance || 1,
       network
     );
-    
+
     if (!result.ok) {
       return {
         ok: false,
         error: result.error
       };
     }
-    
+
     console.log(`✅ Swap successful! TX: ${result.txId}`);
     console.log(`   Received: ${result.amountOut} ${input.toToken}`);
     console.log(`   Price impact: ${result.priceImpact}%`);
-    
+
     return {
       ok: true,
       transactionId: result.txId,
@@ -162,7 +162,7 @@ export async function swapTokens(
       route: result.path,
       gasUsed: 0.5 // Estimate
     };
-    
+
   } catch (error: any) {
     return {
       ok: false,
@@ -219,13 +219,13 @@ export async function executeStrategy(
 ): Promise<{ok: boolean; executed: TradingAction[]; blocked: TradingAction[]; reason?: string}> {
   const executed: TradingAction[] = [];
   const blocked: TradingAction[] = [];
-  
+
   // Check all conditions
   for (const condition of strategy.conditions) {
     // TODO: Implement condition checking
     // This would integrate with price feeds, time checks, etc.
   }
-  
+
   // Execute actions if conditions are met
   for (const action of strategy.actions) {
     // Check guardrails first
@@ -233,9 +233,9 @@ export async function executeStrategy(
       blocked.push(action);
       continue;
     }
-    
+
     // TODO: Check daily spend limit, time windows, etc.
-    
+
     // Execute the action
     switch (action.type) {
       case 'swap':
@@ -245,20 +245,20 @@ export async function executeStrategy(
           amountIn: action.params.amount,
           minAmountOut: action.params.minAmountOut || 0
         });
-        
+
         if (swapResult.ok) {
           executed.push(action);
         } else {
           blocked.push(action);
         }
         break;
-        
+
       // TODO: Implement other action types
       default:
         console.log(`Action type ${action.type} not yet implemented`);
     }
   }
-  
+
   return {
     ok: executed.length > 0,
     executed,
@@ -288,7 +288,7 @@ export const STRATEGY_TEMPLATES: Record<string, TradingStrategy> = {
       requireApprovalAbove: 50
     }
   },
-  
+
   "buy-the-dip": {
     name: "Buy the Dip",
     description: "Buy HBAR when it drops 5% in 24h",
@@ -307,7 +307,7 @@ export const STRATEGY_TEMPLATES: Record<string, TradingStrategy> = {
       requireApprovalAbove: 100
     }
   },
-  
+
   "take-profits": {
     name: "Take Profits",
     description: "Sell 25% when HBAR goes up 20%",
@@ -316,9 +316,9 @@ export const STRATEGY_TEMPLATES: Record<string, TradingStrategy> = {
       { type: 'price_change', params: { token: 'HBAR', change: 20, period: '7d' } }
     ],
     actions: [
-      { type: 'swap', params: { 
-        fromToken: 'HBAR', 
-        toToken: 'USDC', 
+      { type: 'swap', params: {
+        fromToken: 'HBAR',
+        toToken: 'USDC',
         amount: 'balance * 0.25'  // 25% of holdings
       }}
     ],
@@ -330,4 +330,3 @@ export const STRATEGY_TEMPLATES: Record<string, TradingStrategy> = {
     }
   }
 };
-
