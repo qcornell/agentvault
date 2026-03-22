@@ -1589,25 +1589,51 @@ function renderAudit(d){
 }
 
 async function resolveAppr(id,ok){
+  // Check client-side approvals first (from guided demo)
+  const clientItem=clientApprovals.pending.find(a=>a.id===id);
+  if(clientItem){
+    clientItem.status=ok?'approved':'denied';
+    clientItem.resolvedBy='dashboard';
+    clientApprovals.resolved.push(clientItem);
+    clientApprovals.pending=clientApprovals.pending.filter(a=>a.id!==id);
+    showToast(ok?'Approved ✅':'Denied ❌','success');
+    await refresh();
+    return;
+  }
   if(USE_DEMO){
     const item=DEMO.approvals.pending.find(a=>a.id===id);
-    if(item){item.status=ok?'approved':'denied';item.resolvedBy='dashboard';DEMO.approvals.resolved.push(item);DEMO.approvals.pending=DEMO.approvals.pending.filter(a=>a.id!==id);renderApprovals(DEMO.approvals)}
+    if(item){item.status=ok?'approved':'denied';item.resolvedBy='dashboard';DEMO.approvals.resolved.push(item);DEMO.approvals.pending=DEMO.approvals.pending.filter(a=>a.id!==id)}
+    await refresh();
     return;
   }
   try{await apiPost(`/api/approvals/${id}/resolve`,{approved:ok,resolvedBy:'dashboard-operator'});await refresh()}catch(e){alert('Failed: '+e.message)}
 }
 
+// Client-side approval entries (from guided demo steps)
+const clientApprovals={pending:[],resolved:[]};
+
 async function refresh(){
   try{
     const[s,au,ap]=await Promise.all([api('/api/status'),api('/api/audit'),api('/api/approvals')]);
-    renderAgent(s);renderBalance(s);renderPolicy(s);renderAudit(au);renderApprovals(ap);
+    renderAgent(s);renderBalance(s);renderPolicy(s);renderAudit(au);
+    // Merge client-side demo approvals with real API approvals
+    const merged={
+      pending:[...clientApprovals.pending.filter(a=>a.status==='pending'),...(ap.pending||[])],
+      resolved:[...clientApprovals.resolved,...(ap.resolved||[])]
+    };
+    renderApprovals(merged);
     document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();
     USE_DEMO=false;
   }catch(e){
     if(!USE_DEMO){
       USE_DEMO=true;
       renderAgent(DEMO.status);renderBalance(DEMO.status);renderPolicy(DEMO.status);
-      renderAudit(DEMO.audit);renderApprovals(DEMO.approvals);
+      renderAudit(DEMO.audit);
+      const merged={
+        pending:[...clientApprovals.pending.filter(a=>a.status==='pending'),...DEMO.approvals.pending],
+        resolved:[...clientApprovals.resolved,...DEMO.approvals.resolved]
+      };
+      renderApprovals(merged);
       document.getElementById('lastRefresh').textContent='demo';
     }
   }
@@ -1696,8 +1722,8 @@ async function txCheckPolicy(){
         v='approval_required';rule='APPROVAL_THRESHOLD';reason=`Amount ${amt} ℏ exceeds the ${appr} ℏ approval threshold — human approval required`;
         // Add to approval queue so judge can see it
         const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:`Transfer of ${amt} ℏ to ${to} requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
-        DEMO.approvals.pending.push(apprEntry);
-        renderApprovals(DEMO.approvals);
+        clientApprovals.pending.push(apprEntry);
+        refresh();
       }
       else{reason=`Action HBAR_TRANSFER for ${amt} ℏ passed all policy checks`}
       data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
@@ -1710,8 +1736,8 @@ async function txCheckPolicy(){
     // If approval_required from real backend, also add to local approval queue for visibility
     if(v==='approval_required' && !USE_DEMO){
       const apprEntry={id:'appr-'+Date.now(),action:'HBAR_TRANSFER',amount:amt,recipient:to,reason:pc.reason||`Transfer of ${amt} ℏ requires human approval`,status:'pending',createdAt:new Date().toISOString()};
-      DEMO.approvals.pending.push(apprEntry);
-      renderApprovals(DEMO.approvals);
+      clientApprovals.pending.push(apprEntry);
+      refresh();
     }
     res.className='modal-result show '+v;
     res.style.display='block';
@@ -1845,8 +1871,8 @@ async function polCheck(){
         v='approval_required';rule='APPROVAL_THRESHOLD';reason=`Amount ${amt} ℏ exceeds the ${appr} ℏ approval threshold — human approval required`;
         // Add to approval queue
         const apprEntry={id:'appr-'+Date.now(),action:action,amount:amt,recipient:recip||'',reason:`${action} of ${amt} ℏ requires human approval (threshold: ${appr} ℏ)`,status:'pending',createdAt:new Date().toISOString()};
-        DEMO.approvals.pending.push(apprEntry);
-        renderApprovals(DEMO.approvals);
+        clientApprovals.pending.push(apprEntry);
+        refresh();
       }
       else{reason=`Action "${action}" for ${amt} ℏ passed all policy checks`}
       data={ok:true,data:{policyCheck:{verdict:v,rule,reason}}};
