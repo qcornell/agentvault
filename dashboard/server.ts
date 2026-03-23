@@ -405,6 +405,16 @@ const server = http.createServer(async (req, res) => {
     return serveFile(res, path.join(__dirname, "strategy-builder.html"), "text/html");
   }
 
+  // Serve static assets (images, etc.)
+  if (pathname === "/logo.png") {
+    try {
+      const content = fs.readFileSync(path.join(__dirname, "logo.png"));
+      res.writeHead(200, { "Content-Type": "image/png", "Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=3600" });
+      res.end(content);
+      return;
+    } catch { /* fall through to 404 */ }
+  }
+
   // Fallback
   res.writeHead(404);
   res.end("Not found");

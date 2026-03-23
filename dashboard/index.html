@@ -721,7 +721,7 @@ select.finput{font-family:var(--sans);appearance:none;
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-text">Agent<span>Vault</span></div>
+    <img src="/logo.png" alt="AgentVault" style="height:36px;width:auto;object-fit:contain">
     <button class="sidebar-close" id="sidebarClose" onclick="closeSidebar()" aria-label="Close menu">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -941,11 +941,11 @@ select.finput{font-family:var(--sans);appearance:none;
               </div>
             </div>
             <div style="display:flex;gap:6px;margin-top:8px" id="swapQuickBtns">
-              <button onclick="document.getElementById('swapAmt').value='0.5';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">0.5 ℏ</button>
-              <button onclick="document.getElementById('swapAmt').value='1';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">1 ℏ</button>
-              <button onclick="document.getElementById('swapAmt').value='5';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">5 ℏ</button>
-              <button onclick="document.getElementById('swapAmt').value='10';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">10 ℏ</button>
-              <button onclick="document.getElementById('swapAmt').value='25';swapPrecheck()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">25 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='0.5';swapPrecheck();scheduleQuote()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">0.5 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='1';swapPrecheck();scheduleQuote()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">1 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='5';swapPrecheck();scheduleQuote()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">5 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='10';swapPrecheck();scheduleQuote()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">10 ℏ</button>
+              <button onclick="document.getElementById('swapAmt').value='25';swapPrecheck();scheduleQuote()" style="padding:4px 12px;font-size:.72rem;font-weight:600;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text-muted);cursor:pointer">25 ℏ</button>
             </div>
           </div>
           <!-- Arrow -->
@@ -956,7 +956,7 @@ select.finput{font-family:var(--sans);appearance:none;
           </div>
           <!-- You Receive -->
           <div style="margin-bottom:16px">
-            <label style="font-size:.72rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px">You Receive</label>
+            <label style="font-size:.72rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px">You Receive <span id="swapQuoteLabel" style="color:var(--text-dim);font-weight:400;font-style:italic;font-size:.68rem"></span></label>
             <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px">
               <div id="swapOutAmt" style="flex:1;font-size:1.8rem;font-weight:700;color:var(--text-dim);font-family:var(--mono)">—</div>
               <select id="swapToken" onchange="swapPrecheck()" style="background:var(--bg-card);padding:8px 16px;border-radius:var(--radius-xs);border:1px solid var(--border);font-weight:600;color:var(--text);font-family:var(--sans);font-size:.9rem;cursor:pointer;outline:none">
@@ -1441,7 +1441,7 @@ function navigateTo(name){
   if(swapEl) swapEl.style.display=(name==='swap')?'block':'none';
   if(name==='distribute'){openModal('distribute');return}
   if(name==='actions'){openModal('transfer');return}
-  if(name==='swap'){swapEl.scrollIntoView({behavior:'smooth',block:'start'});swapPrecheck();return}
+  if(name==='swap'){swapEl.scrollIntoView({behavior:'smooth',block:'start'});swapPrecheck();if(typeof scheduleQuote==='function')scheduleQuote();return}
   if(name==='overview'){
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     window.scrollTo({top:0,behavior:'smooth'});
@@ -1595,11 +1595,26 @@ async function resolveAppr(id,ok){
   // Check client-side approvals first (from guided demo)
   const clientItem=clientApprovals.pending.find(a=>a.id===id);
   if(clientItem){
+    clientApprovals.pending=clientApprovals.pending.filter(a=>a.id!==id);
     clientItem.status=ok?'approved':'denied';
     clientItem.resolvedBy='dashboard';
     clientApprovals.resolved.push(clientItem);
-    clientApprovals.pending=clientApprovals.pending.filter(a=>a.id!==id);
     showToast(ok?'Approved ✅':'Denied ❌','success');
+    // Also update the guided demo Step 2 result if this is a demo approval
+    const gdResult2=document.getElementById('gdResult2');
+    if(gdResult2 && gdResult2.classList.contains('show')){
+      if(ok){
+        gdResult2.className='gd-result success show';
+        gdResult2.innerHTML='<div class="gd-result-badge gd-rb-success">APPROVED</div><div style="color:var(--text-secondary)">Transfer of '+clientItem.amount+' ℏ approved by human operator. In production, this would now execute on-chain.</div>';
+        const num2=document.getElementById('gdNum2');
+        if(num2){num2.className='gd-num success';num2.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M9 11l3 3L22 4"/></svg>'}
+      } else {
+        gdResult2.className='gd-result deny show';
+        gdResult2.innerHTML='<div class="gd-result-badge gd-rb-deny">DENIED BY HUMAN</div><div style="color:var(--text-secondary)">Transfer of '+clientItem.amount+' ℏ denied by human operator. No funds were moved.</div>';
+        const num2=document.getElementById('gdNum2');
+        if(num2){num2.className='gd-num deny';num2.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'}
+      }
+    }
     await refresh();
     return;
   }
@@ -2043,8 +2058,7 @@ function swapPrecheck(){
     preview.innerHTML='<svg fill="none" stroke="var(--green)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="color:var(--green)">Within policy limits ✓</span>';
   }
 }
-// Run precheck on input
-document.getElementById('swapAmt').addEventListener('input',swapPrecheck);
+// Note: precheck + quote scheduling is wired in the LIVE PRICE QUOTES section below
 
 async function executeSwap(){
   const amt=parseFloat(document.getElementById('swapAmt').value)||0;
@@ -2104,6 +2118,59 @@ async function executeSwap(){
   }
   btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Swap Now';btn.style.opacity='1';
 }
+
+/* ═══════════════════════════════════════════════
+   LIVE PRICE QUOTES (CoinGecko — free, no key)
+   ═══════════════════════════════════════════════ */
+const COINGECKO_IDS={SAUCE:'saucerswap',USDC:'usd-coin'};
+const HBAR_ID='hedera-hashgraph';
+let priceCache={prices:null,fetchedAt:0};
+const PRICE_CACHE_TTL=15000; // 15 seconds
+
+async function fetchPrices(){
+  const now=Date.now();
+  if(priceCache.prices&&(now-priceCache.fetchedAt)<PRICE_CACHE_TTL)return priceCache.prices;
+  try{
+    const ids=[HBAR_ID,...Object.values(COINGECKO_IDS)].join(',');
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+ids+'&vs_currencies=usd');
+    if(!r.ok)return priceCache.prices;
+    const data=await r.json();
+    priceCache.prices=data;
+    priceCache.fetchedAt=now;
+    return data;
+  }catch(e){return priceCache.prices}
+}
+
+let quoteTimeout=null;
+function scheduleQuote(){
+  clearTimeout(quoteTimeout);
+  quoteTimeout=setTimeout(updateQuote,500);
+}
+
+async function updateQuote(){
+  const amt=parseFloat(document.getElementById('swapAmt').value)||0;
+  const token=document.getElementById('swapToken').value;
+  const outEl=document.getElementById('swapOutAmt');
+  const labelEl=document.getElementById('swapQuoteLabel');
+  if(amt<=0){outEl.textContent='—';outEl.style.color='var(--text-dim)';if(labelEl)labelEl.textContent='';return}
+  const prices=await fetchPrices();
+  if(!prices)return;
+  const hbarUsd=prices[HBAR_ID]?.usd;
+  const geckoId=COINGECKO_IDS[token];
+  const tokenUsd=geckoId?prices[geckoId]?.usd:null;
+  if(!hbarUsd||!tokenUsd)return;
+  const hbarValue=amt*hbarUsd;
+  const estimated=hbarValue/tokenUsd;
+  outEl.textContent='~'+estimated.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:token==='USDC'?4:2});
+  outEl.style.color='var(--text)';
+  if(labelEl)labelEl.textContent='est. @ $'+hbarUsd.toFixed(4)+'/HBAR';
+}
+
+// Wire up debounced quote on amount input
+document.getElementById('swapAmt').addEventListener('input',function(){swapPrecheck();scheduleQuote()});
+document.getElementById('swapToken').addEventListener('change',function(){swapPrecheck();scheduleQuote()});
+// Initial quote on page load if swap section visible
+setTimeout(scheduleQuote,2000);
 
 function renderSwapHistory(){
   const el=document.getElementById('swapHistory');
