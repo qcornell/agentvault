@@ -1567,7 +1567,7 @@ function navigateTo(name){
   if(name==='distribute'){openModal('distribute');return}
   if(name==='actions'){openModal('transfer');return}
   if(name==='swap'){swapEl.scrollIntoView({behavior:'smooth',block:'start'});swapPrecheck();if(typeof scheduleQuote==='function')scheduleQuote();return}
-  if(name==='bot'){botEl.scrollIntoView({behavior:'smooth',block:'start'});refreshBotUI();return}
+  if(name==='bot'){botEl.scrollIntoView({behavior:'smooth',block:'start'});refreshBotUI();startBotPolling();return}
   if(name==='overview'){
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     window.scrollTo({top:0,behavior:'smooth'});
@@ -2403,11 +2403,27 @@ async function refreshBotUI(){
       stratEl.innerHTML=strats.map(s=>{
         const statusColor=s.enabled?'var(--green)':'var(--text-dim)';
         const statusText=s.enabled?'Active':'Paused';
+        // Countdown to next trade
+        let countdownHtml='';
+        if(s.enabled){
+          const nextTradeAt=s.lastExecutedAt?(s.lastExecutedAt+s.intervalMs):0;
+          const remaining=nextTradeAt?Math.max(0,nextTradeAt-Date.now()):0;
+          if(s.tradesExecutedToday>=s.maxTradesPerDay){
+            countdownHtml='<span style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text-dim);padding:4px 10px;border-radius:var(--radius-xs);background:rgba(255,255,255,.04);border:1px solid var(--border);white-space:nowrap">max reached</span>';
+          } else if(!s.lastExecutedAt){
+            countdownHtml='<span data-strat-id="'+s.id+'" data-next="0" class="bot-countdown" style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--teal);padding:4px 10px;border-radius:var(--radius-xs);background:var(--teal-glow);border:1px solid var(--teal-border);white-space:nowrap;min-width:56px;text-align:center">soon</span>';
+          } else if(remaining>0){
+            countdownHtml='<span data-strat-id="'+s.id+'" data-next="'+nextTradeAt+'" class="bot-countdown" style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--teal);padding:4px 10px;border-radius:var(--radius-xs);background:var(--teal-glow);border:1px solid var(--teal-border);white-space:nowrap;min-width:56px;text-align:center">'+formatCountdown(remaining)+'</span>';
+          } else {
+            countdownHtml='<span data-strat-id="'+s.id+'" data-next="'+nextTradeAt+'" class="bot-countdown" style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--amber);padding:4px 10px;border-radius:var(--radius-xs);background:var(--amber-glow);border:1px solid var(--amber-border);white-space:nowrap;min-width:56px;text-align:center;animation:pulse 1.5s infinite">now</span>';
+          }
+        }
         return`<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);${s.enabled?'border-left:3px solid var(--green)':''}">
           <div style="flex:1;min-width:0">
             <div style="font-size:.88rem;font-weight:600">${esc(s.name)}</div>
             <div style="font-size:.72rem;color:var(--text-muted);margin-top:2px">${s.amountHbar}ℏ → ${s.toToken} · every ${formatInterval(s.intervalMs)} · ${s.tradesExecutedToday}/${s.maxTradesPerDay} today · ${s.totalTradesExecuted} total</div>
           </div>
+          ${countdownHtml}
           <span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:10px;color:${statusColor};background:${s.enabled?'var(--green-glow)':'rgba(255,255,255,.04)'};border:1px solid ${s.enabled?'var(--green-border)':'var(--border)'}">${statusText}</span>
           <button onclick="toggleStrategy('${s.id}',${!s.enabled})" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-card);color:var(--text-muted);cursor:pointer;font-size:.72rem;font-weight:600">${s.enabled?'Pause':'Resume'}</button>
           <button onclick="deleteStrategy('${s.id}')" style="padding:6px 10px;border:1px solid var(--red-border);border-radius:var(--radius-xs);background:var(--red-glow);color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600">✕</button>
@@ -2439,6 +2455,28 @@ async function refreshBotUI(){
 function startBotPolling(){
   if(botRefreshTimer)return;
   botRefreshTimer=setInterval(refreshBotUI,5000); // refresh every 5s when bot page visible
+  // Start the 1-second countdown ticker
+  if(!countdownTimer) countdownTimer=setInterval(tickCountdowns,1000);
+}
+
+// ── Live countdown ticker (updates every 1s without re-fetching) ──
+let countdownTimer=null;
+function tickCountdowns(){
+  const els=document.querySelectorAll('.bot-countdown');
+  els.forEach(el=>{
+    const next=Number(el.dataset.next);
+    if(!next)return; // "soon" — waiting for first trade
+    const remaining=Math.max(0,next-Date.now());
+    if(remaining>0){
+      el.textContent=formatCountdown(remaining);
+      el.style.color='var(--teal)';el.style.background='var(--teal-glow)';el.style.borderColor='var(--teal-border)';
+      el.style.animation='';
+    } else {
+      el.textContent='now';
+      el.style.color='var(--amber)';el.style.background='var(--amber-glow)';el.style.borderColor='var(--amber-border)';
+      el.style.animation='pulse 1.5s infinite';
+    }
+  });
 }
 
 function formatInterval(ms){
@@ -2446,6 +2484,16 @@ function formatInterval(ms){
   if(ms<3600000)return Math.round(ms/60000)+'m';
   if(ms<86400000)return Math.round(ms/3600000)+'h';
   return Math.round(ms/86400000)+'d';
+}
+
+function formatCountdown(ms){
+  const totalSec=Math.ceil(ms/1000);
+  if(totalSec<=0)return'now';
+  const h=Math.floor(totalSec/3600);
+  const m=Math.floor((totalSec%3600)/60);
+  const s=totalSec%60;
+  if(h>0)return h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 
 function renderSwapHistory(){
