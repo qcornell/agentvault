@@ -770,10 +770,14 @@ select.finput{font-family:var(--sans);appearance:none;
       <span>Distribute</span>
     </a>
     <div class="nav-section">Trading</div>
+    <a class="nav-item" data-nav="bot" onclick="navigateTo('bot')" style="background:linear-gradient(90deg,rgba(246,166,35,.06),transparent);border:1px solid rgba(246,166,35,.12)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <span style="font-weight:600;color:var(--amber)">Auto-Trade Bot</span>
+      <span class="nav-badge" id="navBotBadge" style="background:var(--text-dim);font-size:.6rem;display:none">ON</span>
+    </a>
     <a class="nav-item" onclick="window.open('/strategy-builder.html','_blank')">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <span>Strategy Builder</span>
-      <span class="nav-badge" style="background:var(--green);font-size:.6rem">NEW</span>
     </a>
   </nav>
   <div class="sidebar-footer">
@@ -1026,6 +1030,124 @@ select.finput{font-family:var(--sans);appearance:none;
             </div>
           </div>
           <div style="text-align:center;font-size:.7rem;color:var(--text-dim)">Powered by <strong>SaucerSwap V2</strong> on <strong>Hedera</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AUTO-TRADE BOT SECTION ═══ -->
+    <div class="card fade-up" id="botSection" style="display:none;margin-bottom:24px">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center">
+            <svg fill="none" stroke="#fff" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:20px;height:20px"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div>
+            <h2 style="font-size:1.15rem;font-weight:700;margin:0">Auto-Trade Bot</h2>
+            <div style="font-size:.78rem;color:var(--text-muted)">Set rules → bot trades autonomously → policy engine keeps it safe</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="botStatusBadge" style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-radius:16px;background:rgba(255,255,255,.06);color:var(--text-dim)">Stopped</span>
+        </div>
+      </div>
+      <div style="padding:24px">
+        <!-- Quick Setup -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <!-- DCA Setup Card -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <svg fill="none" stroke="var(--teal)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              DCA (Dollar Cost Average)
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Buy Token</label>
+              <select id="botToken" class="finput" style="padding:8px 12px;font-size:.85rem">
+                <option value="SAUCE">SAUCE</option>
+                <option value="USDC">USDC</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Amount per Trade (HBAR)</label>
+              <input id="botAmount" type="number" class="finput" value="0.5" min="0.1" max="50" step="0.1" style="padding:8px 12px;font-size:.85rem">
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Trade Every</label>
+              <select id="botInterval" class="finput" style="padding:8px 12px;font-size:.85rem">
+                <option value="60000">1 minute (demo)</option>
+                <option value="300000">5 minutes</option>
+                <option value="900000">15 minutes</option>
+                <option value="1800000">30 minutes</option>
+                <option value="3600000" selected>1 hour</option>
+                <option value="7200000">2 hours</option>
+                <option value="14400000">4 hours</option>
+                <option value="43200000">12 hours</option>
+                <option value="86400000">24 hours</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:16px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Max Trades per Day</label>
+              <input id="botMaxTrades" type="number" class="finput" value="5" min="1" max="100" style="padding:8px 12px;font-size:.85rem">
+            </div>
+            <button id="botActivateBtn" onclick="activateBot()" style="width:100%;padding:14px;border:none;border-radius:var(--radius-sm);font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--amber),#d97706);color:#fff;box-shadow:0 4px 20px rgba(246,166,35,.3);transition:all .2s">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Activate DCA Bot
+            </button>
+          </div>
+          <!-- Condition Setup Card -->
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <svg fill="none" stroke="var(--primary-light)" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+              Conditional Trigger
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Buy SAUCE when price drops below</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="color:var(--text-dim);font-size:.9rem">$</span>
+                <input id="botCondPrice" type="number" class="finput" value="0.02" min="0" step="0.001" style="padding:8px 12px;font-size:.85rem">
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Amount per Trade (HBAR)</label>
+              <input id="botCondAmount" type="number" class="finput" value="1" min="0.1" max="50" step="0.1" style="padding:8px 12px;font-size:.85rem">
+            </div>
+            <div class="field" style="margin-bottom:16px">
+              <label style="font-size:.72rem;font-weight:600;color:var(--text-dim)">Max Trades per Day</label>
+              <input id="botCondMaxTrades" type="number" class="finput" value="3" min="1" max="100" style="padding:8px 12px;font-size:.85rem">
+            </div>
+            <div style="margin-bottom:16px;padding:10px 14px;border-radius:var(--radius-xs);background:rgba(122,99,255,.06);border:1px solid rgba(122,99,255,.15);font-size:.75rem;color:var(--text-muted)">
+              Bot checks prices every 60s. When SAUCE drops below your target, it auto-buys through the vault policy engine.
+            </div>
+            <button id="botCondActivateBtn" onclick="activateCondBot()" style="width:100%;padding:14px;border:none;border-radius:var(--radius-sm);font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--primary),#5b4ed6);color:#fff;box-shadow:0 4px 20px rgba(122,99,255,.3);transition:all .2s">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+              Activate Trigger Bot
+            </button>
+          </div>
+        </div>
+        <!-- Kill Switch + Live Prices -->
+        <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center;flex-wrap:wrap">
+          <button id="botKillSwitch" onclick="killBot()" style="padding:12px 24px;border:2px solid var(--red-border);border-radius:var(--radius-sm);font-size:.88rem;font-weight:700;cursor:pointer;background:var(--red-glow);color:var(--red);display:flex;align-items:center;gap:8px;transition:all .2s" onmouseover="this.style.background='rgba(255,88,110,.2)'" onmouseout="this.style.background='var(--red-glow)'">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+            KILL SWITCH — Stop All Bots
+          </button>
+          <div id="botPriceDisplay" style="display:flex;gap:16px;margin-left:auto;font-size:.78rem;color:var(--text-muted)">
+            <span>HBAR: <strong id="botPriceHbar" style="color:var(--text)">—</strong></span>
+            <span>SAUCE: <strong id="botPriceSauce" style="color:var(--text)">—</strong></span>
+            <span>USDC: <strong id="botPriceUsdc" style="color:var(--text)">—</strong></span>
+          </div>
+        </div>
+        <!-- Active Strategies -->
+        <div style="margin-bottom:16px">
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px">Active Strategies</div>
+          <div id="botStrategiesList" style="display:flex;flex-direction:column;gap:8px">
+            <div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.82rem">No strategies yet — create one above</div>
+          </div>
+        </div>
+        <!-- Trade Log -->
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px">Bot Trade Log</div>
+          <div id="botTradeLog" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+            <div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.82rem">No trades yet — activate a bot to start</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1417,6 +1539,7 @@ document.getElementById('sidebar').addEventListener('touchend',e=>{
 /* ── Navigation ── */
 const sectionMap={
   swap:'swapSection',
+  bot:'botSection',
   overview:null,
   approvals:'approvalSection',
   audit:'auditSection',
@@ -1434,14 +1557,17 @@ function navigateTo(name){
   document.querySelectorAll('.bnav[data-bnav]').forEach(el=>{
     el.classList.toggle('active',el.dataset.bnav===name);
   });
-  const titles={swap:'Swap Tokens',overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent Identity (NFT)',hcs:'On-Chain Audit Log',actions:'AI Action Tools',distribute:'Distribute'};
+  const titles={swap:'Swap Tokens',bot:'Auto-Trade Bot',overview:'Overview',approvals:'Approval Queue',audit:'Audit Trail',policy:'Policy Engine',identity:'Agent Identity (NFT)',hcs:'On-Chain Audit Log',actions:'AI Action Tools',distribute:'Distribute'};
   document.querySelector('.topbar h1').textContent=titles[name]||'Overview';
-  // Show/hide swap section
+  // Show/hide swap & bot sections
   const swapEl=document.getElementById('swapSection');
+  const botEl=document.getElementById('botSection');
   if(swapEl) swapEl.style.display=(name==='swap')?'block':'none';
+  if(botEl) botEl.style.display=(name==='bot')?'block':'none';
   if(name==='distribute'){openModal('distribute');return}
   if(name==='actions'){openModal('transfer');return}
   if(name==='swap'){swapEl.scrollIntoView({behavior:'smooth',block:'start'});swapPrecheck();if(typeof scheduleQuote==='function')scheduleQuote();return}
+  if(name==='bot'){botEl.scrollIntoView({behavior:'smooth',block:'start'});refreshBotUI();return}
   if(name==='overview'){
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     window.scrollTo({top:0,behavior:'smooth'});
@@ -2171,6 +2297,156 @@ document.getElementById('swapAmt').addEventListener('input',function(){swapPrech
 document.getElementById('swapToken').addEventListener('change',function(){swapPrecheck();scheduleQuote()});
 // Initial quote on page load if swap section visible
 setTimeout(scheduleQuote,2000);
+
+/* ═══════════════════════════════════════════════
+   AUTO-TRADE BOT UI
+   ═══════════════════════════════════════════════ */
+let botRefreshTimer=null;
+
+async function activateBot(){
+  const token=document.getElementById('botToken').value;
+  const amount=parseFloat(document.getElementById('botAmount').value)||0.5;
+  const interval=parseInt(document.getElementById('botInterval').value)||3600000;
+  const maxTrades=parseInt(document.getElementById('botMaxTrades').value)||5;
+  const btn=document.getElementById('botActivateBtn');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span> Activating...';
+  try{
+    const r=await fetch(API+'/api/bot/strategies',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`DCA ${token} (${amount}ℏ)`,toToken:token,amountHbar:amount,mode:'dca',intervalMs:interval,maxTradesPerDay:maxTrades})});
+    const data=await r.json();
+    if(data.ok){
+      showToast(`🤖 Bot activated: ${amount}ℏ → ${token} every ${formatInterval(interval)}`,'success',5000);
+      startBotPolling();
+      refreshBotUI();
+    } else {
+      showToast('Failed: '+(data.error||'Unknown'),'error');
+    }
+  }catch(e){showToast('Connection error — is the backend running?','error')}
+  btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polygon points="5 3 19 12 5 21 5 3"/></svg> Activate DCA Bot';
+}
+
+async function activateCondBot(){
+  const price=parseFloat(document.getElementById('botCondPrice').value)||0.02;
+  const amount=parseFloat(document.getElementById('botCondAmount').value)||1;
+  const maxTrades=parseInt(document.getElementById('botCondMaxTrades').value)||3;
+  const btn=document.getElementById('botCondActivateBtn');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span> Activating...';
+  try{
+    const r=await fetch(API+'/api/bot/strategies',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`Buy SAUCE < $${price}`,toToken:'SAUCE',amountHbar:amount,mode:'condition',intervalMs:60000,maxTradesPerDay:maxTrades,conditions:{tokenPriceBelow:price}})});
+    const data=await r.json();
+    if(data.ok){
+      showToast(`🤖 Trigger bot active: buy SAUCE when < $${price}`,'success',5000);
+      startBotPolling();
+      refreshBotUI();
+    } else {
+      showToast('Failed: '+(data.error||'Unknown'),'error');
+    }
+  }catch(e){showToast('Connection error','error')}
+  btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg> Activate Trigger Bot';
+}
+
+async function killBot(){
+  if(!confirm('Stop ALL bots and disable all strategies?'))return;
+  try{
+    await fetch(API+'/api/bot/stop',{method:'POST'});
+    showToast('⏹️ All bots stopped','info');
+    refreshBotUI();
+  }catch(e){showToast('Connection error','error')}
+}
+
+async function toggleStrategy(id,enabled){
+  try{
+    await fetch(API+'/api/bot/strategies/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled})});
+    refreshBotUI();
+  }catch(e){showToast('Failed to toggle','error')}
+}
+
+async function deleteStrategy(id){
+  try{
+    await fetch(API+'/api/bot/strategies/'+id,{method:'DELETE'});
+    showToast('Strategy removed','info');
+    refreshBotUI();
+  }catch(e){showToast('Failed to delete','error')}
+}
+
+async function refreshBotUI(){
+  try{
+    const[statusR,strategiesR,tradesR]=await Promise.all([
+      fetch(API+'/api/bot/status').then(r=>r.json()),
+      fetch(API+'/api/bot/strategies').then(r=>r.json()),
+      fetch(API+'/api/bot/trades?limit=30').then(r=>r.json()),
+    ]);
+    // Status badge
+    const badge=document.getElementById('botStatusBadge');
+    const navBadge=document.getElementById('navBotBadge');
+    if(statusR.running){
+      badge.textContent='Running ('+statusR.activeStrategies+' active)';
+      badge.style.background='var(--green-glow)';badge.style.color='var(--green)';badge.style.border='1px solid var(--green-border)';
+      if(navBadge){navBadge.textContent='ON';navBadge.style.display='';navBadge.style.background='var(--green)'}
+    } else {
+      badge.textContent='Stopped';
+      badge.style.background='rgba(255,255,255,.06)';badge.style.color='var(--text-dim)';badge.style.border='none';
+      if(navBadge)navBadge.style.display='none';
+    }
+    // Prices
+    if(statusR.prices){
+      const p=statusR.prices;
+      document.getElementById('botPriceHbar').textContent=p.hbar?'$'+p.hbar.toFixed(4):'—';
+      document.getElementById('botPriceSauce').textContent=p.sauce?'$'+p.sauce.toFixed(6):'—';
+      document.getElementById('botPriceUsdc').textContent=p.usdc?'$'+p.usdc.toFixed(4):'—';
+    }
+    // Strategies list
+    const strats=strategiesR.strategies||[];
+    const stratEl=document.getElementById('botStrategiesList');
+    if(!strats.length){
+      stratEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.82rem">No strategies yet — create one above</div>';
+    } else {
+      stratEl.innerHTML=strats.map(s=>{
+        const statusColor=s.enabled?'var(--green)':'var(--text-dim)';
+        const statusText=s.enabled?'Active':'Paused';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);${s.enabled?'border-left:3px solid var(--green)':''}">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.88rem;font-weight:600">${esc(s.name)}</div>
+            <div style="font-size:.72rem;color:var(--text-muted);margin-top:2px">${s.amountHbar}ℏ → ${s.toToken} · every ${formatInterval(s.intervalMs)} · ${s.tradesExecutedToday}/${s.maxTradesPerDay} today · ${s.totalTradesExecuted} total</div>
+          </div>
+          <span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:10px;color:${statusColor};background:${s.enabled?'var(--green-glow)':'rgba(255,255,255,.04)'};border:1px solid ${s.enabled?'var(--green-border)':'var(--border)'}">${statusText}</span>
+          <button onclick="toggleStrategy('${s.id}',${!s.enabled})" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-card);color:var(--text-muted);cursor:pointer;font-size:.72rem;font-weight:600">${s.enabled?'Pause':'Resume'}</button>
+          <button onclick="deleteStrategy('${s.id}')" style="padding:6px 10px;border:1px solid var(--red-border);border-radius:var(--radius-xs);background:var(--red-glow);color:var(--red);cursor:pointer;font-size:.72rem;font-weight:600">✕</button>
+        </div>`}).join('');
+    }
+    // Trade log
+    const trades=tradesR.trades||[];
+    const logEl=document.getElementById('botTradeLog');
+    if(!trades.length){
+      logEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.82rem">No trades yet — activate a bot to start</div>';
+    } else {
+      logEl.innerHTML=trades.map(t=>{
+        const color=t.verdict==='executed'?'var(--green)':t.verdict==='denied'?'var(--red)':'var(--amber)';
+        const icon=t.verdict==='executed'?'✅':t.verdict==='denied'?'❌':'⚠️';
+        const link=t.hashScanUrl?`<a href="${esc(t.hashScanUrl)}" target="_blank" style="color:var(--teal);font-size:.7rem;margin-left:8px">HashScan ↗</a>`:'';
+        return`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-surface);border-radius:var(--radius-xs);border-left:3px solid ${color}">
+          <span style="font-size:1rem">${icon}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem;font-weight:600">${esc(t.strategyName)}: ${t.amountHbar}ℏ → ${t.amountOut?t.amountOut.toLocaleString():'-'} ${esc(t.tokenSymbol)}${link}</div>
+            <div style="font-size:.68rem;color:var(--text-dim);margin-top:1px">${t.verdict.toUpperCase()} · ${timeAgo(t.timestamp)}</div>
+          </div>
+        </div>`}).join('');
+    }
+  }catch(e){
+    // Backend offline — that's OK
+  }
+}
+
+function startBotPolling(){
+  if(botRefreshTimer)return;
+  botRefreshTimer=setInterval(refreshBotUI,5000); // refresh every 5s when bot page visible
+}
+
+function formatInterval(ms){
+  if(ms<60000)return Math.round(ms/1000)+'s';
+  if(ms<3600000)return Math.round(ms/60000)+'m';
+  if(ms<86400000)return Math.round(ms/3600000)+'h';
+  return Math.round(ms/86400000)+'d';
+}
 
 function renderSwapHistory(){
   const el=document.getElementById('swapHistory');
