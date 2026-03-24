@@ -485,7 +485,7 @@ const server = http.createServer(async (req, res) => {
       maxTradesPerDay: Math.min(Number(body.maxTradesPerDay) || 10, 100),
       tradesExecutedToday: 0,
       totalTradesExecuted: 0,
-      lastExecutedAt: null,
+      lastExecutedAt: Date.now(),  // Start countdown immediately from activation
       createdAt: new Date().toISOString(),
     };
     strategies.push(strat);

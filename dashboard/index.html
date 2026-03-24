@@ -2410,8 +2410,6 @@ async function refreshBotUI(){
           const remaining=nextTradeAt?Math.max(0,nextTradeAt-Date.now()):0;
           if(s.tradesExecutedToday>=s.maxTradesPerDay){
             countdownHtml='<span style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--text-dim);padding:4px 10px;border-radius:var(--radius-xs);background:rgba(255,255,255,.04);border:1px solid var(--border);white-space:nowrap">max reached</span>';
-          } else if(!s.lastExecutedAt){
-            countdownHtml='<span data-strat-id="'+s.id+'" data-next="0" class="bot-countdown" style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--teal);padding:4px 10px;border-radius:var(--radius-xs);background:var(--teal-glow);border:1px solid var(--teal-border);white-space:nowrap;min-width:56px;text-align:center">soon</span>';
           } else if(remaining>0){
             countdownHtml='<span data-strat-id="'+s.id+'" data-next="'+nextTradeAt+'" class="bot-countdown" style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--teal);padding:4px 10px;border-radius:var(--radius-xs);background:var(--teal-glow);border:1px solid var(--teal-border);white-space:nowrap;min-width:56px;text-align:center">'+formatCountdown(remaining)+'</span>';
           } else {
